@@ -84,9 +84,11 @@ asking first.
 | **c** | Hypotheses with the null | The same, plus the null hypothesis. Pick three. |
 | **d** | Continuous or discrete? | Can the variable take any value, or only separate ones? |
 | **e** | Levels of measurement | Categorical, ordinal, interval or ratio? Two mistakes allowed per run. |
-| **f** | Cross-sectional or longitudinal? | Snapshot, over time, or both? Then type the IV(s) and DV. |
-| **g** | Confounds | Is there a confound? If so, which variable is it? |
-| **h** | Within or between subjects? | Type the IV, choose the design, then type the DV. |
+| **f** | Cross-sectional or longitudinal? | Snapshot or over time? Then type the IV and DV. One factor each. |
+| **g** | Two factors | The same, with two independent variables to find. |
+| **h** | Both: panel designs | Several groups followed over time, mixed with designs from f and g. |
+| **i** | Confounds | Is there a confound? If so, which variable is it? |
+| **j** | Within or between subjects? | Type the IV, choose the design, then type the DV. |
 
 ## Running it
 

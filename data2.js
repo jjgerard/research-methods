@@ -385,7 +385,9 @@ const DESIGN_ITEMS = [
 ].map(d => ({ ...d, why: d.cat === 'within' ? WITHIN_WHY : BETWEEN_WHY }));
 
 // ---------------------------------------------------------------------------
-// 2f. Cross-sectional, longitudinal, or both -- then the IV(s) and DV, typed.
+// 2f-2h. Cross-sectional, longitudinal, or both -- then the IV(s) and DV,
+// typed. Three parts, in order: one factor, two factors, then both (panel
+// designs). Cross-sectional and longitudinal are mixed in every part.
 //
 // From the lecture:
 //   cross-sectional  a snapshot: how do 2+ groups differ at one time?
@@ -409,7 +411,8 @@ const TIME_WORDS = ['time', 'over time', 'when they are tested', 'testing time',
 const V_AGE_TIME = { name: 'age (the time of testing)', aliases: ['age', 'how old they are', 'getting older', 'months old', 'age in months', 'development', ...TIME_WORDS] };
 const V_VOCAB = { name: 'vocabulary size', aliases: ['vocabulary', 'number of words', 'words known', 'how many words', 'words they know', 'word knowledge', 'lexicon'] };
 
-const CROSSLONG_ITEMS = [
+// Part 1: one factor. Cross-sectional and longitudinal mixed, one IV each.
+const CROSSLONG_SINGLE = [
   // cross-sectional: different groups, one point in time
   { cat: 'cross',
     label: 'In the same week, researchers measure the vocabulary of 50 two-year-olds and 50 four-year-olds, and compare the two age groups.',
@@ -464,7 +467,102 @@ const CROSSLONG_ITEMS = [
     dv: { name: 'English listening score', aliases: ['listening', 'listening score', 'english listening', 'listening comprehension', 'score', 'english'] },
     others: [{ name: 'the international students', aliases: ['students', 'international students', 'participants'] }] },
 
-  // both (panel): several groups, each followed over time
+];
+
+// Part 2: two factors. Still only cross-sectional or longitudinal, but each
+// design has a second IV alongside the grouping or the time -- a
+// within-subjects one (nouns and verbs; easy and hard texts) or a second
+// way of grouping people. Two IVs is new; the design choice isn't.
+const CROSSLONG_MULTI = [
+  // cross-sectional, two factors: still one point in time
+  { cat: 'cross',
+    label: 'In the same week, researchers measure the vocabulary of monolingual and bilingual children aged 3 and aged 5, and compare all four groups.',
+    ivs: [
+      { name: 'language background (monolingual or bilingual)', aliases: ['bilingual', 'monolingual', 'bilingual or monolingual', 'language background', 'number of languages', 'bilingualism'] },
+      { name: 'age group', aliases: ['age', 'age group', 'how old they are', 'years old', '3 or 5'] },
+    ],
+    dv: V_VOCAB,
+    others: [{ name: 'the week of testing', aliases: ['week', 'same week'] }] },
+  { cat: 'cross',
+    label: 'In a single session, native speakers and learners of English each rate grammatical and ungrammatical sentences.',
+    ivs: [
+      { name: 'native speaker or learner', aliases: ['native', 'native speaker', 'learner', 'native or learner', 'language background', 'speaker type', 'first language', 'proficiency'] },
+      { name: 'grammaticality', aliases: ['grammatical or ungrammatical', 'grammatical', 'ungrammatical', 'sentence type', 'type of sentence', 'correctness', 'grammar'] },
+    ],
+    dv: { name: 'acceptability rating', aliases: ['rating', 'ratings', 'acceptability', 'judgment', 'judgement', 'score'] },
+    others: [{ name: 'the session', aliases: ['session', 'single session'] }] },
+  { cat: 'cross',
+    label: 'One survey asks people in cities and in the countryside, in three age groups, how often they use dialect words, and compares the groups.',
+    ivs: [
+      { name: 'where they live (city or countryside)', aliases: ['city', 'countryside', 'city or countryside', 'urban', 'rural', 'location', 'where they live', 'place'] },
+      { name: 'age group', aliases: ['age', 'age group', 'how old they are', 'generation'] },
+    ],
+    dv: { name: 'how often they use dialect words', aliases: ['dialect', 'dialect words', 'dialect use', 'use of dialect', 'how often', 'frequency'] },
+    others: [{ name: 'the survey', aliases: ['survey', 'questionnaire'] }] },
+  { cat: 'cross',
+    label: 'In one afternoon, first-year and third-year students read texts in large and in small font, and their reading speeds are compared.',
+    ivs: [
+      { name: 'year group', aliases: ['year', 'year group', 'year of study', 'first or third year', 'which year'] },
+      V_FONT_SIZE,
+    ],
+    dv: { name: 'reading speed', aliases: ['reading', 'reading time', 'how fast they read', 'speed', 'reading rate'] },
+    others: [{ name: 'the texts', aliases: ['texts', 'text', 'passages'] }] },
+  { cat: 'cross',
+    label: 'On one testing day, left-handed and right-handed children aged 6 and aged 9 take the same spelling test.',
+    ivs: [
+      { name: 'handedness', aliases: ['left or right handed', 'left handed', 'right handed', 'hand', 'which hand', 'handed'] },
+      { name: 'age group', aliases: ['age', 'age group', 'how old they are', 'years old', '6 or 9'] },
+    ],
+    dv: { name: 'spelling score', aliases: ['spelling', 'spelling test', 'score', 'spelling ability'] },
+    others: [{ name: 'the testing day', aliases: ['day', 'testing day'] }] },
+
+  // longitudinal, two factors: one group, followed over time, plus a
+  // second IV that every member of the group experiences
+  { cat: 'long',
+    label: 'The same 25 children are tested on how many nouns and how many verbs they know at 18, 24 and 30 months old.',
+    ivs: [
+      V_AGE_TIME,
+      { name: 'word type (nouns or verbs)', aliases: ['word type', 'type of word', 'nouns or verbs', 'nouns', 'verbs', 'word class', 'part of speech'] },
+    ],
+    dv: { name: 'number of words known', aliases: ['words known', 'number of words', 'how many words', 'vocabulary', 'how many they know'] },
+    others: [{ name: 'the children', aliases: ['children', 'kids', 'toddlers'] }] },
+  { cat: 'long',
+    label: 'One class of Spanish learners is tested on both speaking and listening at the start and the end of each semester.',
+    ivs: [
+      { name: 'time (point in the course)', aliases: ['point in the course', 'start or end', 'progress', ...TIME_WORDS] },
+      { name: 'skill (speaking or listening)', aliases: ['skill', 'speaking or listening', 'speaking', 'listening', 'type of test', 'which skill'] },
+    ],
+    dv: { name: 'test score', aliases: ['score', 'test score', 'results', 'performance', 'marks'] },
+    others: [{ name: 'the class', aliases: ['class', 'learners', 'students'] }] },
+  { cat: 'long',
+    label: 'The same group of older adults reads easy and difficult texts every two years for ten years, and their reading times are recorded.',
+    ivs: [
+      V_AGE_TIME,
+      { name: 'text difficulty (easy or difficult)', aliases: ['difficulty', 'text difficulty', 'easy or difficult', 'easy', 'difficult', 'hard', 'type of text'] },
+    ],
+    dv: { name: 'reading time', aliases: ['reading', 'time to read', 'how long they take to read', 'reading speed', 'speed'] },
+    others: [{ name: 'the older adults', aliases: ['older adults', 'adults', 'participants', 'elderly'] }] },
+  { cat: 'long',
+    label: 'During a year abroad, 20 students are tested every month on how well they understand speech in quiet and in noise.',
+    ivs: [
+      { name: 'time abroad', aliases: ['time abroad', 'year abroad', 'month', 'every month', 'months abroad', ...TIME_WORDS] },
+      { name: 'background noise (quiet or noisy)', aliases: ['noise', 'background noise', 'quiet or noise', 'quiet', 'noisy', 'listening condition'] },
+    ],
+    dv: { name: 'listening comprehension', aliases: ['comprehension', 'understanding', 'how well they understand', 'understand', 'listening'] },
+    others: [{ name: 'the students', aliases: ['students', 'participants'] }] },
+  { cat: 'long',
+    label: 'The same children write a story and a letter every September from age 7 to age 11, and the length of each piece is measured.',
+    ivs: [
+      V_AGE_TIME,
+      { name: 'type of writing (story or letter)', aliases: ['story or letter', 'story', 'letter', 'type of writing', 'genre', 'writing type', 'kind of text'] },
+    ],
+    dv: { name: 'length of the writing', aliases: ['length', 'how long', 'number of words', 'words written', 'word count'] },
+    others: [{ name: 'the children', aliases: ['children', 'pupils', 'class'] }] },
+];
+
+// Part 3: both. Panel designs -- several groups, each followed over time --
+// so there are always two IVs, the grouping and the time.
+const CROSSLONG_PANEL = [
   { cat: 'both',
     label: 'Three classes are each taught with a different method (A, B or C). Every class takes the same test before teaching starts, after year 1 and after year 2.',
     ivs: [
@@ -505,4 +603,37 @@ const CROSSLONG_ITEMS = [
     ],
     dv: { name: 'reading score', aliases: ['reading', 'reading ability', 'reading test', 'score'] },
     others: [] },
+  { cat: 'both',
+    label: 'Researchers follow two groups of toddlers, one in full-time nursery and one cared for at home, measuring their vocabulary every six months from age 1 to age 3.',
+    ivs: [
+      { name: 'childcare (nursery or home)', aliases: ['nursery', 'home', 'nursery or home', 'childcare', 'care', 'where they are looked after', 'group'] },
+      V_AGE_TIME,
+    ],
+    dv: V_VOCAB,
+    others: [] },
+  { cat: 'both',
+    label: 'Students on an Irish immersion course and students at a weekly evening class take the same speaking test at the start, middle and end of the year.',
+    ivs: [
+      { name: 'type of course (immersion or evening class)', aliases: ['course', 'type of course', 'immersion', 'evening class', 'immersion or evening class', 'class type', 'group'] },
+      { name: 'time (start, middle or end of the year)', aliases: ['start middle or end', 'point in the year', ...TIME_WORDS] },
+    ],
+    dv: { name: 'speaking score', aliases: ['speaking', 'speaking test', 'score', 'irish speaking', 'fluency'] },
+    others: [] },
+  { cat: 'both',
+    label: 'Three age groups of adults (in their 20s, 40s and 60s) are each tested on word recall once a year for five years.',
+    ivs: [
+      { name: 'age group', aliases: ['age group', '20s 40s or 60s', 'generation', 'group'] },
+      { name: 'time (year of testing)', aliases: ['once a year', 'five years', ...TIME_WORDS] },
+    ],
+    dv: { name: 'word recall', aliases: ['recall', 'memory', 'words recalled', 'how many words', 'remember', 'score'] },
+    others: [] },
+];
+
+// Part 3 isn't only panel designs: a third of it is drawn from parts 1 and 2,
+// so "both" is something to recognise rather than an answer that's always
+// right.
+const CROSSLONG_PART3 = [
+  ...CROSSLONG_PANEL,
+  ...CROSSLONG_SINGLE.filter((_, i) => i % 3 === 0),
+  ...CROSSLONG_MULTI.filter((_, i) => i % 3 === 1),
 ];

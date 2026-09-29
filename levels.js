@@ -9,6 +9,21 @@
 // sub-level can be inserted in the middle without anyone's progress moving
 // to a different card.
 // ---------------------------------------------------------------------------
+// Shared by the three cross-sectional/longitudinal sub-levels.
+const CROSSLONG_CHOICES = [
+  { value: 'cross', label: 'Cross-sectional' },
+  { value: 'long', label: 'Longitudinal' },
+  { value: 'both', label: 'Both (a panel design)' },
+];
+const CROSSLONG_SHARED = {
+  steps: ['choice', 'iv', 'dv'],
+  choiceWhy: {
+    cross: 'Different groups are compared at a single point in time — a snapshot. Nobody is tested again later.',
+    long: 'The same group is measured repeatedly over time, to see how it changes. That\'s a cohort design.',
+    both: 'Several groups are compared, AND each group is measured repeatedly over time. That\'s a panel design: cross-sectional and longitudinal at once.',
+  },
+};
+
 const LEVELS = [
   {
     n: 1, title: 'Variables',
@@ -213,23 +228,18 @@ const LEVELS = [
           </ul>`,
         },
       },
+      // Cross-sectional and longitudinal, in three parts: one factor, two
+      // factors, then both. The design choice, its explanations and the
+      // definitions are shared; what changes is how many IVs there are to
+      // find, and -- only in part 3 -- whether "both" is on offer at all.
       {
         id: '2-crosslong', kind: 'design', name: 'Cross-sectional or longitudinal?',
-        desc: 'A snapshot, a group followed over time, or both? Then name the IV and DV in your own words.',
-        items: CROSSLONG_ITEMS,
-        steps: ['choice', 'iv', 'dv'],
-        choiceQuestion: 'Is this design <strong>cross-sectional</strong>, <strong>longitudinal</strong>, or <strong>both</strong>?',
-        choices: [
-          { value: 'cross', label: 'Cross-sectional' },
-          { value: 'long', label: 'Longitudinal' },
-          { value: 'both', label: 'Both (a panel design)' },
-        ],
-        choiceWhy: {
-          cross: 'Different groups are compared at a single point in time — a snapshot. Nobody is tested again later.',
-          long: 'The same group is measured repeatedly over time, to see how it changes. That\'s a cohort design.',
-          both: 'Several groups are compared, AND each group is measured repeatedly over time. That\'s a panel design: cross-sectional and longitudinal at once.',
-        },
-        speech: 'Snapshot, over time, or both? Then type the IV and the DV in your own words.',
+        desc: 'A snapshot, or one group followed over time? Then name the IV and DV in your own words.',
+        items: CROSSLONG_SINGLE,
+        ...CROSSLONG_SHARED,
+        choices: CROSSLONG_CHOICES.slice(0, 2),
+        choiceQuestion: 'Is this design <strong>cross-sectional</strong> or <strong>longitudinal</strong>?',
+        speech: 'Snapshot or over time? Then type the IV and the DV in your own words.',
         help: {
           title: 'Cross-sectional and longitudinal',
           html: `<ul>
@@ -240,15 +250,58 @@ const LEVELS = [
                 group over time</strong>: how does a group change? <em>Measure the same children
                 at 6, 12, 18 and 24 months.</em> Following one group like this is a
                 <strong>cohort design</strong>.</li>
-            <li>A <strong>panel design</strong> is <strong>both</strong>: several groups, each
-                followed over time. <em>Classes taught with methods A, B and C, each tested
-                before, after year 1 and after year 2.</em></li>
             <li>Then type the <strong>independent variable</strong> and the <strong>dependent
-                variable</strong> in your own words. In a panel design there are
-                <strong>two</strong> independent variables — which group, and when — and you'll
-                be asked for both.</li>
+                variable</strong> in your own words. In a cross-sectional design the IV is usually
+                the grouping; in a longitudinal one, it's time.</li>
             <li>You'll see how your answer was read ("Read as: age group") before it's marked.
                 If it could mean two things, you'll be asked which.</li>
+          </ul>`,
+        },
+      },
+      {
+        id: '2-crosslong-multi', kind: 'design', name: 'Two factors',
+        desc: 'Cross-sectional or longitudinal again, but now each design has two independent variables.',
+        items: CROSSLONG_MULTI,
+        ...CROSSLONG_SHARED,
+        choices: CROSSLONG_CHOICES.slice(0, 2),
+        choiceQuestion: 'Is this design <strong>cross-sectional</strong> or <strong>longitudinal</strong>?',
+        speech: 'Snapshot or over time? Then find BOTH independent variables, and the DV.',
+        help: {
+          title: 'Two factors',
+          html: `<ul>
+            <li>A design can have <strong>more than one factor</strong> — more than one
+                independent variable.</li>
+            <li><em>Monolingual and bilingual children aged 3 and 5, tested in the same week</em>:
+                still a snapshot, so still <strong>cross-sectional</strong>, but with two IVs —
+                language background and age group.</li>
+            <li><em>The same children tested on nouns and verbs at 18, 24 and 30 months</em>:
+                still one group over time, so still <strong>longitudinal</strong>, with two IVs —
+                age and word type.</li>
+            <li>First choose the design. Then type <strong>both</strong> independent variables,
+                in either order, and then the dependent variable.</li>
+          </ul>`,
+        },
+      },
+      {
+        id: '2-crosslong-both', kind: 'design', name: 'Both: panel designs',
+        desc: 'Several groups, each followed over time. Plus some from before, so choose carefully.',
+        items: CROSSLONG_PART3,
+        ...CROSSLONG_SHARED,
+        choices: CROSSLONG_CHOICES,
+        choiceQuestion: 'Is this design <strong>cross-sectional</strong>, <strong>longitudinal</strong>, or <strong>both</strong>?',
+        speech: 'Snapshot, over time, or both? Then type the IVs and the DV.',
+        help: {
+          title: 'Both: panel designs',
+          html: `<ul>
+            <li>A <strong>panel design</strong> is cross-sectional and longitudinal at once:
+                <strong>several groups</strong>, each <strong>followed over time</strong>.</li>
+            <li><em>Classes taught with methods A, B and C, each tested before teaching, after
+                year 1 and after year 2.</em> The groups make it cross-sectional; the repeated
+                testing makes it longitudinal.</li>
+            <li>So a panel design always has at least <strong>two independent variables</strong>:
+                which group, and when.</li>
+            <li>Not every design here is a panel design — some are from the last two parts. Check
+                for both things: different groups <em>and</em> repeated testing.</li>
           </ul>`,
         },
       },
