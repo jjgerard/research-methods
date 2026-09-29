@@ -43,8 +43,8 @@ function pickFactorPair(nA, nB) {
 // built so that each of the three things is either clearly there or
 // exactly absent -- never a borderline case the game couldn't mark fairly:
 //
-//   - A main effect, when present, spreads A's averages over at least 3
-//     points; when absent, every level of A averages exactly the same.
+//   - A main effect, when present, spreads the averages over at least 4
+//     points (8 in 3c); when absent, every level averages exactly the same.
 //   - The interaction is "double-centred": every row and every column of it
 //     sums to zero. That's what lets it change the pattern WITHOUT moving
 //     any average -- so an interaction never fakes a main effect, and a
@@ -52,18 +52,18 @@ function pickFactorPair(nA, nB) {
 //   - When present, the interaction is scaled so the gap between colours
 //     visibly changes (by at least 3 points) from one group to the next.
 // ---------------------------------------------------------------------------
-const BAR_BASE = 12;
+const BAR_BASE = 13;
 
-function mainEffectOffsets(n) {
-  // Spread-out values, centred on zero, in a random order: an effect
-  // doesn't have to go up with the level number.
-  const spread = 3 + Math.random() * 2;
-  const raw = shuffle(Array.from({ length: n }, (_, i) => (i / (n - 1) - 0.5) * spread * 1.4));
-  const mean = raw.reduce((s, x) => s + x, 0) / n;
-  return raw.map(x => x - mean);
+function mainEffectOffsets(n, spread, ordered) {
+  // Evenly spaced values, centred on zero. In the hard version they come
+  // in a random order -- an effect doesn't have to go up with the level
+  // number -- and in the easy one they run steadily up or down.
+  const raw = Array.from({ length: n }, (_, i) => (i / (n - 1) - 0.5) * spread);
+  if (ordered) return Math.random() < 0.5 ? raw : raw.reverse();
+  return shuffle(raw);
 }
 
-function interactionMatrix(nA, nB) {
+function interactionMatrix(nA, nB, size) {
   for (;;) {
     const m = Array.from({ length: nA }, () => Array.from({ length: nB }, () => Math.random() * 2 - 1));
     const rowMean = m.map(r => r.reduce((s, x) => s + x, 0) / nB);
@@ -71,19 +71,27 @@ function interactionMatrix(nA, nB) {
     const all = rowMean.reduce((s, x) => s + x, 0) / nA;
     const c = m.map((r, i) => r.map((x, j) => x - rowMean[i] - colMean[j] + all));
     const big = Math.max(...c.flat().map(Math.abs));
-    if (big > 0.3) return c.map(r => r.map(x => x / big * 3));
+    if (big > 0.3) return c.map(r => r.map(x => x / big * size));
   }
 }
 
-function makeFactorialData(nA, nB, effects) {
-  const a = effects.mainA ? mainEffectOffsets(nA) : Array(nA).fill(0);
-  const b = effects.mainB ? mainEffectOffsets(nB) : Array(nB).fill(0);
-  const ab = effects.interaction ? interactionMatrix(nA, nB) : Array.from({ length: nA }, () => Array(nB).fill(0));
+// `easy` (3c): main effects are big -- a spread of 8 or more points, the
+// size of the interaction at most -- so "is there a main effect?" can be
+// answered by eye; A's run steadily up or down. The size-of-design
+// sub-level (3b) uses the harder, more varied version, since there the
+// heights don't matter.
+function makeFactorialData(nA, nB, effects, easy = false) {
+  const spread = easy ? randBetween3(8, 9) : randBetween3(4.2, 7);
+  const a = effects.mainA ? mainEffectOffsets(nA, spread, easy) : Array(nA).fill(0);
+  const b = effects.mainB ? mainEffectOffsets(nB, easy ? randBetween3(7, 8) : spread, easy) : Array(nB).fill(0);
+  const ab = effects.interaction ? interactionMatrix(nA, nB, easy ? 2 : 3) : Array.from({ length: nA }, () => Array(nB).fill(0));
   const cells = a.map((ai, i) => b.map((bj, j) => BAR_BASE + ai + bj + ab[i][j]));
   const meansA = cells.map(r => r.reduce((s, x) => s + x, 0) / nB);
   const meansB = Array.from({ length: nB }, (_, j) => cells.reduce((s, r) => s + r[j], 0) / nA);
   return { nA, nB, cells, meansA, meansB, effects };
 }
+
+function randBetween3(lo, hi) { return lo + Math.random() * (hi - lo); }
 
 function randomEffects() {
   return { mainA: Math.random() < 0.5, mainB: Math.random() < 0.5, interaction: Math.random() < 0.5 };

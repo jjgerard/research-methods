@@ -28,10 +28,10 @@ const LEVELS = [
   {
     n: 1, title: 'Variables',
     blurb: 'What counts as a variable, which one changes the other, and what that looks like on a graph.',
-    intro: 'Each sub-level asks one kind of question. Get 10 in a row to finish it and unlock the next. You have two hearts per run, so two mistakes won\'t reset it.',
+    intro: 'Each sub-level asks one kind of question. Most sub-levels need 5 in a row to finish (the first and last need 10). You have two hearts per run, so two mistakes won\'t reset it.',
     subs: [
       {
-        id: '1a', kind: 'classify', name: 'Variable or not?',
+        id: '1a', kind: 'classify', target: 10, name: 'Variable or not?',
         question: 'Is this a variable?',
         categories: [{ value: 'var', label: 'Variable' }, { value: 'not', label: 'Not a variable' }],
         items: SORT_ITEMS.map(i => ({ ...i, cat: i.variable ? 'var' : 'not' })),
@@ -90,7 +90,7 @@ const LEVELS = [
         },
       },
       {
-        id: '1d', kind: 'graph', name: 'Match the graph',
+        id: '1d', kind: 'graph', target: 10, name: 'Match the graph',
         desc: 'Four graphs, one statement. Which graph shows it?',
         speech: 'Pick the graph that shows the statement. Changer along the bottom, change-ee up the side.',
         help: {
@@ -115,7 +115,7 @@ const LEVELS = [
   {
     n: 2, title: 'Research design fundamentals',
     blurb: 'Validity and reliability, hypotheses, levels of measurement, confounds, and who takes part in what.',
-    intro: 'Each sub-level asks one kind of question. Get 10 in a row to finish it and unlock the next (5 for the hypothesis and cross-sectional/longitudinal sub-levels). You have two hearts per run, so two mistakes won\'t reset it.',
+    intro: 'Each sub-level asks one kind of question. Get 5 in a row to finish it and unlock the next. You have two hearts per run, so two mistakes won\'t reset it.',
     subs: [
       {
         id: '2-validity', kind: 'validity', name: 'Valid? Reliable?',
@@ -139,7 +139,7 @@ const LEVELS = [
         },
       },
       {
-        id: '2-hyp', kind: 'hypotheses', target: 5, name: 'Hypotheses',
+        id: '2-hyp', kind: 'hypotheses', name: 'Hypotheses',
         desc: 'A research question and four hypotheses. Which two oppose each other?',
         speech: 'Pick the two opposing hypotheses: same cause and effect as the question, opposite directions.',
         help: {
@@ -159,7 +159,7 @@ const LEVELS = [
         },
       },
       {
-        id: '2-hyp-null', kind: 'hypotheses', target: 5, withNull: true, name: 'Hypotheses with the null',
+        id: '2-hyp-null', kind: 'hypotheses', withNull: true, name: 'Hypotheses with the null',
         desc: 'Six hypotheses now. Pick the two opposing ones and the null.',
         speech: 'Pick three: the two opposing hypotheses, and the null hypothesis.',
         help: {
@@ -230,7 +230,7 @@ const LEVELS = [
       // definitions are shared; what changes is how many IVs there are to
       // find, and -- only in part 3 -- whether "both" is on offer at all.
       {
-        id: '2-crosslong', kind: 'design', target: 5, name: 'Cross-sectional or longitudinal?',
+        id: '2-crosslong', kind: 'design', name: 'Cross-sectional or longitudinal?',
         desc: 'A snapshot, or one group followed over time? Then name the IV and DV in your own words.',
         items: CROSSLONG_SINGLE,
         ...CROSSLONG_SHARED,
@@ -256,7 +256,7 @@ const LEVELS = [
         },
       },
       {
-        id: '2-crosslong-multi', kind: 'design', target: 5, name: 'Two factors',
+        id: '2-crosslong-multi', kind: 'design', name: 'Two factors',
         desc: 'Cross-sectional or longitudinal again, but now each design has two independent variables.',
         items: CROSSLONG_MULTI,
         ...CROSSLONG_SHARED,
@@ -280,7 +280,7 @@ const LEVELS = [
         },
       },
       {
-        id: '2-crosslong-both', kind: 'design', target: 5, name: 'Both: panel designs',
+        id: '2-crosslong-both', kind: 'design', name: 'Both: panel designs',
         desc: 'Several groups, each followed over time. Plus some from before, so choose carefully.',
         items: CROSSLONG_PART3,
         ...CROSSLONG_SHARED,
@@ -361,7 +361,7 @@ const LEVELS = [
     intro: 'Every design and graph here is generated fresh, so there\'s nothing to memorise, only things to read. Get 10 in a row to finish each sub-level; you have two hearts per run.',
     subs: [
       {
-        id: '3-box', kind: 'box', name: 'What by what?',
+        id: '3-box', kind: 'box', target: 10, name: 'What by what?',
         desc: 'Read the size of a design from its box notation.',
         speech: 'Count the levels of each factor. What by what?',
         help: {
@@ -378,7 +378,7 @@ const LEVELS = [
         },
       },
       {
-        id: '3-bars', kind: 'barDims', name: 'What by what? From a graph',
+        id: '3-bars', kind: 'barDims', target: 10, name: 'What by what? From a graph',
         desc: 'The same question, read from a bar graph.',
         speech: 'Count the groups along the bottom, and the colours. What by what?',
         help: {
@@ -396,8 +396,8 @@ const LEVELS = [
         },
       },
       {
-        id: '3-effects', kind: 'effects', name: 'Main effects and interactions',
-        desc: 'Is there a main effect of A? Of B? An interaction?',
+        id: '3-effects', kind: 'effects', target: 10, name: 'Main effects and interactions',
+        desc: 'Is there a main effect of A? Of B? An interaction? Two or three groups, two colours.',
         speech: 'Main effect of A? Of B? An interaction? Answer all three, then check.',
         help: {
           title: 'Main effects and interactions',
@@ -422,7 +422,7 @@ const LEVELS = [
   {
     n: 4, title: 'Averages and variation',
     blurb: 'Mean, median and mode; how spread out data is; z-scores; and normal versus skewed distributions.',
-    intro: 'Each sub-level asks one kind of question. Get 10 in a row to finish it and unlock the next. You have two hearts per run, so two mistakes won\'t reset it.',
+    intro: 'Each sub-level asks one kind of question. Get 5 in a row to finish it and unlock the next. You have two hearts per run, so two mistakes won\'t reset it.',
     subs: [
       {
         id: '4-central', kind: 'classify', name: 'Mean, median or mode?',

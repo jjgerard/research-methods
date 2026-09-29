@@ -454,10 +454,12 @@ function barDimsQuestion() {
 // between colours for an interaction -- because "look at the averages" is
 // only useful advice if you can see which averages.
 function effectsQuestion() {
-  const nA = pick(FACTOR_LEVEL_COUNTS);
-  const nB = pick(FACTOR_LEVEL_COUNTS);
+  // Small designs only -- 2 or 3 groups, 2 colours -- so the question is
+  // about reading effects, not about keeping track of a crowded graph.
+  const nA = pick([2, 3]);
+  const nB = 2;
   const effects = randomEffects();
-  const data = makeFactorialData(nA, nB, effects);
+  const data = makeFactorialData(nA, nB, effects, true);
   const judge = yesNoRows([
     { key: 'mainA', label: 'Main effect of A?' },
     { key: 'mainB', label: 'Main effect of B?' },
@@ -927,7 +929,7 @@ const QUESTION_TYPES = {
 // up until it has actually been read.
 const QUIZ_CORRECT_DELAY_MS = 900;
 // Every sub-level gives two hearts per run: a slip costs points and a heart
-// but not the run. Ten straight with no room for a mis-tap was more about
+// but not the run. A run with no room for a mis-tap is more about
 // nerve than knowledge. A sub-level can still set its own `allowedMisses`.
 const ALLOWED_MISSES = 2;
 const RECENT_MEMORY = 6;

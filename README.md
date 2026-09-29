@@ -41,7 +41,8 @@ five examples; this gives them hundreds, with a reason every time they get one w
 
 ## The design, and why
 
-**Ten in a row, with two hearts.** A sub-level is finished with 10 right answers in a row.
+**Five in a row, with two hearts.** A sub-level is finished with 5 right answers in a row
+(10 for Variable or not?, Match the graph, and all of Level 3).
 Each run allows two mistakes: a mistake costs a heart, and a third one starts the run
 again. Every third right answer doubles what each answer is worth, and what a wrong one
 costs, so guessing doesn't pay.
@@ -81,13 +82,13 @@ asking first.
 | | Sub-level | What it asks |
 |---|---|---|
 | **a** | Valid? Reliable? | Is this design valid? Is it reliable? Both at once. |
-| **b** | Hypotheses | Pick the two opposing hypotheses for a research question. 5 in a row. |
-| **c** | Hypotheses with the null | The same, plus the null hypothesis. Pick three. 5 in a row. |
+| **b** | Hypotheses | Pick the two opposing hypotheses for a research question. |
+| **c** | Hypotheses with the null | The same, plus the null hypothesis. Pick three. |
 | **d** | Continuous or discrete? | Can the variable take any value, or only separate ones? |
 | **e** | Levels of measurement | Categorical, ordinal, interval or ratio? |
-| **f** | Cross-sectional or longitudinal? | Snapshot or over time? Then type the IV and DV. One factor each. 5 in a row. |
-| **g** | Two factors | The same, with two independent variables to find. 5 in a row. |
-| **h** | Both: panel designs | Several groups followed over time, mixed with designs from f and g. 5 in a row. |
+| **f** | Cross-sectional or longitudinal? | Snapshot or over time? Then type the IV and DV. One factor each. |
+| **g** | Two factors | The same, with two independent variables to find. |
+| **h** | Both: panel designs | Several groups followed over time, mixed with designs from f and g. |
 | **i** | Confounds | Is there a confound? If so, which variable is it? |
 | **j** | Within or between subjects? | Type the IV, choose the design, then type the DV. |
 
@@ -99,7 +100,7 @@ Every box and graph is generated fresh, so nothing can be memorised.
 |---|---|---|
 | **a** | What by what? | Read the size of a design (2×3, 4×2…) from its box notation. Either order is accepted. |
 | **b** | What by what? From a graph | The same, from a bar graph: A along the bottom, B as colours. |
-| **c** | Main effects and interactions | Is there a main effect of A? Of B? An interaction? All three at once. |
+| **c** | Main effects and interactions | Is there a main effect of A? Of B? An interaction? All three at once, on small graphs (2 or 3 groups, 2 colours) with big, easy-to-see main effects. |
 
 The graphs are built so each effect is either clearly there or exactly absent, never
 borderline: an absent main effect has identical averages, and an interaction changes the

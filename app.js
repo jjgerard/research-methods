@@ -307,7 +307,7 @@ const HELP = {
     html: `<ul>
       <li>Work through the levels in order. Each is split into sub-levels, and each one
           unlocks when you finish the one before it.</li>
-      <li>A sub-level is finished when you get <strong>10 answers in a row</strong>.</li>
+      <li>A sub-level is finished when you get <strong>5 answers in a row</strong> (10 in a few, marked on the bar). The bar at the top shows how far you are.</li>
       <li>You have <strong>two hearts</strong> (♥♥) per run. A wrong answer costs a heart and
           tells you why it was wrong, but your run carries on. A third wrong answer starts the
           run again, with your hearts refilled.</li>
