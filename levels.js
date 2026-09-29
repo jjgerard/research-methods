@@ -115,7 +115,7 @@ const LEVELS = [
   {
     n: 2, title: 'Research design fundamentals',
     blurb: 'Validity and reliability, hypotheses, levels of measurement, confounds, and who takes part in what.',
-    intro: 'Each sub-level asks one kind of question. Get 10 in a row to finish it and unlock the next (5 for the two hypothesis sub-levels). You have two hearts per run, so two mistakes won\'t reset it.',
+    intro: 'Each sub-level asks one kind of question. Get 10 in a row to finish it and unlock the next (5 for the hypothesis and cross-sectional/longitudinal sub-levels). You have two hearts per run, so two mistakes won\'t reset it.',
     subs: [
       {
         id: '2-validity', kind: 'validity', name: 'Valid? Reliable?',
@@ -230,7 +230,7 @@ const LEVELS = [
       // definitions are shared; what changes is how many IVs there are to
       // find, and -- only in part 3 -- whether "both" is on offer at all.
       {
-        id: '2-crosslong', kind: 'design', name: 'Cross-sectional or longitudinal?',
+        id: '2-crosslong', kind: 'design', target: 5, name: 'Cross-sectional or longitudinal?',
         desc: 'A snapshot, or one group followed over time? Then name the IV and DV in your own words.',
         items: CROSSLONG_SINGLE,
         ...CROSSLONG_SHARED,
@@ -256,7 +256,7 @@ const LEVELS = [
         },
       },
       {
-        id: '2-crosslong-multi', kind: 'design', name: 'Two factors',
+        id: '2-crosslong-multi', kind: 'design', target: 5, name: 'Two factors',
         desc: 'Cross-sectional or longitudinal again, but now each design has two independent variables.',
         items: CROSSLONG_MULTI,
         ...CROSSLONG_SHARED,
@@ -280,7 +280,7 @@ const LEVELS = [
         },
       },
       {
-        id: '2-crosslong-both', kind: 'design', name: 'Both: panel designs',
+        id: '2-crosslong-both', kind: 'design', target: 5, name: 'Both: panel designs',
         desc: 'Several groups, each followed over time. Plus some from before, so choose carefully.',
         items: CROSSLONG_PART3,
         ...CROSSLONG_SHARED,
