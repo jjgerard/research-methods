@@ -121,13 +121,18 @@ function flashMascotSpeech(text, ms = 3400) {
   if (!text) return;
   clearTimeout(mascotFlashTimer);
   renderMascotBubble(text);
+  // Marked so CSS can tell a reaction from the standing instruction: on a
+  // phone, inside a quiz, only reactions are shown (see style.css).
+  document.getElementById('mascot-bubble').classList.add('flash');
   mascotFlashTimer = setTimeout(() => {
     mascotFlashTimer = null;
+    document.getElementById('mascot-bubble').classList.remove('flash');
     renderMascotBubble(mascotBase);
   }, ms);
 }
 function clearMascotFlash() {
   clearTimeout(mascotFlashTimer);
+  document.getElementById('mascot-bubble').classList.remove('flash');
   mascotFlashTimer = null;
   renderMascotBubble(mascotBase);
 }
@@ -280,7 +285,7 @@ const HELP = {
       <li>It goes with the Research Methods module (CMM378). Everything in it is also
           taught in class, in the same order. The game is where you practise it enough
           times for it to stick.</li>
-      <li>There are <strong>two levels</strong> so far, each split into short sub-levels.
+      <li>There are <strong>three levels</strong> so far, each split into short sub-levels.
           Early questions are a single tap. Later ones ask you to type answers in your
           own words.</li>
       <li><strong>Nothing here is graded and nothing is watched.</strong> Your points and
@@ -302,8 +307,10 @@ const HELP = {
     html: `<ul>
       <li>Work through the levels in order. Each is split into sub-levels, and each one
           unlocks when you finish the one before it.</li>
-      <li>A sub-level is finished when you get <strong>10 answers in a row</strong>. A wrong
-          answer starts the run again &mdash; and tells you why it was wrong.</li>
+      <li>A sub-level is finished when you get <strong>10 answers in a row</strong>.</li>
+      <li>You have <strong>two hearts</strong> (♥♥) per run. A wrong answer costs a heart and
+          tells you why it was wrong, but your run carries on. A third wrong answer starts the
+          run again, with your hearts refilled.</li>
       <li>Every 3 in a row doubles the points each answer is worth. A wrong answer loses
           points at the same rate, so a guess is a gamble.</li>
       <li>Your points are saved automatically on this device, under your name and class code.

@@ -28,7 +28,7 @@ const LEVELS = [
   {
     n: 1, title: 'Variables',
     blurb: 'What counts as a variable, which one changes the other, and what that looks like on a graph.',
-    intro: 'Each sub-level asks one kind of question. Get 10 in a row to finish it and unlock the next.',
+    intro: 'Each sub-level asks one kind of question. Get 10 in a row to finish it and unlock the next. You have two hearts per run, so two mistakes won\'t reset it.',
     subs: [
       {
         id: '1a', kind: 'classify', name: 'Variable or not?',
@@ -47,8 +47,9 @@ const LEVELS = [
                 variable, though — the height of buildings differs.)</li>
             <li>Watch out for things that can be measured but only ever have <strong>one</strong>
                 value. Those aren't variables either.</li>
-            <li>Get <strong>10 in a row</strong> to finish. A wrong answer starts the run again,
-                and tells you why.</li>
+            <li>Get <strong>10 in a row</strong> to finish. You have <strong>two hearts</strong>:
+                a mistake costs a heart and tells you why, but your run carries on. A third
+                mistake starts the run again.</li>
           </ul>`,
         },
       },
@@ -114,7 +115,7 @@ const LEVELS = [
   {
     n: 2, title: 'Research design fundamentals',
     blurb: 'Validity and reliability, hypotheses, levels of measurement, confounds, and who takes part in what.',
-    intro: 'Each sub-level asks one kind of question. Get 10 in a row to finish it and unlock the next.',
+    intro: 'Each sub-level asks one kind of question. Get 10 in a row to finish it and unlock the next (5 for the two hypothesis sub-levels). You have two hearts per run, so two mistakes won\'t reset it.',
     subs: [
       {
         id: '2-validity', kind: 'validity', name: 'Valid? Reliable?',
@@ -138,7 +139,7 @@ const LEVELS = [
         },
       },
       {
-        id: '2-hyp', kind: 'hypotheses', name: 'Hypotheses',
+        id: '2-hyp', kind: 'hypotheses', target: 5, name: 'Hypotheses',
         desc: 'A research question and four hypotheses. Which two oppose each other?',
         speech: 'Pick the two opposing hypotheses: same cause and effect as the question, opposite directions.',
         help: {
@@ -158,7 +159,7 @@ const LEVELS = [
         },
       },
       {
-        id: '2-hyp-null', kind: 'hypotheses', withNull: true, name: 'Hypotheses with the null',
+        id: '2-hyp-null', kind: 'hypotheses', target: 5, withNull: true, name: 'Hypotheses with the null',
         desc: 'Six hypotheses now. Pick the two opposing ones and the null.',
         speech: 'Pick three: the two opposing hypotheses, and the null hypothesis.',
         help: {
@@ -198,7 +199,7 @@ const LEVELS = [
       },
       {
         id: '2-noir', kind: 'classify', name: 'Levels of measurement',
-        desc: 'Categorical, ordinal, interval or ratio? You can make 2 mistakes per run.',
+        desc: 'Categorical, ordinal, interval or ratio?',
         question: 'What level of measurement is this?',
         categories: [
           { value: 'categorical', label: 'Categorical' },
@@ -207,8 +208,7 @@ const LEVELS = [
           { value: 'ratio', label: 'Ratio' },
         ],
         items: MEASUREMENT_ITEMS,
-        allowedMisses: 2,
-        speech: 'Categorical, ordinal, interval or ratio? You have two hearts: two mistakes won\'t reset your run.',
+        speech: 'Categorical, ordinal, interval or ratio?',
         help: {
           title: 'Levels of measurement',
           html: `<ul>
@@ -222,9 +222,6 @@ const LEVELS = [
                 a date.</em></li>
             <li><strong>Ratio</strong>: ranked, constant steps, <em>and</em> a natural zero.
                 <em>Weight; time to do a task</em> — it can take twice as long.</li>
-            <li>Four choices makes this harder, so you get <strong>two hearts</strong> per run:
-                a mistake costs points and a heart, but your run carries on. Lose a third time
-                and the run starts again.</li>
           </ul>`,
         },
       },
@@ -353,6 +350,70 @@ const LEVELS = [
                 variable</strong> — whatever gets measured.</li>
             <li>You'll see how your answer was read ("Read as: font size") before it's marked.
                 If it could mean two things, you'll be asked which.</li>
+          </ul>`,
+        },
+      },
+    ],
+  },
+  {
+    n: 3, title: 'Factorial designs and interactions',
+    blurb: 'How big is a design, and what does a graph of it show: main effects, an interaction, both or neither?',
+    intro: 'Every design and graph here is generated fresh, so there\'s nothing to memorise, only things to read. Get 10 in a row to finish each sub-level; you have two hearts per run.',
+    subs: [
+      {
+        id: '3-box', kind: 'box', name: 'What by what?',
+        desc: 'Read the size of a design from its box notation.',
+        speech: 'Count the levels of each factor. What by what?',
+        help: {
+          title: 'Factorial designs',
+          html: `<ul>
+            <li>A <strong>factorial design</strong> has more than one factor (independent
+                variable), and every level of one is combined with every level of the other.</li>
+            <li>The design is named by <strong>how many levels each factor has</strong>. Prime
+                (passive, active, silence) × Priming context (speaking, listening) is a
+                <strong>3×2 design</strong>, with 3 × 2 = 6 conditions.</li>
+            <li>Either order is fine: a 3×2 design is also a 2×3 design.</li>
+            <li>Tap the two numbers, then <strong>Check</strong>.</li>
+          </ul>`,
+        },
+      },
+      {
+        id: '3-bars', kind: 'barDims', name: 'What by what? From a graph',
+        desc: 'The same question, read from a bar graph.',
+        speech: 'Count the groups along the bottom, and the colours. What by what?',
+        help: {
+          title: 'Reading a design from a graph',
+          html: `<ul>
+            <li>In these graphs, factor <strong>A</strong> is along the bottom: each group of
+                bars is one level of A.</li>
+            <li>Factor <strong>B</strong> is shown by <strong>colour</strong>: each colour is one
+                level of B, and the key at the top lists them.</li>
+            <li>So the design is (number of groups) × (number of colours). There's one bar for
+                every condition.</li>
+            <li>Ignore the heights of the bars for now — only the size of the design matters
+                here.</li>
+          </ul>`,
+        },
+      },
+      {
+        id: '3-effects', kind: 'effects', name: 'Main effects and interactions',
+        desc: 'Is there a main effect of A? Of B? An interaction?',
+        speech: 'Main effect of A? Of B? An interaction? Answer all three, then check.',
+        help: {
+          title: 'Main effects and interactions',
+          html: `<ul>
+            <li>A <strong>main effect of A</strong>: <em>averaged over the colours</em>, do the
+                groups along the bottom differ? Picture each group's bars squashed into one
+                average bar — are those all the same height?</li>
+            <li>A <strong>main effect of B</strong>: <em>averaged over the groups</em>, do the
+                colours differ? Is one colour higher than another overall?</li>
+            <li>An <strong>interaction</strong>: does the effect of B <strong>depend on</strong>
+                the level of A? If the colours follow the same pattern in every group (the
+                same gaps between them), there's no interaction. If the pattern changes from
+                group to group, there is.</li>
+            <li>Each of the three can be there or not, in any combination — even an
+                interaction with no main effects at all.</li>
+            <li>Answer all three, then press <strong>Check</strong>. All three have to be right.</li>
           </ul>`,
         },
       },

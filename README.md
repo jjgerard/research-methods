@@ -41,9 +41,10 @@ five examples; this gives them hundreds, with a reason every time they get one w
 
 ## The design, and why
 
-**Ten in a row.** A sub-level is finished with 10 right answers in a row. A wrong answer
-starts the run again. Every third right answer doubles what each answer is worth, and
-what a wrong one costs, so guessing doesn't pay.
+**Ten in a row, with two hearts.** A sub-level is finished with 10 right answers in a row.
+Each run allows two mistakes: a mistake costs a heart, and a third one starts the run
+again. Every third right answer doubles what each answer is worth, and what a wrong one
+costs, so guessing doesn't pay.
 
 **Never just "no".** Every wrong answer says what was right and why.
 
@@ -80,15 +81,35 @@ asking first.
 | | Sub-level | What it asks |
 |---|---|---|
 | **a** | Valid? Reliable? | Is this design valid? Is it reliable? Both at once. |
-| **b** | Hypotheses | Pick the two opposing hypotheses for a research question. |
-| **c** | Hypotheses with the null | The same, plus the null hypothesis. Pick three. |
+| **b** | Hypotheses | Pick the two opposing hypotheses for a research question. 5 in a row. |
+| **c** | Hypotheses with the null | The same, plus the null hypothesis. Pick three. 5 in a row. |
 | **d** | Continuous or discrete? | Can the variable take any value, or only separate ones? |
-| **e** | Levels of measurement | Categorical, ordinal, interval or ratio? Two mistakes allowed per run. |
+| **e** | Levels of measurement | Categorical, ordinal, interval or ratio? |
 | **f** | Cross-sectional or longitudinal? | Snapshot or over time? Then type the IV and DV. One factor each. |
 | **g** | Two factors | The same, with two independent variables to find. |
 | **h** | Both: panel designs | Several groups followed over time, mixed with designs from f and g. |
 | **i** | Confounds | Is there a confound? If so, which variable is it? |
 | **j** | Within or between subjects? | Type the IV, choose the design, then type the DV. |
+
+### Level 3: Factorial designs and interactions
+
+Every box and graph is generated fresh, so nothing can be memorised.
+
+| | Sub-level | What it asks |
+|---|---|---|
+| **a** | What by what? | Read the size of a design (2×3, 4×2…) from its box notation. Either order is accepted. |
+| **b** | What by what? From a graph | The same, from a bar graph: A along the bottom, B as colours. |
+| **c** | Main effects and interactions | Is there a main effect of A? Of B? An interaction? All three at once. |
+
+The graphs are built so each effect is either clearly there or exactly absent, never
+borderline: an absent main effect has identical averages, and an interaction changes the
+gap between colours without moving any average.
+
+## Fits on a phone
+
+Every question, including its Check button, fits on a small phone screen (360×640)
+without scrolling. That's checked for every sub-level, and at the last step of the
+multi-step ones.
 
 ## Running it
 
@@ -110,9 +131,10 @@ number in `index.html`. Raise it on every change so nobody gets a cached old cop
 | `levels.js` | The levels and sub-levels: names, help text, and which question type each uses. |
 | `data.js` | Level 1's items, and the relations Level 2's hypotheses reuse. |
 | `data2.js` | Level 2's items, with every explanation. |
+| `data3.js` | Level 3's factors, and the generator for its graphs. |
 | `quiz.js` | The question types, and the quiz screen they all share. |
 | `parser.js` | Works out which part of a study description a typed answer means. |
-| `graphs.js` | The small graphs in Level 1. |
+| `graphs.js` | The line graphs in Level 1 and the bar graphs in Level 3. |
 | `app.js` | Players, points, screens, menu, help and the mascot. |
 | `streak.js` | The 10-in-a-row scoring. |
 | `sound.js` | Sound effects, made in code with no audio files. |

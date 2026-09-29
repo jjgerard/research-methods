@@ -9,7 +9,7 @@ const STREAK_TARGET = 10;
 const STREAK_BASE_POINTS = 10;
 const STREAK_TIER_SIZE = 3; // every 3-in-a-row doubles the multiplier
 
-// Some sub-levels allow a set number of misses per run (shown as hearts): a
+// A run can allow a set number of misses (shown as hearts): a
 // wrong answer then costs points and a heart, but the run carries on. Only
 // running out of hearts resets it -- and refills them.
 class StreakGame {

@@ -91,3 +91,73 @@ function fitGraphLabels(root) {
     }
   });
 }
+
+// ---------------------------------------------------------------------------
+// Grouped bar graphs for Level 3: factor A along the bottom, factor B as
+// colours, one bar per condition.
+//
+// The colours are chosen to stay apart for the commonest kinds of colour
+// blindness, and every bar group has the same left-to-right order as the
+// legend -- so a student who can't tell two colours apart can still read
+// the graph by position.
+// ---------------------------------------------------------------------------
+const BAR_COLOURS = ['#1f6f8b', '#e07b39', '#8e5aa8', '#d9a400'];
+const BAR_W = 340;
+const BAR_H = 250;
+const BAR_PLOT = { left: 38, right: 330, top: 44, bottom: 206 };
+const BAR_Y_MAX = 25;
+
+function drawBarGraph(data) {
+  const { nA, nB, cells } = data;
+  const { left, right, top, bottom } = BAR_PLOT;
+  const svg = svgEl('svg', {
+    viewBox: `0 0 ${BAR_W} ${BAR_H}`, class: 'bar-graph', role: 'img',
+    'aria-label': `Bar graph: score for each level of A (along the bottom), with B shown as ${nB} colours. ` +
+      cells.map((r, i) => `A${i + 1}: ` + r.map((v, j) => `B${j + 1} ${v.toFixed(1)}`).join(', ')).join('; '),
+  });
+  const y = v => bottom - (v / BAR_Y_MAX) * (bottom - top);
+
+  // Gridlines and y labels every 5.
+  for (let v = 0; v <= BAR_Y_MAX; v += 5) {
+    svg.appendChild(svgEl('line', { x1: left, x2: right, y1: y(v), y2: y(v), class: v ? 'bar-grid' : 'bar-axis' }));
+    const t = svgEl('text', { x: left - 6, y: y(v) + 4, class: 'bar-tick', 'text-anchor': 'end' });
+    t.textContent = v;
+    svg.appendChild(t);
+  }
+  svg.appendChild(svgEl('line', { x1: left, x2: left, y1: top, y2: bottom, class: 'bar-axis' }));
+  const yTitle = svgEl('text', { class: 'bar-title', 'text-anchor': 'middle', transform: `translate(10 ${(top + bottom) / 2}) rotate(-90)` });
+  yTitle.textContent = 'Score';
+  svg.appendChild(yTitle);
+
+  // Bars, grouped by A.
+  const groupW = (right - left) / nA;
+  const pad = groupW * 0.16;
+  const barW = (groupW - 2 * pad) / nB;
+  cells.forEach((row, i) => {
+    const gx = left + i * groupW + pad;
+    row.forEach((v, j) => {
+      svg.appendChild(svgEl('rect', {
+        x: gx + j * barW + 1, y: y(v), width: Math.max(2, barW - 2), height: bottom - y(v),
+        fill: BAR_COLOURS[j], class: 'bar',
+      }));
+    });
+    const label = svgEl('text', { x: left + (i + 0.5) * groupW, y: bottom + 18, class: 'bar-label', 'text-anchor': 'middle' });
+    label.textContent = `A${i + 1}`;
+    svg.appendChild(label);
+  });
+  const xTitle = svgEl('text', { x: (left + right) / 2, y: BAR_H - 6, class: 'bar-title', 'text-anchor': 'middle' });
+  xTitle.textContent = 'A';
+  svg.appendChild(xTitle);
+
+  // Legend for B across the top.
+  const legendW = 64;
+  const startX = (left + right) / 2 - (nB * legendW) / 2;
+  for (let j = 0; j < nB; j++) {
+    const x = startX + j * legendW;
+    svg.appendChild(svgEl('rect', { x, y: 12, width: 16, height: 16, rx: 3, fill: BAR_COLOURS[j] }));
+    const t = svgEl('text', { x: x + 22, y: 25, class: 'bar-legend' });
+    t.textContent = `B${j + 1}`;
+    svg.appendChild(t);
+  }
+  return svg;
+}

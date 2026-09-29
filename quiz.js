@@ -170,8 +170,7 @@ function graphQuestion(recent) {
 // there because they're what a student who has the causal direction the
 // wrong way round will reach for.
 function hypothesisTexts(rel) {
-  const iv = rel.ivNP || rel.iv;
-  const dv = rel.dvNP || rel.dv;
+  const [iv, dv] = rel.hyp;
   // "Increasing X" and "Changing X" are singular whatever X is, so one
   // template stays grammatical across every relation.
   return {
@@ -189,6 +188,7 @@ function hypothesisQuestion(recent, sub) {
   const iv = rel.ivNP || rel.iv;
   const dv = rel.dvNP || rel.dv;
   const texts = hypothesisTexts(rel);
+  const [ivShort, dvShort] = rel.hyp;
   const ids = sub.withNull
     ? ['f-up', 'f-down', 'b-up', 'b-down', 'f-null', 'b-null']
     : ['f-up', 'f-down', 'b-up', 'b-down'];
@@ -231,7 +231,7 @@ function hypothesisQuestion(recent, sub) {
     const correct = wrong.length === 0;
     const parts = [];
     if (wrong.some(id => id.startsWith('b-'))) {
-      parts.push(`The question asks about the effect OF ${iv} ON ${dv}, so ${iv} should be the cause in every hypothesis. The ones that start "Increasing ${dv}…" or "Changing ${dv}…" are backwards.`);
+      parts.push(`The question asks about the effect OF ${iv} ON ${dv}, so ${iv} should be the cause in every hypothesis. The ones that start "Increasing ${dvShort}…" or "Changing ${dvShort}…" are backwards.`);
     }
     if (wrong.includes('f-null') || wrong.includes('b-null')) {
       parts.push('"No effect" isn\'t one of a pair of opposing hypotheses — it\'s the null hypothesis.');
@@ -246,9 +246,9 @@ function hypothesisQuestion(recent, sub) {
 
   return {
     key: rel.id,
-    prompt: { quote: `Research question: Does ${iv} affect ${dv}?` },
+    prompt: { quote: `Does ${iv} affect ${dv}?` },
     question: sub.withNull
-      ? 'Pick the <strong>3</strong> hypotheses: the two opposing ones, and the null.'
+      ? 'Pick <strong>3</strong>: two opposing, plus the null.'
       : 'Pick the <strong>2</strong> opposing hypotheses.',
     layout: 'list',
     answer: correctIds.map(id => texts[id]),
@@ -264,24 +264,47 @@ function hypothesisQuestion(recent, sub) {
 // right -- but the explanation speaks to each half separately.
 function validityQuestion(recent) {
   const item = pickFresh(VALIDITY_ITEMS, recent, i => i.text);
-  const rows = [
+  const judge = yesNoRows([
     { key: 'valid', label: 'Is it valid?', help: 'Does it measure the intended effect?' },
     { key: 'reliable', label: 'Is it reliable?', help: 'Would it give the same result again?' },
-  ];
-  const buttons = {};
+  ]);
+  const grade = (ans) => {
+    const wrong = judge.mark(ans, item);
+    const parts = wrong.map(k => `It ${item[k] ? 'IS' : 'is NOT'} ${k}: ${k === 'valid' ? item.whyValid : item.whyReliable}`);
+    return { correct: wrong.length === 0, explain: parts.join(' ') };
+  };
+  return {
+    key: item.text,
+    prompt: { desc: item.text },
+    // No question line: the two rows below ask it, and on a phone every line
+    // above the Check button is a line that pushes it off the screen.
+    question: '',
+    layout: 'judge',
+    answer: { valid: item.valid, reliable: item.reliable },
+    render: judge.render,
+    grade,
+  };
+}
 
+// Several yes/no judgments about the same thing, answered together and
+// graded as one: validity and reliability (2a), and main effects and the
+// interaction (3c). `mark(answers, truth)` colours every row and returns
+// the keys that were answered wrongly, so each question can explain just
+// those.
+function yesNoRows(rows) {
+  const buttons = {};
   const render = (el, submit) => {
     const chosen = {};
     const check = makeButton('Check', 'btn-primary check-btn');
     const refresh = () => {
       const done = rows.every(r => r.key in chosen);
       check.disabled = !done;
-      check.textContent = done ? 'Check' : 'Answer both, then check';
+      check.textContent = done ? 'Check' : (rows.length === 2 ? 'Answer both, then check' : 'Answer all of them, then check');
     };
     rows.forEach(r => {
       const row = document.createElement('div');
       row.className = 'judge-row';
-      row.innerHTML = `<div class="judge-label">${r.label}<span>${r.help}</span></div>`;
+      row.innerHTML = `<div class="judge-label">${r.label}${r.help ? `<span>${r.help}</span>` : ''}</div>`;
       const pair = document.createElement('div');
       pair.className = 'judge-pair';
       buttons[r.key] = {};
@@ -301,29 +324,187 @@ function validityQuestion(recent) {
     el.appendChild(check);
     refresh();
   };
-
-  const grade = (ans) => {
+  const mark = (ans, truth) => {
     disableAll(document.getElementById('quiz-answers'));
-    const parts = [];
+    const wrong = [];
     rows.forEach(r => {
-      const right = item[r.key];
-      buttons[r.key][String(right)].classList.add('is-answer');
-      if (ans[r.key] !== right) {
+      buttons[r.key][String(truth[r.key])].classList.add('is-answer');
+      if (ans[r.key] !== truth[r.key]) {
         buttons[r.key][String(ans[r.key])].classList.add('is-wrong');
-        parts.push(`It ${right ? 'IS' : 'is NOT'} ${r.key}: ${r.key === 'valid' ? item.whyValid : item.whyReliable}`);
+        wrong.push(r.key);
       }
     });
-    return { correct: parts.length === 0, explain: parts.join(' ') };
+    return wrong;
+  };
+  return { render, mark };
+}
+
+// ---------------- factorial designs: how many by how many ----------------
+// 3a reads the size of a design off the box notation, 3b off a bar graph.
+// The answer is two numbers, tapped rather than typed: "3 x 2" typed on a
+// phone keyboard is a fiddly string to get right, and the typing isn't
+// what's being tested. Either order counts -- a 3 x 2 design is a 2 x 3
+// design written the other way round.
+const DIMENSION_CHOICES = [2, 3, 4, 5];
+
+function dimensionPicker(el, submit) {
+  const picked = [null, null];
+  const groups = [[], []];
+  const check = makeButton('Check', 'btn-primary check-btn');
+  const refresh = () => {
+    const done = picked.every(p => p !== null);
+    check.disabled = !done;
+    check.textContent = done ? `Check: ${picked[0]} × ${picked[1]}` : 'Pick both numbers, then check';
+  };
+  const wrap = document.createElement('div');
+  wrap.className = 'dims';
+  [0, 1].forEach(side => {
+    const group = document.createElement('div');
+    group.className = 'dims-group';
+    group.setAttribute('role', 'group');
+    group.setAttribute('aria-label', side === 0 ? 'First number' : 'Second number');
+    DIMENSION_CHOICES.forEach(n => {
+      const b = makeToggle(String(n), () => {
+        picked[side] = n;
+        groups[side].forEach(x => setPressed(x, x === b));
+        refresh();
+      });
+      b.classList.add('dims-btn');
+      groups[side].push(b);
+      group.appendChild(b);
+    });
+    wrap.appendChild(group);
+    if (side === 0) {
+      const times = document.createElement('div');
+      times.className = 'dims-times';
+      times.textContent = '×';
+      wrap.appendChild(times);
+    }
+  });
+  el.appendChild(wrap);
+  check.addEventListener('click', () => submit([...picked]));
+  el.appendChild(check);
+  refresh();
+  return groups;
+}
+
+function gradeDimensions(groups, picked, nA, nB, describe) {
+  disableAll(document.getElementById('quiz-answers'));
+  const correct = [...picked].sort().join() === [nA, nB].sort().join();
+  // Mark the pair that was meant, in the order the student picked if it
+  // was right, and in A-then-B order if it wasn't.
+  const want = correct ? picked : [nA, nB];
+  [0, 1].forEach(side => groups[side].forEach(b => {
+    const n = Number(b.textContent.replace(/^✓ /, ''));
+    if (n === want[side]) b.classList.add('is-answer');
+    else if (n === picked[side] && !correct) b.classList.add('is-wrong');
+  }));
+  return { correct, explain: correct ? '' : `${describe} So it's a ${nA} × ${nB} design (or ${nB} × ${nA} — either order is fine).` };
+}
+
+function boxQuestion() {
+  const nA = pick(FACTOR_LEVEL_COUNTS);
+  const nB = pick(FACTOR_LEVEL_COUNTS);
+  const [fa, fb] = pickFactorPair(nA, nB);
+  let groups;
+
+  const table = document.createElement('table');
+  table.className = 'factor-box';
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+  table.innerHTML =
+    `<caption class="sr-only">A ${nA} by ${nB} factorial design: ${esc(fa.name)} by ${esc(fb.name)}</caption>` +
+    `<tr><td colspan="2" rowspan="2"></td><th colspan="${nA}" scope="colgroup">${esc(fa.name)}</th></tr>` +
+    `<tr>${fa.levels.map(l => `<th scope="col">${esc(l)}</th>`).join('')}</tr>` +
+    fb.levels.map((l, j) =>
+      `<tr>${j === 0 ? `<th rowspan="${nB}" scope="rowgroup" class="factor-side">${esc(fb.name)}</th>` : ''}` +
+      `<th scope="row">${esc(l)}</th>${fa.levels.map(() => '<td></td>').join('')}</tr>`).join('');
+
+  return {
+    key: `${fa.name}|${fb.name}|${nA}|${nB}`,
+    prompt: { node: table },
+    question: '<strong>What × what?</strong>',
+    layout: 'dims',
+    answer: [nA, nB],
+    render: (el, submit) => { groups = dimensionPicker(el, submit); },
+    grade: (picked) => gradeDimensions(groups, picked, nA, nB,
+      `${fa.name} has ${nA} levels (${fa.levels.join(', ')}) and ${fb.name} has ${nB} (${fb.levels.join(', ')}).`),
+  };
+}
+
+function barDimsQuestion() {
+  const nA = pick(FACTOR_LEVEL_COUNTS);
+  const nB = pick(FACTOR_LEVEL_COUNTS);
+  const data = makeFactorialData(nA, nB, randomEffects());
+  let groups;
+  return {
+    key: `${nA}x${nB}-${Math.random()}`,
+    prompt: { node: drawBarGraph(data) },
+    question: '<strong>What × what?</strong>',
+    layout: 'dims',
+    answer: [nA, nB],
+    render: (el, submit) => { groups = dimensionPicker(el, submit); },
+    grade: (picked) => gradeDimensions(groups, picked, nA, nB,
+      `A is along the bottom, with ${nA} levels (A1–A${nA}). B is the colours, with ${nB} levels (B1–B${nB}).`),
+  };
+}
+
+// ---------------- main effects and interactions ----------------
+// Three judgments about one graph. The explanations give the numbers the
+// judgment rests on -- the averages for a main effect, the changing gap
+// between colours for an interaction -- because "look at the averages" is
+// only useful advice if you can see which averages.
+function effectsQuestion() {
+  const nA = pick(FACTOR_LEVEL_COUNTS);
+  const nB = pick(FACTOR_LEVEL_COUNTS);
+  const effects = randomEffects();
+  const data = makeFactorialData(nA, nB, effects);
+  const judge = yesNoRows([
+    { key: 'mainA', label: 'Main effect of A?' },
+    { key: 'mainB', label: 'Main effect of B?' },
+    { key: 'interaction', label: 'Interaction between A and B?' },
+  ]);
+  const fmt = v => v.toFixed(1);
+  const list = (prefix, means) => means.map((m, i) => `${prefix}${i + 1} ${fmt(m)}`).join(', ');
+
+  const explainKey = (k) => {
+    if (k === 'mainA') {
+      return effects.mainA
+        ? `There IS a main effect of A: averaged over the colours, the groups differ (${list('A', data.meansA)}).`
+        : `There's NO main effect of A: averaged over the colours, every group comes out the same (${list('A', data.meansA)}).`;
+    }
+    if (k === 'mainB') {
+      return effects.mainB
+        ? `There IS a main effect of B: averaged over the groups, the colours differ (${list('B', data.meansB)}).`
+        : `There's NO main effect of B: averaged over the groups, every colour comes out the same (${list('B', data.meansB)}).`;
+    }
+    // With three or more colours, point at the pair whose gap changes most:
+    // that's where an interaction is easiest to see.
+    let best = [0, 1];
+    let bestRange = -1;
+    for (let p = 0; p < nB; p++) for (let q = p + 1; q < nB; q++) {
+      const g = data.cells.map(r => r[q] - r[p]);
+      const range = Math.max(...g) - Math.min(...g);
+      if (range > bestRange) { bestRange = range; best = [p, q]; }
+    }
+    const [lo, hi] = best;
+    const pair = `B${lo + 1} to B${hi + 1}`;
+    const gaps = data.cells.map((r, i) => `A${i + 1}: ${r[hi] - r[lo] >= 0 ? '+' : ''}${fmt(r[hi] - r[lo])}`).join(', ');
+    return effects.interaction
+      ? `There IS an interaction: the effect of B isn't the same in every group — the gap from ${pair} changes (${gaps}).`
+      : `There's NO interaction: the colours follow the same pattern in every group — the gap from ${pair} stays the same (${gaps}).`;
   };
 
   return {
-    key: item.text,
-    prompt: { desc: item.text },
-    question: 'Is this design valid? Is it reliable?',
+    key: `${nA}x${nB}-${Math.random()}`,
+    prompt: { node: drawBarGraph(data) },
+    question: '',
     layout: 'judge',
-    answer: { valid: item.valid, reliable: item.reliable },
-    render,
-    grade,
+    answer: effects,
+    render: judge.render,
+    grade: (ans) => {
+      const wrong = judge.mark(ans, effects);
+      return { correct: wrong.length === 0, explain: wrong.map(explainKey).join(' ') };
+    },
   };
 }
 
@@ -445,8 +626,11 @@ function freeTextStep(el, { placeholder, candidates, onResolved }) {
     }
     input.disabled = true;
     check.disabled = true;
+    // Collapse to one line -- what they typed and how it was read -- so the
+    // next step has room to appear without pushing anything off screen.
+    row.classList.add('hidden');
     note.className = 'freetext-note read-as';
-    note.textContent = `Read as: ${c.name}`;
+    note.textContent = `“${input.value.trim()}” — read as: ${c.name}`;
   };
   const offer = (ids, text) => {
     note.className = 'freetext-note';
@@ -533,6 +717,10 @@ function designQuestion(recent, sub) {
             row.querySelectorAll('button').forEach(x => { x.disabled = true; });
             if (c.value !== item.cat) { submit({ step: 'choice', got: c.value }); return; }
             b.classList.add('is-answer');
+            // Collapse the answered step to just its answer, so the steps
+            // still to come fit on the screen under it.
+            row.querySelectorAll('button').forEach(x => { if (x !== b) x.classList.add('hidden'); });
+            row.classList.add('answered');
             run(i + 1);
           });
           row.appendChild(b);
@@ -591,6 +779,9 @@ function designQuestion(recent, sub) {
 }
 
 const QUESTION_TYPES = {
+  box: boxQuestion,
+  barDims: barDimsQuestion,
+  effects: effectsQuestion,
   design: designQuestion,
   classify: classifyQuestion,
   roles: rolesQuestion,
@@ -605,6 +796,10 @@ const QUESTION_TYPES = {
 // move on by themselves; a wrong one waits for Next, so the explanation stays
 // up until it has actually been read.
 const QUIZ_CORRECT_DELAY_MS = 900;
+// Every sub-level gives two hearts per run: a slip costs points and a heart
+// but not the run. Ten straight with no room for a mis-tap was more about
+// nerve than knowledge. A sub-level can still set its own `allowedMisses`.
+const ALLOWED_MISSES = 2;
 const RECENT_MEMORY = 6;
 
 let quizSub = null;
@@ -635,7 +830,8 @@ function renderPrompt(prompt) {
   const el = document.getElementById('quiz-prompt');
   el.innerHTML = '';
   const p = document.createElement('div');
-  if (prompt.big) { p.className = 'prompt-big'; p.textContent = prompt.big; }
+  if (prompt.node) { p.className = 'prompt-figure'; p.appendChild(prompt.node); }
+  else if (prompt.big) { p.className = 'prompt-big'; p.textContent = prompt.big; }
   else if (prompt.desc) { p.className = 'prompt-desc'; p.textContent = prompt.desc; }
   else { p.className = 'prompt-quote'; p.textContent = prompt.quote; }
   el.appendChild(p);
@@ -731,12 +927,13 @@ function answerQuestion(value) {
 
 function openQuiz(sub) {
   quizSub = sub;
-  quizGame = new StreakGame(sub.target || STREAK_TARGET, sub.allowedMisses || 0);
+  quizGame = new StreakGame(sub.target || STREAK_TARGET, sub.allowedMisses ?? ALLOWED_MISSES);
   quizRecent = [];
   document.getElementById('quiz-title').textContent = sub.name;
   setModalDoneState(false);
   renderStreakBar();
   document.getElementById('quiz-overlay').classList.remove('hidden');
+  document.body.classList.add('in-quiz');
   setMascotSpeech(sub.speech);
   nextQuestion();
   pushNav(closeQuiz);
@@ -752,6 +949,7 @@ function openQuiz(sub) {
 function closeQuiz() {
   clearTimeout(quizAdvanceTimer);
   document.getElementById('quiz-overlay').classList.add('hidden');
+  document.body.classList.remove('in-quiz');
   quizSub = null;
   quizQuestion = null;
   clearMascotFlash();
