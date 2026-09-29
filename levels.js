@@ -422,7 +422,7 @@ const LEVELS = [
   {
     n: 4, title: 'Averages and variation',
     blurb: 'Mean, median and mode; how spread out data is; z-scores; and normal versus skewed distributions.',
-    intro: 'Each sub-level asks one kind of question. Get 5 in a row to finish it and unlock the next. You have two hearts per run, so two mistakes won\'t reset it.',
+    intro: 'Each sub-level asks one kind of question. Some sub-levels need 5 in a row to finish and some need 10 (the bar shows which). You have two hearts per run, so two mistakes won\'t reset it.',
     subs: [
       {
         id: '4-central', kind: 'classify', name: 'Mean, median or mode?',
@@ -444,7 +444,7 @@ const LEVELS = [
         },
       },
       {
-        id: '4-variation', kind: 'variation', name: 'Which varies more?',
+        id: '4-variation', kind: 'variation', target: 10, name: 'Which varies more?',
         desc: 'Two groups of people. Whose heights are more spread out?',
         speech: 'Which group\'s heights are more spread out?',
         help: {
@@ -460,7 +460,7 @@ const LEVELS = [
         },
       },
       {
-        id: '4-sigma', kind: 'sigma', name: 'Which arrow is σ?',
+        id: '4-sigma', kind: 'sigma', target: 10, name: 'Which arrow is σ?',
         desc: 'Pick the arrow that shows the standard deviation.',
         speech: 'Which arrow is the standard deviation?',
         help: {
@@ -475,7 +475,7 @@ const LEVELS = [
         },
       },
       {
-        id: '4-heightz', kind: 'heightZ', name: 'Standard deviations: heights',
+        id: '4-heightz', kind: 'heightZ', target: 10, name: 'Standard deviations: heights',
         desc: 'Find the height that\'s a given number of standard deviations from the mean.',
         speech: 'Tap the height that many standard deviations from the mean.',
         help: {

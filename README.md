@@ -42,7 +42,7 @@ five examples; this gives them hundreds, with a reason every time they get one w
 ## The design, and why
 
 **Five in a row, with two hearts.** A sub-level is finished with 5 right answers in a row
-(10 for Variable or not?, Match the graph, and all of Level 3).
+(10 for Variable or not?, Match the graph, all of Level 3, and Level 4's b, c and d).
 Each run allows two mistakes: a mistake costs a heart, and a third one starts the run
 again. Every third right answer doubles what each answer is worth, and what a wrong one
 costs, so guessing doesn't pay.
