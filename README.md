@@ -45,6 +45,8 @@ reading.
 
 ## The levels
 
+### Level 1 — Variables
+
 | | Sub-level | What it asks |
 |---|---|---|
 | **1a** | Variable or not? | Is this a measurable feature with different possible values? Includes constants (the speed of light) that are measurable but never vary. |
@@ -52,7 +54,20 @@ reading.
 | **1c** | Independent and dependent | The same question, with the proper names. |
 | **1d** | Match the graph | Four graphs, one statement: forwards or backwards (which variable is on which axis), crossed with increasing or decreasing. |
 
-More levels will be added as the module outline is written.
+### Level 2 — Research design fundamentals
+
+| | Sub-level | What it asks |
+|---|---|---|
+| **2a** | Valid? Reliable? | A two-sentence description of a measure. Is it valid, and is it reliable? Both are answered together, and both must be right. |
+| **2b** | Hypotheses | A research question built from a Level 1 relation, and the four graphs from 1d put into words. Pick the two opposing hypotheses. |
+| **2c** | Hypotheses with the null | The same, plus a "no effect" version each way. Pick three. |
+| **2d** | Continuous or discrete? | Numeric variables only; categories wait for 2e. |
+| **2e** | Levels of measurement | Nominal, ordinal, interval or ratio. Two hearts per run: two mistakes don't reset it. |
+| **2f** | Confounds | Is there a confound? If so, which variable is it? Most studies appear twice, once confounded and once controlled. |
+| **2g** | Within or between subjects? | Same people in every condition, or different people in each? |
+
+Still to come in Level 2: cross-sectional and longitudinal designs (with students writing
+the IV and DV in their own words), and asking for the IV and DV in 2g.
 
 ## Running it
 
@@ -67,8 +82,10 @@ served a cached old copy.
 
 | File | What's in it |
 |---|---|
-| `data.js` | Every item, statement, explanation and level. Adding a level means adding data here. |
-| `quiz.js` | The question types (sort, roles, graph) and the quiz modal they all share. |
+| `data.js` | Level 1's items and the relations (reused by Level 2's hypotheses), with every explanation. |
+| `data2.js` | Level 2's items and explanations. |
+| `levels.js` | The levels and sub-levels: names, help text, and which question type each uses. |
+| `quiz.js` | The question types and the quiz modal they all share. |
 | `graphs.js` | The small scatter-plot graphs for 1d. |
 | `app.js` | Players, progress, points, screens, menu, help, and the mascot. |
 | `streak.js` | The 10-in-a-row scoring engine, shared with Shapes and Language. |

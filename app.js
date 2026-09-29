@@ -225,7 +225,7 @@ function renderSubGrid() {
     const locked = i > 0 && !isSubDone(currentLevel.subs[i - 1]);
     const card = document.createElement('div');
     card.className = 'target-card' + (done ? ' done' : '') + (locked ? ' locked' : '');
-    const letter = sub.id.slice(-1);
+    const letter = 'abcdefghijklmnop'[i];
     const h3 = document.createElement('h3');
     // Locked cards keep their name hidden: "Independent and dependent"
     // sitting on screen during 1b would hand over 1c's new words early.
