@@ -152,9 +152,9 @@ const SORT_ITEMS = [
 //                  and why the backwards version doesn't hold.
 //
 // These are the claims as stated, not findings -- the game only asks what a
-// statement says changes what, never whether it's true. Some are well
-// established and some are contested (screen time), which is a later
-// level's business.
+// statement says changes what, never whether it's true. Even so, none of
+// them should teach a claim the course doesn't stand behind: no relation
+// here links screen time with language.
 //
 // A deliberate spread of 'down' relations, because 1d is only a real
 // question if a falling line is as likely as a rising one. The reaction
@@ -174,10 +174,10 @@ const RELATIONS = [
     says: ['Children grow taller as they get older.',
            'A child\'s height goes up with age.'],
     why: 'Growing older is what makes children taller. Getting taller doesn\'t make anyone older.' },
-  { id: 'screen-vocab', iv: 'screen time', dv: 'vocabulary size', ivAxis: 'Screen time', dvAxis: 'Vocabulary', dir: 'down',
-    says: ['Toddlers who have more screen time learn fewer words.',
-           'Toddlers learn fewer words the more screen time they have.'],
-    why: 'The claim is that screen time changes how many words toddlers learn — not that learning words changes how much screen time they get.' },
+  { id: 'delay-recall', iv: 'time since learning', dv: 'words remembered', ivNP: 'the time since learning', dvNP: 'the number of new words remembered', ivAxis: 'Time since learning', dvAxis: 'Words recalled', dir: 'down',
+    says: ['The longer it has been since people learned a list of new words, the fewer of them they remember.',
+           'People remember fewer new words the longer it has been since they learned them.'],
+    why: 'Time passing is what does the forgetting. Remembering fewer words can\'t make more time pass.' },
   { id: 'complexity-rt', iv: 'sentence complexity', dv: 'reading time', ivAxis: 'Complexity', dvAxis: 'Reading time', dir: 'up',
     says: ['More complex sentences take longer to read.',
            'Reading time goes up as sentences get more complex.'],
