@@ -285,7 +285,7 @@ const HELP = {
       <li>It goes with the Research Methods module (CMM378). Everything in it is also
           taught in class, in the same order. The game is where you practise it enough
           times for it to stick.</li>
-      <li>There are <strong>three levels</strong> so far, each split into short sub-levels.
+      <li>There are <strong>four levels</strong> so far, each split into short sub-levels.
           Early questions are a single tap. Later ones ask you to type answers in your
           own words.</li>
       <li><strong>Nothing here is graded and nothing is watched.</strong> Your points and

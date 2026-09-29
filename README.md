@@ -105,6 +105,19 @@ The graphs are built so each effect is either clearly there or exactly absent, n
 borderline: an absent main effect has identical averages, and an interaction changes the
 gap between colours without moving any average.
 
+### Level 4: Averages and variation
+
+| | Sub-level | What it asks |
+|---|---|---|
+| **a** | Mean, median or mode? | Which average does this description of a calculation give? |
+| **b** | Which varies more? | Two groups of people drawn by height. Whose heights are more spread out? The more varied group is as often the shorter one. |
+| **c** | Which arrow is σ? | Arrows from the mean to each person, and three candidates: half σ, σ and twice σ. |
+| **d** | Standard deviations: heights | Drag a marker to the height that's a given number of σ from the mean. |
+| **e** | Standard deviations: ratings | The same on a 1–7 scale lined up with the z-scale, with a new participant (mean and σ) each time. |
+| **f** | Normal or skewed? | Normal curves come narrow or wide and anywhere on the scale; skewed ones have a long tail on either side. |
+
+Everything except 4a is generated. Heights are in centimetres.
+
 ## Fits on a phone
 
 Every question, including its Check button, fits on a small phone screen (360×640)
@@ -132,9 +145,10 @@ number in `index.html`. Raise it on every change so nobody gets a cached old cop
 | `data.js` | Level 1's items, and the relations Level 2's hypotheses reuse. |
 | `data2.js` | Level 2's items, with every explanation. |
 | `data3.js` | Level 3's factors, and the generator for its graphs. |
+| `data4.js` | Level 4's descriptions, and the generators for its groups, lines and distributions. |
 | `quiz.js` | The question types, and the quiz screen they all share. |
 | `parser.js` | Works out which part of a study description a typed answer means. |
-| `graphs.js` | The line graphs in Level 1 and the bar graphs in Level 3. |
+| `graphs.js` | Every figure: line graphs, bar graphs, people, number lines and histograms. |
 | `app.js` | Players, points, screens, menu, help and the mascot. |
 | `streak.js` | The 10-in-a-row scoring. |
 | `sound.js` | Sound effects, made in code with no audio files. |

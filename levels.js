@@ -419,4 +419,115 @@ const LEVELS = [
       },
     ],
   },
+  {
+    n: 4, title: 'Averages and variation',
+    blurb: 'Mean, median and mode; how spread out data is; z-scores; and normal versus skewed distributions.',
+    intro: 'Each sub-level asks one kind of question. Get 10 in a row to finish it and unlock the next. You have two hearts per run, so two mistakes won\'t reset it.',
+    subs: [
+      {
+        id: '4-central', kind: 'classify', name: 'Mean, median or mode?',
+        desc: 'Which average does this calculation give you?',
+        question: 'Which average is this?',
+        categories: [{ value: 'mean', label: 'Mean' }, { value: 'median', label: 'Median' }, { value: 'mode', label: 'Mode' }],
+        items: CENTRAL_ITEMS,
+        speech: 'Mean, median or mode? Read how it\'s worked out.',
+        help: {
+          title: 'Mean, median and mode',
+          html: `<ul>
+            <li>The <strong>mean</strong>: add up all the values and divide by how many there
+                are. Exam marks 80, 77 and 30: 187 ÷ 3 = 62.</li>
+            <li>The <strong>median</strong>: put the values in order and take the one in the
+                <strong>middle</strong>. 30, 77, 80: the median is 77. Half the values are below
+                it and half above.</li>
+            <li>The <strong>mode</strong>: the value that appears <strong>most often</strong>.</li>
+          </ul>`,
+        },
+      },
+      {
+        id: '4-variation', kind: 'variation', name: 'Which varies more?',
+        desc: 'Two groups of people. Whose heights are more spread out?',
+        speech: 'Which group\'s heights are more spread out?',
+        help: {
+          title: 'Variation',
+          html: `<ul>
+            <li><strong>Variation</strong> (or dispersion) is how <strong>spread out</strong> the
+                values are: how far they tend to be from the mean.</li>
+            <li>A group where everyone is about the same height varies little. A group with some
+                very short and some very tall people varies a lot.</li>
+            <li>The dashed line is each group's mean. Being taller or shorter on average is a
+                different question — look at how far people are from their own group's line.</li>
+          </ul>`,
+        },
+      },
+      {
+        id: '4-sigma', kind: 'sigma', name: 'Which arrow is σ?',
+        desc: 'Pick the arrow that shows the standard deviation.',
+        speech: 'Which arrow is the standard deviation?',
+        help: {
+          title: 'The standard deviation (σ)',
+          html: `<ul>
+            <li>Draw an arrow from the mean to each value: how far away from the mean is it?</li>
+            <li>The <strong>standard deviation</strong>, σ, is roughly the <strong>average
+                arrow length</strong>.</li>
+            <li>So σ is longer than the shortest arrows and shorter than the longest ones. One of
+                the three arrows fits; the others are half as long and twice as long.</li>
+          </ul>`,
+        },
+      },
+      {
+        id: '4-heightz', kind: 'heightZ', name: 'Standard deviations: heights',
+        desc: 'Find the height that\'s a given number of standard deviations from the mean.',
+        speech: 'Tap the height that many standard deviations from the mean.',
+        help: {
+          title: 'Counting in standard deviations',
+          html: `<ul>
+            <li>Any value can be described by <strong>how many standard deviations</strong> it is
+                from the mean. That number is its <strong>z-score</strong>.</li>
+            <li>z = 0 is the mean. z = +1 is one σ above it; z = −1 is one σ below it.</li>
+            <li>z = +1.5 is one and a half σ above the mean: with a mean of 165 cm and σ = 8 cm,
+                that's 165 + 1.5 × 8 = 177 cm.</li>
+            <li>The line shows the mean and one σ either side. Tap the point for the z you're
+                given.</li>
+          </ul>`,
+        },
+      },
+      {
+        id: '4-ratingz', kind: 'ratingZ', name: 'Standard deviations: ratings',
+        desc: 'The same on a 1–7 rating scale, with a different participant each time.',
+        speech: 'Every participant has their own mean and σ. Tap the rating for that z.',
+        help: {
+          title: 'z-scores for ratings',
+          html: `<ul>
+            <li>Participants use a rating scale differently: some are harsh, some lenient, some
+                use the whole scale and some only the middle.</li>
+            <li>So each participant has their <strong>own mean and σ</strong>, and their own way
+                the 1–7 scale lines up with the z-scale underneath it.</li>
+            <li>z = +1 for a lenient participant might be a 7; for a harsh one, a 4.</li>
+            <li>Tap the rating that matches the z you're given, for this participant.</li>
+          </ul>`,
+        },
+      },
+      {
+        id: '4-skew', kind: 'skew', name: 'Normal or skewed?',
+        desc: 'Is the distribution symmetrical, or does it have a long tail?',
+        speech: 'Normal or skewed? Look at the shape, and at the tails.',
+        help: {
+          title: 'Normal and skewed distributions',
+          html: `<ul>
+            <li>A <strong>normal</strong> distribution is a symmetrical bell shape: the same
+                amount of the population below the mean as above it. Its mean, median and mode are
+                all in the same place.</li>
+            <li>It can be narrow or wide, and sit anywhere on the scale. The <strong>shape</strong>
+                is what makes it normal.</li>
+            <li>A <strong>skewed</strong> distribution has one tail much longer than the other. The
+                long tail pulls the mean towards it, so the mean and the median are different.</li>
+          </ul>`,
+        },
+      },
+    ],
+  },
 ];
+
+// A stray comma between two levels leaves an empty slot in LEVELS, and the
+// level select then dies on it with nothing on screen. Say so plainly.
+if (LEVELS.some(level => !level)) console.error('LEVELS has an empty slot: look for ",," between two levels in levels.js');

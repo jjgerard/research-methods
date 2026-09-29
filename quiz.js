@@ -778,7 +778,137 @@ function designQuestion(recent, sub) {
   };
 }
 
+// ---------------- Level 4: averages and variation ----------------
+const round1 = v => +v.toFixed(1);
+const zWords = z => `${Math.abs(z)} standard deviation${Math.abs(z) === 1 ? '' : 's'} ${z > 0 ? 'above' : 'below'} the mean`;
+const zLabel = z => `z = ${z > 0 ? '+' : '−'}${Math.abs(z)}`;
+
+// 4b. Two groups; which varies more? Each group is its own answer button.
+function variationQuestion() {
+  const pair = makeVariationPair();
+  const names = ['Group A', 'Group B'];
+  const buttons = [];
+  // One scale for both groups, so heights compare across the two buttons.
+  const scale = heightScale(pair.groups.flatMap(g => g.heights), 118, 0.5);
+  const render = (el, submit) => {
+    pair.groups.forEach((g, i) => {
+      const b = makeButton('');
+      b.classList.add('figure-btn');
+      const cap = document.createElement('span');
+      cap.className = 'figure-cap';
+      cap.textContent = names[i];
+      b.append(cap, drawGroup(g, PEOPLE_COLOURS[i], names[i], scale));
+      b.addEventListener('click', () => submit(i));
+      buttons.push(b);
+      el.appendChild(b);
+    });
+  };
+  const grade = (i) => {
+    disableAll(document.getElementById('quiz-answers'));
+    const right = pair.moreVaried;
+    buttons[right].classList.add('is-answer');
+    if (i !== right) buttons[i].classList.add('is-wrong');
+    const m = pair.groups[right], l = pair.groups[1 - right];
+    const taller = m.mean < l.mean ? ` ${names[right]} is shorter on average, but that's a different question: variation is about spread, not height.` : '';
+    return {
+      correct: i === right,
+      explain: `${names[right]} varies more: its heights spread from ${m.min} to ${m.max} cm (σ = ${round1(m.sd)} cm), while ${names[1 - right]}'s only go from ${l.min} to ${l.max} cm (σ = ${round1(l.sd)} cm).${taller}`,
+    };
+  };
+  return {
+    key: `var-${Math.random()}`,
+    prompt: { quote: 'Which group\'s heights vary more?' },
+    question: '',
+    layout: 'pair',
+    answer: pair.moreVaried,
+    render,
+    grade,
+  };
+}
+
+// 4c. Which arrow is the standard deviation?
+function sigmaQuestion() {
+  const g = makeSigmaGroup();
+  const right = g.arrows.find(a => a.factor === 1).letter;
+  return {
+    key: `sig-${Math.random()}`,
+    prompt: { node: drawSigmaGroup(g) },
+    question: 'The grey arrows show how far each person is from the mean. Which arrow, <strong>A, B or C</strong>, is the standard deviation?',
+    layout: 'triple',
+    options: g.arrows.map(a => ({ value: a.letter, label: a.letter })),
+    answer: right,
+    explain: (v) => {
+      const f = g.arrows.find(a => a.letter === v).factor;
+      return `The standard deviation is roughly the average length of the grey arrows: here σ = ${round1(g.sd)} cm, which is arrow ${right}. Arrow ${v} is ${f === 2 ? 'twice' : 'half'} that — ${f === 2 ? 'longer than most of the grey arrows' : 'shorter than most of the grey arrows'}.`;
+    },
+  };
+}
+
+// 4d / 4e. Tap where a given z falls, on a line of heights or of ratings.
+function zLineQuestion(kind) {
+  const d = kind === 'height' ? makeHeightLine() : makeRatingLine();
+  let fig;
+  let current = 0;
+  const unit = kind === 'height' ? ' cm' : '';
+  const valueAt = z => +(d.mean + z * d.sd).toFixed(2);
+  const render = (el, submit) => {
+    const readout = document.createElement('div');
+    readout.className = 'slider-readout';
+    fig = (kind === 'height' ? heightLineFigure : ratingLineFigure)(d, (z) => {
+      current = z;
+      readout.textContent = `Your mark: ${valueAt(z)}${unit}`;
+    });
+    const check = makeButton('Check', 'btn-primary check-btn');
+    check.addEventListener('click', () => submit(current));
+    el.append(fig.wrap, readout, check);
+  };
+  const grade = (z) => {
+    disableAll(document.getElementById('quiz-answers'));
+    fig.input.disabled = true;
+    fig.markAt(d.z, 'mark-right');
+    if (z !== d.z) fig.markAt(z, 'mark-wrong');
+    const sign = d.z > 0 ? '+' : '−';
+    return {
+      correct: z === d.z,
+      explain: `${zLabel(d.z)} means ${zWords(d.z)}: ${d.mean}${unit} ${sign} ${Math.abs(d.z)} × ${d.sd}${unit} = ${valueAt(d.z)}${unit} (the green mark). ` +
+        (z === 0 ? 'Your mark was still on the mean (z = 0).' : `Your mark (red) was at ${zLabel(z)}, ${valueAt(z)}${unit}.`),
+    };
+  };
+  return {
+    key: `${kind}-${Math.random()}`,
+    prompt: { big: zLabel(d.z) },
+    question: kind === 'height'
+      ? `Drag the marker to the height that's <strong>${zWords(d.z)}</strong>.`
+      : `This participant's mean rating is ${d.mean}, with σ = ${d.sd}. Drag the marker to the rating that's <strong>${zWords(d.z)}</strong>.`,
+    layout: 'figure',
+    answer: d.z,
+    render,
+    grade,
+  };
+}
+
+// 4f. Normal or skewed?
+function skewQuestion() {
+  const d = makeDistribution();
+  return {
+    key: `skew-${Math.random()}`,
+    prompt: { node: drawHistogram(d) },
+    question: 'Is this distribution <strong>normal</strong> or <strong>skewed</strong>?',
+    layout: 'pair',
+    options: [{ value: 'normal', label: 'Normal' }, { value: 'skewed', label: 'Skewed' }],
+    answer: d.skewed ? 'skewed' : 'normal',
+    explain: () => d.skewed
+      ? `It's skewed: the tail on the ${d.tail} is much longer than the other. That pulls the mean towards the ${d.tail}, so the mean and the median aren't the same, and there isn't the same amount of the population on each side of the mean.`
+      : 'It\'s normal: the two sides mirror each other around the middle, so the mean, median and mode are all in the same place. A normal distribution can be narrow or wide, and sit anywhere on the scale — it\'s the symmetrical bell shape that makes it normal.',
+  };
+}
+
 const QUESTION_TYPES = {
+  variation: variationQuestion,
+  sigma: sigmaQuestion,
+  heightZ: () => zLineQuestion('height'),
+  ratingZ: () => zLineQuestion('rating'),
+  skew: skewQuestion,
   box: boxQuestion,
   barDims: barDimsQuestion,
   effects: effectsQuestion,
