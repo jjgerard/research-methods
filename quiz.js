@@ -265,7 +265,7 @@ function hypothesisQuestion(recent, sub) {
 function validityQuestion(recent) {
   const item = pickFresh(VALIDITY_ITEMS, recent, i => i.text);
   const rows = [
-    { key: 'valid', label: 'Is it valid?', help: 'Does it measure what it\'s meant to?' },
+    { key: 'valid', label: 'Is it valid?', help: 'Does it measure the intended effect?' },
     { key: 'reliable', label: 'Is it reliable?', help: 'Would it give the same result again?' },
   ];
   const buttons = {};
@@ -398,7 +398,200 @@ function confoundQuestion(recent) {
   };
 }
 
+// ---------------- typed answers ----------------
+// A box to type in, read by parser.js. What the parser finds is shown back
+// ("Read as: font size") before anything is marked, so a student can see
+// how their words were taken. When it can't decide between two things it
+// asks which one was meant, and when it can't recognise anything it asks
+// again -- neither counts as a wrong answer, because neither is one. After
+// two answers it can't place at all, it lists what's in the description,
+// so an unusual phrasing can never leave a student stuck.
+const PARSER_TRIES_BEFORE_LIST = 2;
+
+function freeTextStep(el, { placeholder, candidates, onResolved }) {
+  const wrap = document.createElement('div');
+  wrap.className = 'freetext';
+  const row = document.createElement('div');
+  row.className = 'freetext-row';
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.className = 'freetext-input';
+  input.placeholder = placeholder;
+  input.autocomplete = 'off';
+  input.setAttribute('autocapitalize', 'none');
+  input.setAttribute('enterkeyhint', 'done');
+  const check = makeButton('Check', 'btn-primary');
+  const note = document.createElement('div');
+  note.className = 'freetext-note';
+  const chips = document.createElement('div');
+  chips.className = 'freetext-chips';
+  row.append(input, check);
+  wrap.append(row, note, chips);
+  el.appendChild(wrap);
+
+  let misses = 0;
+  // onResolved may hand back a note instead of accepting -- "you've already
+  // named that one" -- in which case the box stays open for another go.
+  const resolve = (id) => {
+    const c = candidates.find(x => x.id === id);
+    chips.innerHTML = '';
+    const refusal = onResolved(id);
+    if (refusal) {
+      note.className = 'freetext-note';
+      note.textContent = refusal;
+      input.value = '';
+      input.focus({ preventScroll: true });
+      return;
+    }
+    input.disabled = true;
+    check.disabled = true;
+    note.className = 'freetext-note read-as';
+    note.textContent = `Read as: ${c.name}`;
+  };
+  const offer = (ids, text) => {
+    note.className = 'freetext-note';
+    note.textContent = text;
+    chips.innerHTML = '';
+    ids.forEach(id => {
+      const b = makeButton(candidates.find(x => x.id === id).name, 'chip-btn');
+      b.addEventListener('click', () => resolve(id));
+      chips.appendChild(b);
+    });
+  };
+  const attempt = () => {
+    if (!input.value.trim()) { input.focus(); return; }
+    const r = matchAnswer(input.value, candidates);
+    if (r.status === 'match') resolve(r.id);
+    else if (r.status === 'ambiguous') offer(r.ids, 'That could be more than one thing in the description. Did you mean:');
+    else if (++misses >= PARSER_TRIES_BEFORE_LIST) offer(shuffle(candidates.map(c => c.id)), 'I still can\'t tell which part you mean. Is it one of these?');
+    else {
+      chips.innerHTML = '';
+      note.className = 'freetext-note';
+      note.textContent = 'I can\'t tell which part of the description you mean. Try again, using words from the description.';
+    }
+  };
+  check.addEventListener('click', attempt);
+  input.addEventListener('keydown', ev => { if (ev.key === 'Enter') attempt(); });
+  input.focus({ preventScroll: true });
+  // Each new step appears under the last one, which on a phone is often
+  // below the fold -- bring it up so the next box is visibly waiting.
+  wrap.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  return wrap;
+}
+
+// ---------------- design questions: choose, and name the variables ----------------
+// A study description, then a fixed sequence of steps -- set per sub-level
+// by `sub.steps` -- each either a choice (within or between; cross-sectional
+// or longitudinal) or a typed answer (the IV, the DV). The whole sequence is
+// one answer to the streak: a wrong step ends the item then and there, with
+// an explanation of that step.
+//
+// Some designs have two IVs (a panel design: which group, and when). Each
+// gets its own box, in whichever order the student names them, and naming
+// the same one twice is turned away rather than marked wrong.
+const IV_ORDINALS = ['first', 'second', 'third'];
+
+function designQuestion(recent, sub) {
+  const item = pickFresh(sub.items, recent, i => i.label);
+  const ivs = item.ivs.map((v, i) => ({ id: `iv${i}`, ...v }));
+  const candidates = shuffle([
+    ...ivs,
+    { id: 'dv', ...item.dv },
+    ...item.others.map((o, i) => ({ id: `other${i}`, ...o })),
+  ]);
+  const nameOf = id => candidates.find(c => c.id === id).name;
+  const isIV = id => id.startsWith('iv');
+  const setQuestion = html => { document.getElementById('quiz-question').innerHTML = html; };
+  const choiceLabel = Object.fromEntries(sub.choices.map(c => [c.value, c.label]));
+  let choiceButtons = {};
+
+  // One step per IV, so "iv" in sub.steps expands to as many as the item has.
+  const steps = sub.steps.flatMap(s => (s === 'iv' ? ivs.map((_, i) => ({ kind: 'iv', index: i })) : [{ kind: s }]));
+  const found = new Set();
+
+  const questionFor = (step) => {
+    if (step.kind === 'choice') return sub.choiceQuestion;
+    if (step.kind === 'dv') return 'What\'s the <strong>dependent variable</strong>? Type it in your own words.';
+    if (ivs.length === 1) return 'What\'s the <strong>independent variable</strong>? Type it in your own words.';
+    return step.index === 0
+      ? `This design has <strong>${ivs.length} independent variables</strong>. Type the ${IV_ORDINALS[0]} one in your own words.`
+      : `And the <strong>${IV_ORDINALS[step.index]} independent variable</strong>?`;
+  };
+
+  const render = (el, submit) => {
+    const run = (i) => {
+      if (i >= steps.length) { submit({ ok: true }); return; }
+      const step = steps[i];
+      setQuestion(questionFor(step));
+      if (step.kind === 'choice') {
+        const row = document.createElement('div');
+        row.className = `quiz-answers ${sub.choices.length === 2 ? 'layout-pair' : 'layout-list'} step`;
+        sub.choices.forEach(c => {
+          const b = makeButton(c.label);
+          choiceButtons[c.value] = b;
+          b.addEventListener('click', () => {
+            row.querySelectorAll('button').forEach(x => { x.disabled = true; });
+            if (c.value !== item.cat) { submit({ step: 'choice', got: c.value }); return; }
+            b.classList.add('is-answer');
+            run(i + 1);
+          });
+          row.appendChild(b);
+        });
+        el.appendChild(row);
+        row.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        return;
+      }
+      freeTextStep(el, {
+        placeholder: step.kind === 'dv' ? 'The dependent variable is...' : 'The independent variable is...',
+        candidates,
+        onResolved: (id) => {
+          if (step.kind === 'iv' && found.has(id)) return 'You\'ve already named that one. What\'s the other?';
+          const ok = step.kind === 'dv' ? id === 'dv' : isIV(id);
+          if (!ok) { submit({ step: step.kind, got: id }); return null; }
+          if (step.kind === 'iv') found.add(id);
+          run(i + 1);
+          return null;
+        },
+      });
+    };
+    run(0);
+  };
+
+  const ivList = ivs.map(v => v.name).join(' and ');
+  const grade = (ans) => {
+    document.querySelectorAll('#quiz-answers input, #quiz-answers button').forEach(x => { x.disabled = true; });
+    if (ans.ok) return { correct: true };
+    if (ans.step === 'choice') {
+      choiceButtons[ans.got].classList.add('is-wrong');
+      choiceButtons[item.cat].classList.add('is-answer');
+      return { correct: false, explain: `It's ${choiceLabel[item.cat].toLowerCase()}. ${sub.choiceWhy[item.cat]}` };
+    }
+    const got = nameOf(ans.got);
+    const ivPhrase = ivs.length > 1 ? `The independent variables are ${ivList}` : `The independent variable is ${ivList}`;
+    let why;
+    if (ans.step === 'iv' && ans.got === 'dv') {
+      why = `${cap(got)} is what's measured — that's the dependent variable. ${ivPhrase}: what differs between the conditions${sub.ivHint ? ` ${sub.ivHint}` : ''}.`;
+    } else if (ans.step === 'dv' && isIV(ans.got)) {
+      why = `${cap(got)} is ${ivs.length > 1 ? 'one of the independent variables' : 'the independent variable'} — what differs between the conditions. The dependent variable is what's measured: ${item.dv.name}.`;
+    } else {
+      why = `That's part of the study, but not a variable that ${ans.step === 'iv' ? 'differs between the conditions' : 'gets measured'}. ${ans.step === 'iv' ? ivPhrase : `The dependent variable is ${item.dv.name}`}.`;
+    }
+    return { correct: false, explain: why };
+  };
+
+  return {
+    key: item.label,
+    prompt: { desc: item.label },
+    question: questionFor(steps[0]),
+    layout: 'steps',
+    answer: { choice: item.cat, ivs: ivs.map(v => v.name), dv: item.dv.name },
+    render,
+    grade,
+  };
+}
+
 const QUESTION_TYPES = {
+  design: designQuestion,
   classify: classifyQuestion,
   roles: rolesQuestion,
   graph: graphQuestion,
@@ -503,7 +696,7 @@ function answerQuestion(value) {
   if (!quizQuestion || quizAnswered) return;
   quizAnswered = true;
   const q = quizQuestion;
-  const { correct, explain } = q.grade ? q.grade(value) : gradeOptions(q, value);
+  const { correct, explain = '' } = q.grade ? q.grade(value) : gradeOptions(q, value);
   const result = quizGame.answer(correct);
   state.points = Math.max(0, state.points + result.pointsDelta);
   saveState();

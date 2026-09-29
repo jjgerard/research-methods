@@ -274,20 +274,27 @@ const HELP = {
   about: {
     title: 'About Methods and Language',
     html: `<ul>
-      <li>This is a puzzle game about <strong>research methods</strong> in linguistics:
-          what you can measure, what changes what, and how to show it.</li>
-      <li>It goes with the Research Methods module rather than replacing it. Everything in it
-          is something you'll also meet in class, in the same order; the game is where you
-          get to <strong>do</strong> it enough times for it to stick.</li>
-      <li><strong>Nothing here is graded and nothing is watched.</strong> Your points live on
-          this device and nowhere else &mdash; nobody, including your lecturer, can see them
-          unless you show them. Get things wrong as often as you like.</li>
-      <li>There's no account, no email and no password. The class code just keeps your
-          points separate from someone else's on a shared computer.</li>
-      <li>You can <strong>add it to your home screen</strong> and it'll open like an app,
-          without the browser bars. On iPhone: Share, then <em>Add to Home Screen</em>.
-          On Android: the ⋮ menu, then <em>Install app</em> or <em>Add to Home screen</em>.</li>
-      <li>It's a sister game to <a href="https://jjgerard.github.io/shapes/" target="_blank" rel="noopener">Shapes and Language</a>.</li>
+      <li>This is a puzzle game for practising <strong>research methods in
+          linguistics</strong>: what a variable is, which one changes which, and how
+          studies are designed.</li>
+      <li>It goes with the Research Methods module (CMM378). Everything in it is also
+          taught in class, in the same order. The game is where you practise it enough
+          times for it to stick.</li>
+      <li>There are <strong>two levels</strong> so far, each split into short sub-levels.
+          Early questions are a single tap. Later ones ask you to type answers in your
+          own words.</li>
+      <li><strong>Nothing here is graded and nothing is watched.</strong> Your points and
+          anything you type stay on this device. Nobody else can see them, including
+          your lecturer.</li>
+      <li>There's no account, no email and no password. The class code keeps your points
+          separate from anyone else's on a shared device.</li>
+      <li>You can <strong>add it to your home screen</strong> and it opens like an app.
+          On iPhone: <em>Share</em>, then <em>Add to Home Screen</em>. On Android: the
+          <em>⋮</em> menu, then <em>Install app</em> or <em>Add to Home screen</em>.</li>
+      <li>It's free, and the code is open for anyone to read or reuse:
+          <a href="https://github.com/jjgerard/research-methods" target="_blank" rel="noopener">github.com/jjgerard/research-methods</a>.
+          It's a sister game to
+          <a href="https://jjgerard.github.io/shapes/" target="_blank" rel="noopener">Shapes and Language</a>.</li>
     </ul>`,
   },
   general: {

@@ -249,7 +249,7 @@ body.on-welcome main { padding-top: 8px; }
 .quiz-answers.layout-grid { grid-template-columns: 1fr 1fr; }
 /* Whole sentences to choose between (hypotheses, confound suspects): one
    per row, left-aligned, so each reads as a sentence and not a label. */
-.quiz-answers.layout-list { grid-template-columns: 1fr; }
+.quiz-answers.layout-list { grid-template-columns: minmax(0, 1fr); }
 .layout-list .answer-btn { text-align: left; font-weight: 600; min-height: 0; padding: 14px 16px; line-height: 1.35; }
 .stage2 { margin-top: -4px; }
 /* A choice that's been tapped but not yet checked -- clearly different from
@@ -258,6 +258,29 @@ body.on-welcome main { padding-top: 8px; }
 .answer-btn.selected::before { content: '✓ '; color: var(--accent); }
 .answer-btn.is-answer.selected::before, .answer-btn.is-wrong.selected::before { color: inherit; }
 .check-btn { justify-self: center; min-width: 220px; margin-top: 4px; }
+/* Typed answers. 16px+ on the input is not a style choice: anything smaller
+   makes iOS zoom the whole page in when the box is tapped. */
+/* minmax(0, 1fr), not 1fr: a plain 1fr column won't shrink below its
+   widest child, and a text input's default width pushed the Check button
+   off the side of a phone. */
+.quiz-answers.layout-steps { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+.freetext-row { display: flex; gap: 10px; }
+.freetext-input {
+  flex: 1; min-width: 0; font-size: 1.05rem; font-family: inherit;
+  padding: 12px 14px; border: 2px solid var(--line); border-radius: 10px;
+}
+.freetext-input:focus { outline: none; border-color: var(--accent); }
+.freetext-input:disabled { background: #f7f5f0; color: var(--ink); }
+.freetext-note { margin-top: 8px; font-size: 0.92rem; color: var(--muted); font-weight: 600; }
+.freetext-note:empty { display: none; }
+.freetext-note.read-as { color: var(--accent); }
+.freetext-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.freetext-chips:empty { display: none; }
+.chip-btn {
+  background: var(--panel); color: var(--ink); border: 2px solid var(--accent-mute);
+  border-radius: 999px; padding: 8px 14px; font-size: 0.95rem; font-weight: 600;
+}
+.chip-btn:hover { border-color: var(--accent); background: var(--accent-tint); }
 .quiz-answers.layout-judge { grid-template-columns: 1fr; gap: 14px; }
 .judge-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .judge-label { font-weight: 700; font-size: 1.05rem; }

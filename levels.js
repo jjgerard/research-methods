@@ -108,12 +108,15 @@ const LEVELS = [
         help: {
           title: 'Validity and reliability',
           html: `<ul>
-            <li>A measure is <strong>valid</strong> if it measures <strong>what it's meant to
-                measure</strong>. Measuring head size to find out how intelligent someone is
+            <li>A design is <strong>valid</strong> if it measures <strong>the intended
+                effect</strong> — what you actually want to ask about. Measuring head size to find out how intelligent someone is
                 isn't valid — it's measuring something else.</li>
-            <li>A measure is <strong>reliable</strong> if it gives <strong>the same result when
-                it's done again</strong>. A tape measure round the same head gives the same
+            <li>A design is <strong>reliable</strong> if <strong>repeating it gives the same
+                result</strong>, like a cake recipe that gives the same cake every time. A tape measure round the same head gives the same
                 number every time, so it's reliable — even though it isn't valid.</li>
+            <li>Reliability also depends on having <strong>enough participants</strong> for the
+                size of the effect, and on describing the study clearly enough for someone else
+                to repeat it.</li>
             <li>They're separate questions. A design can have both, either one, or neither.</li>
             <li>Answer both, then press <strong>Check</strong>. Both have to be right to count.</li>
           </ul>`,
@@ -166,11 +169,13 @@ const LEVELS = [
         help: {
           title: 'Continuous or discrete?',
           html: `<ul>
-            <li>A <strong>continuous</strong> variable can take <strong>any value</strong> on
-                its scale, including every value in between: 172 cm, 172.5 cm, 172.55 cm...</li>
-            <li>A <strong>discrete</strong> variable only comes in <strong>separate
-                values</strong>, with nothing in between: you can have 2 siblings or 3, but
-                not 2.5.</li>
+            <li>A <strong>continuous</strong> variable has <strong>infinite values, with no
+                gaps</strong> in the scale: age, time, distance.</li>
+            <li>A <strong>discrete</strong> variable has <strong>finite or countable
+                values</strong> that can't be divided up: you can't have 20.3 people, or be born
+                partly in 2002 and partly in 2003.</li>
+            <li>Careful: the <em>average</em> number of people can be 20.3, so an average is
+                continuous.</li>
             <li>A quick test: can you sensibly add another decimal place? Then it's continuous.
                 If the values are counted, it's discrete.</li>
           </ul>`,
@@ -178,31 +183,72 @@ const LEVELS = [
       },
       {
         id: '2-noir', kind: 'classify', name: 'Levels of measurement',
-        desc: 'Nominal, ordinal, interval or ratio? You can make 2 mistakes per run.',
+        desc: 'Categorical, ordinal, interval or ratio? You can make 2 mistakes per run.',
         question: 'What level of measurement is this?',
         categories: [
-          { value: 'nominal', label: 'Nominal' },
+          { value: 'categorical', label: 'Categorical' },
           { value: 'ordinal', label: 'Ordinal' },
           { value: 'interval', label: 'Interval' },
           { value: 'ratio', label: 'Ratio' },
         ],
         items: MEASUREMENT_ITEMS,
         allowedMisses: 2,
-        speech: 'Nominal, ordinal, interval or ratio? You have two hearts: two mistakes won\'t reset your run.',
+        speech: 'Categorical, ordinal, interval or ratio? You have two hearts: two mistakes won\'t reset your run.',
         help: {
           title: 'Levels of measurement',
           html: `<ul>
-            <li><strong>Nominal</strong>: categories with no order. <em>First language,
-                eye colour.</em></li>
-            <li><strong>Ordinal</strong>: the values are in order, but the gaps between them
-                aren't equal. <em>1st, 2nd, 3rd in a race.</em></li>
-            <li><strong>Interval</strong>: equal gaps, but no true zero. <em>Temperature in
-                °C</em> — 0°C isn't "no temperature", so 20°C isn't twice as hot as 10°C.</li>
-            <li><strong>Ratio</strong>: equal gaps <em>and</em> a true zero, so "twice as
-                much" makes sense. <em>Reaction time</em> — 400 ms is twice 200 ms.</li>
+            <li><strong>Categorical</strong>: distinct outcomes with no order. <em>Place of
+                birth, blood type, handedness.</em></li>
+            <li><strong>Ordinal</strong>: the outcomes are ranked, but the difference between
+                steps is arbitrary. <em>1st, 2nd, 3rd place; strongly disagree … strongly
+                agree.</em></li>
+            <li><strong>Interval</strong>: ranked, with a constant difference between steps, but
+                no natural zero — values aren't "twice as much". <em>A rating scale of 1–7;
+                a date.</em></li>
+            <li><strong>Ratio</strong>: ranked, constant steps, <em>and</em> a natural zero.
+                <em>Weight; time to do a task</em> — it can take twice as long.</li>
             <li>Four choices makes this harder, so you get <strong>two hearts</strong> per run:
                 a mistake costs points and a heart, but your run carries on. Lose a third time
                 and the run starts again.</li>
+          </ul>`,
+        },
+      },
+      {
+        id: '2-crosslong', kind: 'design', name: 'Cross-sectional or longitudinal?',
+        desc: 'A snapshot, a group followed over time, or both? Then name the IV and DV in your own words.',
+        items: CROSSLONG_ITEMS,
+        steps: ['choice', 'iv', 'dv'],
+        choiceQuestion: 'Is this design <strong>cross-sectional</strong>, <strong>longitudinal</strong>, or <strong>both</strong>?',
+        choices: [
+          { value: 'cross', label: 'Cross-sectional' },
+          { value: 'long', label: 'Longitudinal' },
+          { value: 'both', label: 'Both (a panel design)' },
+        ],
+        choiceWhy: {
+          cross: 'Different groups are compared at a single point in time — a snapshot. Nobody is tested again later.',
+          long: 'The same group is measured repeatedly over time, to see how it changes. That\'s a cohort design.',
+          both: 'Several groups are compared, AND each group is measured repeatedly over time. That\'s a panel design: cross-sectional and longitudinal at once.',
+        },
+        speech: 'Snapshot, over time, or both? Then type the IV and the DV in your own words.',
+        help: {
+          title: 'Cross-sectional and longitudinal',
+          html: `<ul>
+            <li>A <strong>cross-sectional</strong> design is a <strong>snapshot</strong>: how do
+                two or more groups differ at one point in time? <em>Measure 2-year-olds and
+                4-year-olds in the same week.</em></li>
+            <li>A <strong>longitudinal</strong> design takes <strong>repeated measures from the same
+                group over time</strong>: how does a group change? <em>Measure the same children
+                at 6, 12, 18 and 24 months.</em> Following one group like this is a
+                <strong>cohort design</strong>.</li>
+            <li>A <strong>panel design</strong> is <strong>both</strong>: several groups, each
+                followed over time. <em>Classes taught with methods A, B and C, each tested
+                before, after year 1 and after year 2.</em></li>
+            <li>Then type the <strong>independent variable</strong> and the <strong>dependent
+                variable</strong> in your own words. In a panel design there are
+                <strong>two</strong> independent variables — which group, and when — and you'll
+                be asked for both.</li>
+            <li>You'll see how your answer was read ("Read as: age group") before it's marked.
+                If it could mean two things, you'll be asked which.</li>
           </ul>`,
         },
       },
@@ -227,12 +273,17 @@ const LEVELS = [
         },
       },
       {
-        id: '2-withinbetween', kind: 'classify', name: 'Within or between subjects?',
-        desc: 'Does everyone take part in every condition, or only one?',
-        question: 'Is this a within-subjects or a between-subjects design?',
-        categories: [{ value: 'within', label: 'Within subjects' }, { value: 'between', label: 'Between subjects' }],
+        id: '2-withinbetween', kind: 'design', name: 'Within or between subjects?',
+        desc: 'Name the IV in your own words, say whether it\'s within or between subjects, then name the DV.',
         items: DESIGN_ITEMS,
-        speech: 'Same people in every condition, or different people in each?',
+        steps: ['iv', 'choice', 'dv'],
+        choiceQuestion: 'Is this a <strong>within-subjects</strong> or a <strong>between-subjects</strong> design?',
+        choices: [{ value: 'within', label: 'Within subjects' }, { value: 'between', label: 'Between subjects' }],
+        choiceWhy: {
+          within: 'The same people take part in every condition, so each person is compared with themselves.',
+          between: 'Each person is in only one condition, so different groups of people are compared.',
+        },
+        speech: 'Type the IV in your own words, decide within or between, then type the DV.',
         help: {
           title: 'Within or between subjects?',
           html: `<ul>
@@ -243,6 +294,12 @@ const LEVELS = [
                 <strong>only one condition</strong>. One group reads active sentences and a
                 different group reads passive ones.</li>
             <li>Ask: does any one person experience more than one condition?</li>
+            <li>Each question has three steps. First <strong>type the independent
+                variable</strong> in your own words — whatever differs between the
+                conditions. Then choose within or between. Then <strong>type the dependent
+                variable</strong> — whatever gets measured.</li>
+            <li>You'll see how your answer was read ("Read as: font size") before it's marked.
+                If it could mean two things, you'll be asked which.</li>
           </ul>`,
         },
       },

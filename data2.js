@@ -10,7 +10,7 @@
 // Validity: does it measure what it's meant to measure?
 // Reliability: would it give the same result if it were done again?
 //
-// Four of each combination. The "reliable but not valid" ones are the
+// At least four of each combination. The "reliable but not valid" ones are the
 // important ones: a measure can be perfectly consistent and still be
 // measuring the wrong thing (head size for intelligence). The "valid but
 // not reliable" ones follow the dartboard picture -- aimed at the right
@@ -72,6 +72,21 @@ const VALIDITY_ITEMS = [
     whyValid: 'naming pictures does test word knowledge.',
     whyReliable: 'two pictures is far too few — the score swings from day to day on luck alone.' },
 
+  // the lecture's two further points about reliability: enough participants
+  // for the size of the effect, and a description full enough to repeat
+  { valid: true, reliable: true,
+    text: 'To find out whether "Boy the ball kicked the" is grammatical, researchers ask 5 native speakers of English. When they ask another 5 speakers, they get the same answer.',
+    whyValid: 'asking native speakers whether a sentence is grammatical is the right way to find out.',
+    whyReliable: 'another 5 speakers give the same answer. With an effect this big, 5 people is enough.' },
+  { valid: true, reliable: false,
+    text: 'To find out whether students prefer books or TV, researchers ask 5 students. When they ask another 5 students, the answer comes out the other way.',
+    whyValid: 'asking students which they prefer is the right question.',
+    whyReliable: 'repeating it with another 5 people gives a different result. For a small difference like this, 5 participants is far too few.' },
+  { valid: true, reliable: false,
+    text: 'Researchers test children\'s word learning with a well-designed picture task, but their report doesn\'t say which words they used or how the children were tested. Other researchers who try to repeat the study get different results.',
+    whyValid: 'a picture task is a sensible way to test word learning.',
+    whyReliable: 'without a full "recipe" — procedure, materials, participants — nobody can repeat the study and get the same result.' },
+
   // neither
   { valid: false, reliable: false,
     text: 'To measure how good people are at learning languages, researchers ask them to guess a number between 1 and 100. People guess a different number every time they\'re asked.',
@@ -92,15 +107,16 @@ const VALIDITY_ITEMS = [
 ];
 
 // ---------------------------------------------------------------------------
-// 2d. Continuous or discrete.
+// 2d. Continuous or discrete -- the lecture's "contrast 1".
 //
-// Continuous: any value on a scale, including every value in between.
-// Discrete: separate values, with nothing in between -- you can't have
-// 2.5 siblings.
+// Continuous: infinite values, no gaps in the scale.
+// Discrete: finite or countable values, which can't be divided up.
 //
-// Only numeric variables here. Categories (first language, handedness) are
-// discrete too, but they're 2e's business as nominal variables, and mixing
-// them in here would make this a question about numbers vs words instead.
+// Only numeric variables and yes/no answers here. Categories (first
+// language, handedness) are discrete too, but they're 2e's business, and
+// mixing them in would make this a question about numbers versus words.
+// "Average number of people" is the lecture's own trap: people are
+// discrete, an average of them isn't.
 // ---------------------------------------------------------------------------
 const CONT = 'It can take any value on a scale, including every value in between — ';
 const DISC = 'It only comes in separate values, with nothing in between — ';
@@ -116,6 +132,7 @@ const CONTINUITY_ITEMS = [
   { cat: 'cont', label: 'vowel duration', why: CONT + 'a vowel can last 83 ms, 83.4 ms, 83.42 ms...' },
   { cat: 'cont', label: 'pitch of a speaker\'s voice', why: CONT + 'pitch in hertz can be any value — 180 Hz, 180.6 Hz...' },
   { cat: 'cont', label: 'loudness of background noise', why: CONT + 'decibels can be any value on the scale.' },
+  { cat: 'cont', label: 'average number of people in a class', why: CONT + 'a single class can\'t have 20.3 people, but an average across classes can.' },
   { cat: 'cont', label: 'time spent studying', why: CONT + 'you can study for 2 hours, 2.5 hours, 2 hours and 31 minutes...' },
 
   { cat: 'disc', label: 'number of siblings', why: DISC + 'you can have 2 siblings or 3, but not 2.5.' },
@@ -129,34 +146,38 @@ const CONTINUITY_ITEMS = [
   { cat: 'disc', label: 'number of languages someone speaks', why: DISC + 'you speak 2 languages or 3 — they\'re counted.' },
   { cat: 'disc', label: 'number of times a word appears in a text', why: DISC + 'each appearance is counted once.' },
   { cat: 'disc', label: 'number of children in a class', why: DISC + 'children are counted in whole numbers.' },
+  { cat: 'disc', label: 'year of birth', why: DISC + 'you can\'t be born partly in 2002 and partly in 2003.' },
+  { cat: 'disc', label: 'answer to a true/false question', why: DISC + 'it\'s true or false, with nothing in between.' },
   { cat: 'disc', label: 'number of questions answered correctly', why: DISC + 'each question is either right or not, so the total is a whole number.' },
 ];
 
 // ---------------------------------------------------------------------------
-// 2e. Levels of measurement.
+// 2e. Levels of measurement -- the lecture's "contrast 2", in its terms:
+// categorical, ordinal, interval, ratio.
 //
-// Rating scales are treated as ordinal throughout. There's a long argument
-// about treating them as interval, but nothing guarantees the step from 3
-// to 4 is the same size as the step from 6 to 7, and ordinal is the answer
-// a first course gives.
+// Following the lecture, a NUMBERED rating scale ("rate 1-7") is interval
+// and a scale of labelled steps ("strongly disagree ... strongly agree") is
+// ordinal. Both appear, so the difference between them is part of the
+// question. Dates are interval too.
 //
-// Temperature appears three times on purpose: °C and °F are interval (zero
-// is arbitrary), kelvin is ratio (zero really is no heat). It's the clearest
-// case there is of the SAME thing measured at two different levels.
+// Temperature appears twice on purpose: °C is interval (zero is arbitrary),
+// kelvin is ratio (zero really is no heat). The clearest case there is of
+// the SAME thing measured at two different levels.
 // ---------------------------------------------------------------------------
-const NOM = 'Nominal: the values are just categories with no order. ';
-const ORD = 'Ordinal: the values have an order, but the gaps between them aren\'t equal. ';
-const INT = 'Interval: equal gaps between values, but no true zero. ';
-const RAT = 'Ratio: equal gaps AND a true zero, so "twice as much" makes sense. ';
+const NOM = 'Categorical: distinct outcomes with no order. ';
+const ORD = 'Ordinal: the outcomes are ranked, but the difference between steps is arbitrary. ';
+const INT = 'Interval: ranked, with a constant difference between steps, but no natural zero — so values aren\'t "twice as much". ';
+const RAT = 'Ratio: ranked, constant steps AND a natural zero, so "twice as much" makes sense. ';
 const MEASUREMENT_ITEMS = [
-  { cat: 'nominal', label: 'first language', why: NOM + 'Polish isn\'t more or less than Irish, just different.' },
-  { cat: 'nominal', label: 'eye colour', why: NOM + 'Blue, brown and green have no order.' },
-  { cat: 'nominal', label: 'handedness (left or right)', why: NOM + 'Left isn\'t more than right.' },
-  { cat: 'nominal', label: 'country of birth', why: NOM + 'Countries can be counted up, but not put in order.' },
-  { cat: 'nominal', label: 'word class (noun, verb, adjective)', why: NOM + 'A verb isn\'t more than a noun.' },
-  { cat: 'nominal', label: 'which experimental group someone is in', why: NOM + 'Group A and group B are labels, not amounts.' },
-  { cat: 'nominal', label: 'dialect region', why: NOM + 'Ulster English isn\'t more or less than Scottish English, just different.' },
-  { cat: 'nominal', label: 'type of school (state, grammar, private)', why: NOM + 'These are kinds of school, not amounts of school.' },
+  { cat: 'categorical', label: 'first language', why: NOM + 'Polish isn\'t more or less than Irish, just different.' },
+  { cat: 'categorical', label: 'eye colour', why: NOM + 'Blue, brown and green have no order.' },
+  { cat: 'categorical', label: 'blood type', why: NOM + 'A, B, AB and O are different outcomes, not ranked ones.' },
+  { cat: 'categorical', label: 'place of birth', why: NOM + 'Places are different, not more or less.' },
+  { cat: 'categorical', label: 'handedness (left or right)', why: NOM + 'Left isn\'t more than right.' },
+  { cat: 'categorical', label: 'word class (noun, verb, adjective)', why: NOM + 'A verb isn\'t more than a noun.' },
+  { cat: 'categorical', label: 'which experimental group someone is in', why: NOM + 'Group A and group B are labels, not amounts.' },
+  { cat: 'categorical', label: 'dialect region', why: NOM + 'Ulster English isn\'t more or less than Scottish English, just different.' },
+  { cat: 'categorical', label: 'type of school (state, grammar, private)', why: NOM + 'These are kinds of school, not amounts of school.' },
 
   { cat: 'ordinal', label: 'finishing position in a race (1st, 2nd, 3rd)', why: ORD + 'The gap between 1st and 2nd could be a second; between 2nd and 3rd, a minute.' },
   { cat: 'ordinal', label: 'agreement from "strongly disagree" to "strongly agree"', why: ORD + 'The answers are in order, but nothing says the steps are the same size.' },
@@ -165,11 +186,13 @@ const MEASUREMENT_ITEMS = [
   { cat: 'ordinal', label: 'T-shirt size (S, M, L, XL)', why: ORD + 'In order, but the jump from S to M needn\'t match the jump from L to XL.' },
   { cat: 'ordinal', label: 'ranking sentences from most to least natural', why: ORD + 'A ranking gives the order, not how far apart the sentences are.' },
   { cat: 'ordinal', label: 'highest qualification (GCSE, A-level, degree)', why: ORD + 'The qualifications are in order, but not equally spaced.' },
-  { cat: 'ordinal', label: 'acceptability rating on a 1–7 scale', why: ORD + 'The numbers are in order, but nothing guarantees the step from 3 to 4 equals the step from 6 to 7.' },
+
 
   { cat: 'interval', label: 'temperature in °C', why: INT + '0°C isn\'t "no temperature", so 20°C isn\'t twice as hot as 10°C.' },
-  { cat: 'interval', label: 'temperature in °F', why: INT + '0°F is just a point on the scale, not an absence of heat.' },
   { cat: 'interval', label: 'calendar year (e.g. 1998, 2024)', why: INT + 'The gap between years is equal, but year 0 isn\'t the beginning of time, so 2000 isn\'t "twice" 1000.' },
+  { cat: 'interval', label: 'acceptability rating on a 1–7 scale', why: INT + 'The numbered steps are treated as equal, but there\'s no zero on the scale, so a 6 isn\'t "twice as acceptable" as a 3.' },
+  { cat: 'interval', label: 'agreement rated on a scale of 1–7', why: INT + 'A numbered scale has constant steps, but no natural zero.' },
+  { cat: 'interval', label: 'date of an exam', why: INT + 'Days are equal steps, but the calendar\'s starting point is arbitrary.' },
   { cat: 'interval', label: 'time of day on a clock', why: INT + 'The minutes are equal, but midnight isn\'t "no time", so 4 o\'clock isn\'t twice 2 o\'clock.' },
 
   { cat: 'ratio', label: 'reaction time in milliseconds', why: RAT + '0 ms is no time at all, and 400 ms is twice 200 ms.' },
@@ -183,7 +206,7 @@ const MEASUREMENT_ITEMS = [
 ];
 
 // ---------------------------------------------------------------------------
-// 2f. Confounds.
+// 2g. Confounds.
 //
 // Half the designs have one, half don't. The two halves are mostly the same
 // studies, done badly and then done properly, so the difference between a
@@ -255,46 +278,231 @@ const CONFOUND_ITEMS = [
 ];
 
 // ---------------------------------------------------------------------------
-// 2g. Within or between subjects.
+// 2h. Within or between subjects -- and, typed in the student's own words,
+// the IV and the DV.
 //
 // Pairs again: most studies appear once each way, so what decides the
-// answer is visibly who takes part in which condition, not the topic.
-// `iv`/`dv` are recorded for when this sub-level also asks for them.
+// design is visibly who takes part in which condition, not the topic.
+//
+// Every description says what is measured, because the student is asked
+// to name it: a DV that has to be guessed at isn't a fair question.
+//
+// `ivs`, `dv` and `others` are the candidates parser.js chooses between.
+// `others` are the things in the description that AREN'T variables being
+// manipulated or measured -- the participants, the materials -- because
+// "the sentences" is exactly what a student unsure of the IV types, and it
+// deserves an answer about why that isn't it, not "I didn't understand".
+// Aliases are the ways a student might name each one; the parser copes with
+// word endings, small typos and extra words, so they needn't be exhaustive.
 // ---------------------------------------------------------------------------
 const WITHIN_WHY = 'Within subjects: the same people take part in every condition, so each person is compared with themselves.';
 const BETWEEN_WHY = 'Between subjects: each person is in only one condition, so different groups of people are compared.';
-const DESIGN_ITEMS = [
-  { cat: 'within', iv: 'sentence voice', dv: 'reading time',
-    label: 'Every participant reads 40 sentences, half active and half passive, and their reading times for the two types are compared.' },
-  { cat: 'within', iv: 'word type', dv: 'test score',
-    label: 'Each child is tested on both nouns and verbs, and their scores for the two word types are compared.' },
-  { cat: 'within', iv: 'background noise', dv: 'comprehension',
-    label: 'The same listeners hear one story in quiet and another with background noise, and their comprehension of the two is compared.' },
-  { cat: 'within', iv: 'caffeine', dv: 'memory score',
-    label: 'Participants do a memory task once after drinking coffee and again, a week later, after drinking water.' },
-  { cat: 'within', iv: 'grammaticality', dv: 'acceptability rating',
-    label: 'Each participant rates both grammatical and ungrammatical sentences, and their ratings for the two kinds are compared.' },
-  { cat: 'within', iv: 'font size', dv: 'reading time',
-    label: 'Readers see some words in large font and other words in small font, and their reading times for the two sizes are compared.' },
-  { cat: 'within', iv: 'the course', dv: 'pronunciation score',
-    label: 'A group of learners takes a pronunciation test before a six-week course and the same test after it.' },
-  { cat: 'within', iv: 'language', dv: 'naming speed',
-    label: 'Every participant names the same pictures in their first language and again in their second language.' },
 
-  { cat: 'between', iv: 'sentence voice', dv: 'reading time',
-    label: 'One group of participants reads only active sentences, and a different group reads only passive sentences.' },
-  { cat: 'between', iv: 'type of school', dv: 'attention score',
-    label: 'Children from a bilingual school and children from a monolingual school do the same attention task.' },
-  { cat: 'between', iv: 'learning method', dv: 'words learned',
-    label: 'Half the participants are randomly assigned to learn new words with an app, and the other half with flashcards.' },
-  { cat: 'between', iv: 'background noise', dv: 'comprehension',
-    label: 'Listeners are split into two groups: one hears a story in quiet, and the other hears it with background noise.' },
-  { cat: 'between', iv: 'handedness', dv: 'verbal fluency',
-    label: 'Left-handed and right-handed participants are compared on a verbal fluency task.' },
-  { cat: 'between', iv: 'sleep', dv: 'words remembered',
-    label: 'One group sleeps after learning new words, and a different group stays awake.' },
-  { cat: 'between', iv: 'native language', dv: 'acceptability rating',
-    label: 'Native speakers and learners of English rate the same set of sentences, and the two groups\' ratings are compared.' },
-  { cat: 'between', iv: 'font size', dv: 'reading time',
-    label: 'Each participant is randomly assigned to read a text in one of three font sizes.' },
+const V_READING_TIME = { name: 'reading time', aliases: ['time to read', 'how long it takes to read', 'reading speed', 'how fast they read', 'reading', 'speed', 'time', 'reading times'] };
+const V_FONT_SIZE = { name: 'font size', aliases: ['font', 'size', 'text size', 'print size', 'large or small', 'large', 'small', 'big', 'letter size'] };
+const V_VOICE = { name: 'sentence voice (active or passive)', aliases: ['voice', 'active or passive', 'active', 'passive', 'sentence type', 'type of sentence', 'sentence structure', 'construction'] };
+const V_NOISE = { name: 'background noise (quiet or noisy)', aliases: ['noise', 'background noise', 'quiet or noise', 'quiet', 'noisy', 'sound level', 'listening condition', 'loud'] };
+const V_COMPREHENSION = { name: 'comprehension', aliases: ['understanding', 'how much they understand', 'how well they understand', 'understand', 'comprehension score'] };
+const V_RATING = { name: 'acceptability rating', aliases: ['rating', 'ratings', 'acceptability', 'judgment', 'judgement', 'score', 'how acceptable'] };
+const P_PARTICIPANTS = { name: 'the participants', aliases: ['participants', 'people', 'subjects', 'person'] };
+
+const DESIGN_ITEMS = [
+  { cat: 'within',
+    label: 'Every participant reads 40 sentences, half active and half passive, and their reading times for the two types are compared.',
+    ivs: [V_VOICE], dv: V_READING_TIME,
+    others: [P_PARTICIPANTS, { name: 'the number of sentences', aliases: ['number of sentences', '40 sentences', 'sentences', 'amount of sentences'] }] },
+  { cat: 'within',
+    label: 'Each child is tested on both nouns and verbs, and their scores for the two word types are compared.',
+    ivs: [{ name: 'word type (nouns or verbs)', aliases: ['word type', 'type of word', 'nouns or verbs', 'nouns', 'verbs', 'word class', 'part of speech', 'grammatical category', 'category'] }],
+    dv: { name: 'test score', aliases: ['score', 'scores', 'how many they get right', 'accuracy', 'performance', 'result', 'results', 'correct'] },
+    others: [{ name: 'the children', aliases: ['children', 'child', 'kids', 'age'] }] },
+  { cat: 'within',
+    label: 'The same listeners hear one story in quiet and another with background noise, and their comprehension of the two is compared.',
+    ivs: [V_NOISE], dv: V_COMPREHENSION,
+    others: [{ name: 'the listeners', aliases: ['listeners', 'people', 'participants'] }, { name: 'the stories', aliases: ['story', 'stories', 'text'] }] },
+  { cat: 'within',
+    label: 'Participants do a memory task once after drinking coffee and again, a week later, after drinking water, and their two memory scores are compared.',
+    ivs: [{ name: 'the drink (coffee or water)', aliases: ['coffee', 'water', 'caffeine', 'coffee or water', 'drink', 'what they drink', 'type of drink', 'beverage'] }],
+    dv: { name: 'memory score', aliases: ['memory', 'memory task', 'how much they remember', 'remember', 'recall', 'memory performance', 'score'] },
+    others: [P_PARTICIPANTS, { name: 'the week between sessions', aliases: ['week', 'a week later', 'week between', 'gap'] }] },
+  { cat: 'within',
+    label: 'Each participant rates both grammatical and ungrammatical sentences, and their ratings for the two kinds are compared.',
+    ivs: [{ name: 'grammaticality', aliases: ['grammatical or ungrammatical', 'grammatical', 'ungrammatical', 'whether the sentence is grammatical', 'sentence type', 'type of sentence', 'correctness', 'grammar'] }],
+    dv: V_RATING,
+    others: [P_PARTICIPANTS] },
+  { cat: 'within',
+    label: 'Readers see some words in large font and other words in small font, and their reading times for the two sizes are compared.',
+    ivs: [V_FONT_SIZE], dv: V_READING_TIME,
+    others: [{ name: 'the readers', aliases: ['readers', 'participants', 'people'] }, { name: 'the words', aliases: ['words', 'word'] }] },
+  { cat: 'within',
+    label: 'A group of learners takes a pronunciation test before a six-week course and the same test after it.',
+    ivs: [{ name: 'the course (before or after)', aliases: ['course', 'before or after', 'before and after', 'training', 'instruction', 'teaching', 'lessons', 'when they take the test', 'timing'] }],
+    dv: { name: 'pronunciation score', aliases: ['pronunciation', 'pronunciation test', 'how well they pronounce', 'accent', 'test score', 'score'] },
+    others: [{ name: 'the learners', aliases: ['learners', 'students', 'people', 'group'] }] },
+  { cat: 'within',
+    label: 'Every participant names the same pictures in their first language and again in their second language, and how quickly they name them is compared.',
+    ivs: [{ name: 'language (first or second)', aliases: ['language', 'first or second language', 'first language', 'second language', 'which language', 'l1', 'l2', 'native language'] }],
+    dv: { name: 'naming speed', aliases: ['naming', 'naming time', 'how quickly they name', 'how fast', 'speed', 'reaction time', 'time', 'quickly'] },
+    others: [P_PARTICIPANTS, { name: 'the pictures', aliases: ['pictures', 'images', 'picture'] }] },
+
+  { cat: 'between',
+    label: 'One group of participants reads only active sentences, and a different group reads only passive sentences. The two groups\' reading times are compared.',
+    ivs: [V_VOICE], dv: V_READING_TIME,
+    others: [{ name: 'the groups of participants', aliases: ['participants', 'people', 'group', 'groups'] }] },
+  { cat: 'between',
+    label: 'Children from a bilingual school and children from a monolingual school do the same attention task, and their scores are compared.',
+    ivs: [{ name: 'type of school (bilingual or monolingual)', aliases: ['school', 'type of school', 'bilingual or monolingual', 'bilingual', 'monolingual', 'bilingualism', 'language background', 'number of languages'] }],
+    dv: { name: 'attention score', aliases: ['attention', 'attention task', 'performance', 'score', 'scores'] },
+    others: [{ name: 'the children', aliases: ['children', 'child', 'kids', 'age'] }] },
+  { cat: 'between',
+    label: 'Half the participants are randomly assigned to learn new words with an app, and the other half with flashcards. The number of words each group learns is compared.',
+    ivs: [{ name: 'learning method (app or flashcards)', aliases: ['app', 'flashcards', 'app or flashcards', 'method', 'learning method', 'how they learn', 'study method', 'technique'] }],
+    dv: { name: 'number of words learned', aliases: ['words learned', 'number of words', 'vocabulary', 'how many words', 'learning', 'score', 'words'] },
+    others: [P_PARTICIPANTS] },
+  { cat: 'between',
+    label: 'Listeners are split into two groups: one hears a story in quiet, and the other hears it with background noise. The two groups\' comprehension is compared.',
+    ivs: [V_NOISE], dv: V_COMPREHENSION,
+    others: [{ name: 'the listeners', aliases: ['listeners', 'people', 'participants', 'groups'] }, { name: 'the story', aliases: ['story', 'text'] }] },
+  { cat: 'between',
+    label: 'Left-handed and right-handed participants do a verbal fluency task, and their fluency scores are compared.',
+    ivs: [{ name: 'handedness', aliases: ['left or right handed', 'left handed', 'right handed', 'left', 'right', 'hand', 'which hand', 'dominant hand'] }],
+    dv: { name: 'verbal fluency', aliases: ['fluency', 'fluency task', 'verbal', 'fluency score', 'score', 'performance'] },
+    others: [P_PARTICIPANTS] },
+  { cat: 'between',
+    label: 'One group sleeps after learning new words, and a different group stays awake. The next day, the two groups\' recall of the words is compared.',
+    ivs: [{ name: 'sleep (sleep or stay awake)', aliases: ['sleep', 'sleeping', 'awake', 'sleep or stay awake', 'staying awake', 'rest'] }],
+    dv: { name: 'recall of the words', aliases: ['recall', 'remember', 'memory', 'words remembered', 'how many words', 'number of words remembered', 'score'] },
+    others: [{ name: 'the new words', aliases: ['new words', 'the words learned', 'words'] }] },
+  { cat: 'between',
+    label: 'Native speakers and learners of English rate the same set of sentences, and the two groups\' ratings are compared.',
+    ivs: [{ name: 'native speaker or learner', aliases: ['native', 'native speaker', 'learner', 'native or learner', 'language background', 'speaker type', 'first language', 'proficiency', 'nativeness', 'english speakers'] }],
+    dv: V_RATING,
+    others: [{ name: 'the sentences', aliases: ['sentences', 'sentence set', 'set of sentences'] }] },
+  { cat: 'between',
+    label: 'Each participant is randomly assigned to read a text in one of three font sizes, and their reading times are compared.',
+    ivs: [V_FONT_SIZE], dv: V_READING_TIME,
+    others: [P_PARTICIPANTS, { name: 'the text', aliases: ['text', 'passage'] }] },
 ].map(d => ({ ...d, why: d.cat === 'within' ? WITHIN_WHY : BETWEEN_WHY }));
+
+// ---------------------------------------------------------------------------
+// 2f. Cross-sectional, longitudinal, or both -- then the IV(s) and DV, typed.
+//
+// From the lecture:
+//   cross-sectional  a snapshot: how do 2+ groups differ at one time?
+//   longitudinal     repeated measures from the SAME group over time (a
+//                    cohort design: one group, followed)
+//   both             a panel design: several groups, each followed over
+//                    time -- the teaching-methods example
+//
+// The IVs follow from the design, which is the point of asking for them
+// here: in a cross-sectional study the IV is the grouping (age group,
+// language background); in a longitudinal one it's time; in a panel design
+// it's both, so the student has to find two. The lecture's own examples are
+// used where it has them (vocabulary at 6-24 months, a language class
+// tested across a year, teaching methods A-C); its phone-use panel is left
+// out, as asked.
+//
+// Time gets named in many ways -- age, months, "before and after", "over
+// the year" -- so its alias list is long on purpose.
+// ---------------------------------------------------------------------------
+const TIME_WORDS = ['time', 'over time', 'when they are tested', 'testing time', 'point in time', 'time point', 'session', 'months', 'years', 'year', 'how long', 'duration', 'before and after', 'pretest', 'post test', 'semester', 'stage'];
+const V_AGE_TIME = { name: 'age (the time of testing)', aliases: ['age', 'how old they are', 'getting older', 'months old', 'age in months', 'development', ...TIME_WORDS] };
+const V_VOCAB = { name: 'vocabulary size', aliases: ['vocabulary', 'number of words', 'words known', 'how many words', 'words they know', 'word knowledge', 'lexicon'] };
+
+const CROSSLONG_ITEMS = [
+  // cross-sectional: different groups, one point in time
+  { cat: 'cross',
+    label: 'In the same week, researchers measure the vocabulary of 50 two-year-olds and 50 four-year-olds, and compare the two age groups.',
+    ivs: [{ name: 'age group', aliases: ['age', 'age group', 'two or four year olds', 'how old they are', 'years old', 'group'] }],
+    dv: V_VOCAB,
+    others: [{ name: 'the week of testing', aliases: ['week', 'same week', 'time'] }] },
+  { cat: 'cross',
+    label: 'In one survey in March, researchers ask teenagers, adults and older adults how often they use slang, and compare the three groups.',
+    ivs: [{ name: 'age group', aliases: ['age', 'age group', 'teenagers adults or older adults', 'how old they are', 'generation', 'group'] }],
+    dv: { name: 'how often they use slang', aliases: ['slang', 'slang use', 'use of slang', 'how much slang', 'frequency of slang'] },
+    others: [{ name: 'the month of the survey', aliases: ['march', 'month', 'survey date', 'time'] }] },
+  { cat: 'cross',
+    label: 'A single questionnaire asks first-, second- and third-year students how confident they feel speaking in class, and compares the year groups.',
+    ivs: [{ name: 'year group', aliases: ['year', 'year group', 'year of study', 'first second or third year', 'which year', 'group'] }],
+    dv: { name: 'confidence speaking in class', aliases: ['confidence', 'how confident', 'speaking confidence', 'confident'] },
+    others: [{ name: 'the questionnaire', aliases: ['questionnaire', 'survey'] }] },
+  { cat: 'cross',
+    label: 'Researchers test the reading speed of monolingual and bilingual adults, each in a single session, and compare the two groups.',
+    ivs: [{ name: 'language background (monolingual or bilingual)', aliases: ['bilingual', 'monolingual', 'bilingual or monolingual', 'language background', 'number of languages', 'bilingualism', 'group'] }],
+    dv: { name: 'reading speed', aliases: ['reading', 'reading time', 'how fast they read', 'speed', 'reading rate'] },
+    others: [{ name: 'the testing session', aliases: ['session', 'single session', 'time'] }] },
+  { cat: 'cross',
+    label: 'In one afternoon of testing, researchers count how many past-tense errors 3-, 4- and 5-year-olds make, and compare the age groups.',
+    ivs: [{ name: 'age group', aliases: ['age', 'age group', 'how old they are', 'years old', 'group'] }],
+    dv: { name: 'number of past-tense errors', aliases: ['errors', 'past tense errors', 'mistakes', 'number of errors', 'how many errors', 'past tense'] },
+    others: [{ name: 'the afternoon of testing', aliases: ['afternoon', 'testing session', 'time'] }] },
+
+  // longitudinal (cohort): one group, followed over time
+  { cat: 'long',
+    label: 'Researchers measure the vocabulary of the same 30 children at 6, 12, 18 and 24 months old.',
+    ivs: [V_AGE_TIME],
+    dv: V_VOCAB,
+    others: [{ name: 'the children', aliases: ['children', 'kids', 'babies', 'number of children'] }] },
+  { cat: 'long',
+    label: 'A class learning Spanish takes the same speaking test at the start of the course, at the end of each semester, and again one year later.',
+    ivs: [{ name: 'time (point in the course)', aliases: ['point in the course', 'start or end', 'course', 'progress', ...TIME_WORDS] }],
+    dv: { name: 'speaking test score', aliases: ['speaking', 'speaking score', 'test score', 'score', 'spanish speaking', 'speaking ability', 'proficiency'] },
+    others: [{ name: 'the class', aliases: ['class', 'students', 'learners'] }] },
+  { cat: 'long',
+    label: 'The same group of older adults is tested on finding words every two years for ten years.',
+    ivs: [V_AGE_TIME],
+    dv: { name: 'word-finding score', aliases: ['word finding', 'finding words', 'word retrieval', 'naming', 'score', 'performance'] },
+    others: [{ name: 'the older adults', aliases: ['older adults', 'adults', 'participants', 'elderly'] }] },
+  { cat: 'long',
+    label: 'One primary-school class writes a story every September from age 7 to age 11, and the length of their stories is compared across the years.',
+    ivs: [V_AGE_TIME],
+    dv: { name: 'story length', aliases: ['length', 'length of story', 'how long the stories are', 'number of words', 'words written', 'story'] },
+    others: [{ name: 'the class', aliases: ['class', 'pupils', 'children'] }] },
+  { cat: 'long',
+    label: 'Researchers follow 20 international students through their first year at university, testing their English listening every three months.',
+    ivs: [{ name: 'time at university', aliases: ['time at university', 'first year', 'three months', 'every three months', 'time in the country', ...TIME_WORDS] }],
+    dv: { name: 'English listening score', aliases: ['listening', 'listening score', 'english listening', 'listening comprehension', 'score', 'english'] },
+    others: [{ name: 'the international students', aliases: ['students', 'international students', 'participants'] }] },
+
+  // both (panel): several groups, each followed over time
+  { cat: 'both',
+    label: 'Three classes are each taught with a different method (A, B or C). Every class takes the same test before teaching starts, after year 1 and after year 2.',
+    ivs: [
+      { name: 'teaching method', aliases: ['method', 'teaching method', 'a b or c', 'how they are taught', 'teaching', 'class'] },
+      { name: 'time (pretest, year 1, year 2)', aliases: ['year 1 year 2', 'pretest', ...TIME_WORDS] },
+    ],
+    dv: { name: 'test score', aliases: ['test', 'score', 'test score', 'results', 'performance', 'learning'] },
+    others: [] },
+  { cat: 'both',
+    label: 'Children from bilingual and monolingual homes have their vocabulary measured at ages 2, 3 and 4, and the two groups are compared at each age.',
+    ivs: [
+      { name: 'home language (bilingual or monolingual)', aliases: ['bilingual', 'monolingual', 'bilingual or monolingual', 'home language', 'language background', 'home', 'group'] },
+      V_AGE_TIME,
+    ],
+    dv: V_VOCAB,
+    others: [] },
+  { cat: 'both',
+    label: 'One group of learners uses an app and another uses a textbook. Both groups take the same grammar test every month for six months.',
+    ivs: [
+      { name: 'learning method (app or textbook)', aliases: ['app', 'textbook', 'app or textbook', 'method', 'learning method', 'group'] },
+      { name: 'time (month of testing)', aliases: ['month', 'six months', 'every month', ...TIME_WORDS] },
+    ],
+    dv: { name: 'grammar test score', aliases: ['grammar', 'grammar score', 'grammar test', 'test score', 'score'] },
+    others: [] },
+  { cat: 'both',
+    label: 'Two groups of people with aphasia, one having speech therapy and one not, have their naming accuracy tested every month for a year.',
+    ivs: [
+      { name: 'therapy (or no therapy)', aliases: ['therapy', 'speech therapy', 'therapy or not', 'treatment', 'group'] },
+      { name: 'time (month of testing)', aliases: ['month', 'every month', 'a year', ...TIME_WORDS] },
+    ],
+    dv: { name: 'naming accuracy', aliases: ['naming', 'accuracy', 'naming score', 'how many they name', 'correct'] },
+    others: [] },
+  { cat: 'both',
+    label: 'Researchers follow a group of left-handed and a group of right-handed children, testing their reading every year from age 5 to age 8.',
+    ivs: [
+      { name: 'handedness', aliases: ['left or right handed', 'left handed', 'right handed', 'hand', 'which hand', 'handed'] },
+      V_AGE_TIME,
+    ],
+    dv: { name: 'reading score', aliases: ['reading', 'reading ability', 'reading test', 'score'] },
+    others: [] },
+];
