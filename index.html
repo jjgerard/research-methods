@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Methods and Language</title>
+<link rel="stylesheet" href="style.css?v=1">
+<link rel="icon" href="icon-32.png?v=1" sizes="32x32" type="image/png">
+<link rel="icon" href="icon-192.png?v=1" sizes="192x192" type="image/png">
+<meta name="theme-color" content="#1f4e5f">
+<!-- Same arrangement as Shapes and Language: enough to be added to a home
+     screen and open without browser bars, and deliberately NO service
+     worker, so nobody is ever stuck on a stale cached copy with no way to
+     know it. The cost is needing a connection, which for a page this size
+     is a fair trade. -->
+<link rel="manifest" href="manifest.webmanifest?v=1">
+<link rel="apple-touch-icon" href="icon-180.png?v=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Methods">
+</head>
+<body>
+<div id="app">
+
+  <header id="app-header">
+    <div class="brand">
+      <img src="logo.png?v=1" alt="" class="brand-logo">
+      <span class="brand-name">Methods and Language</span>
+    </div>
+    <div class="header-right">
+      <span id="player-points" class="points-pill hidden">0 pts</span>
+      <button id="btn-menu" class="btn-menu" aria-haspopup="dialog">☰ Menu</button>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ============ NAME GATE ============ -->
+    <section id="screen-name" class="screen">
+      <div class="hero">
+        <img src="logo.png?v=1" alt="" class="hero-logo">
+        <h1 class="hero-name">Methods and Language</h1>
+        <p class="hero-tag">Solve puzzles with research methods!</p>
+      </div>
+      <div class="card narrow">
+        <h2>Let's get you started</h2>
+        <label>Your name
+          <input id="input-name" type="text" maxlength="30" autocomplete="off"
+                 autocapitalize="words" autocorrect="off" spellcheck="false" placeholder="e.g. Jordan">
+        </label>
+        <label>Class code
+          <input id="input-code" type="text" maxlength="20" autocomplete="off"
+                 autocapitalize="characters" autocorrect="off" spellcheck="false" placeholder="e.g. CMM378">
+        </label>
+        <p class="field-help">Your teacher gives you this. It isn't a password.</p>
+        <p id="name-error" class="field-error hidden"></p>
+        <button id="btn-start" class="btn-primary btn-hero">Start</button>
+        <p class="muted start-note">Your points save on this device under your name and class code, so you can close the page and come back to them.</p>
+        <button class="link-btn welcome-help" data-help="general">How does this work?</button>
+      </div>
+    </section>
+
+    <!-- ============ LEVEL SELECT ============ -->
+    <section id="screen-levels" class="screen hidden">
+      <h1>Choose a level</h1>
+      <div class="level-grid" id="level-grid"></div>
+      <div class="level-grid roadmap-grid" id="roadmap"></div>
+    </section>
+
+    <!-- ============ ONE LEVEL'S SUB-LEVELS ============ -->
+    <!-- Every level uses this one screen: a heading, a line about the
+         level, and its sub-levels as cards that unlock in order. -->
+    <section id="screen-level" class="screen hidden">
+      <button class="link-btn back-btn" data-back>&larr; Levels</button>
+      <h1 id="level-heading">Level 1</h1>
+      <p class="muted" id="level-intro"></p>
+      <div class="target-grid" id="sub-grid"></div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ============ QUIZ MODAL (every sub-level) ============ -->
+<!-- One modal for all the question types. What changes between them is
+     only what's in the prompt and the answer area; the streak bar, the
+     feedback line and the Next button behave the same everywhere, so a
+     student learns them once. -->
+<div id="quiz-overlay" class="overlay hidden">
+  <div class="editor">
+    <div class="editor-header">
+      <div class="editor-header-text">
+        <div id="quiz-title">Quiz</div>
+      </div>
+      <div class="editor-actions">
+        <button id="quiz-help" class="btn-icon btn-icon-sm" title="How to play" aria-label="How to play">?</button>
+        <button id="quiz-close" class="link-btn">&times; close</button>
+      </div>
+    </div>
+    <div class="quiz-body">
+      <div class="streak-bar-wrap">
+        <div class="streak-bar"><div id="quiz-streak-fill" class="streak-bar-fill"></div></div>
+        <div id="quiz-streak-label" class="streak-label"></div>
+      </div>
+      <div id="quiz-prompt" class="quiz-prompt"></div>
+      <div id="quiz-question" class="quiz-question"></div>
+      <div id="quiz-answers" class="quiz-answers"></div>
+      <div id="quiz-feedback" class="quiz-feedback" role="status"></div>
+      <button id="quiz-next" class="btn-primary quiz-next hidden">Next question &rarr;</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ HOW-TO-PLAY PANEL ============ -->
+<div id="help-overlay" class="overlay overlay-dialog hidden">
+  <div class="dialog">
+    <h2 id="help-title">How to play</h2>
+    <div id="help-body" class="dialog-body"></div>
+    <div class="dialog-actions">
+      <button id="help-close" class="btn-primary">Got it</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MENU ============ -->
+<div id="menu-overlay" class="overlay overlay-dialog hidden">
+  <div class="dialog">
+    <h2>Menu</h2>
+    <p id="menu-player" class="dialog-body hidden"></p>
+    <div class="menu-actions">
+      <button id="menu-sound" class="btn-secondary menu-item">🔊 Sound is on</button>
+      <button id="menu-help" class="btn-secondary menu-item">? How to play</button>
+      <button id="menu-about" class="btn-secondary menu-item">About this game</button>
+      <button id="menu-switch" class="btn-secondary menu-item hidden">Switch player</button>
+    </div>
+    <div class="dialog-actions">
+      <button id="menu-close" class="btn-primary">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ CONFIRM DIALOG ============ -->
+<div id="confirm-overlay" class="overlay overlay-dialog hidden">
+  <div class="dialog">
+    <h2 id="confirm-title">Are you sure?</h2>
+    <p id="confirm-message" class="dialog-body"></p>
+    <div class="dialog-actions">
+      <button id="confirm-cancel" class="btn-secondary">No, go back</button>
+      <button id="confirm-ok" class="btn-primary">Yes</button>
+    </div>
+  </div>
+</div>
+
+<div class="mascot-wrap">
+  <div id="mascot-bubble" class="mascot-bubble" role="status"></div>
+  <!-- The guide is a data point: a round dot, the thing every graph in the
+       game is made of, with the same face and celebrations as the Shapes
+       mascot so the two games read as a family. Two faces are drawn and
+       cross-faded in CSS -- opacity animates everywhere, a morphing path
+       doesn't. -->
+  <div id="mascot" class="mascot" aria-hidden="true">
+    <svg viewBox="0 0 100 100">
+      <clipPath id="mascot-clip"><circle cx="50" cy="50" r="41"/></clipPath>
+      <circle class="mascot-body" cx="50" cy="50" r="41"/>
+      <g clip-path="url(#mascot-clip)">
+        <ellipse class="mascot-gloss" cx="34" cy="26" rx="17" ry="8" transform="rotate(-24 34 26)"/>
+        <ellipse class="mascot-blush" cx="26" cy="62" rx="8" ry="5.2"/>
+        <ellipse class="mascot-blush" cx="74" cy="62" rx="8" ry="5.2"/>
+      </g>
+      <g class="mascot-face">
+        <ellipse class="mascot-eye" cx="36" cy="46" rx="7.5" ry="9"/>
+        <ellipse class="mascot-eye" cx="64" cy="46" rx="7.5" ry="9"/>
+        <circle class="mascot-glint" cx="33.5" cy="42.6" r="2.7"/>
+        <circle class="mascot-glint" cx="61.5" cy="42.6" r="2.7"/>
+        <path class="mascot-mouth" d="M 38 62 Q 50 73 62 62"/>
+      </g>
+      <g class="mascot-face-happy">
+        <path class="mascot-eye-shut" d="M 28 48 Q 36 39 44 48"/>
+        <path class="mascot-eye-shut" d="M 56 48 Q 64 39 72 48"/>
+        <path class="mascot-mouth-open" d="M 39 60 Q 39 74 50 74 Q 61 74 61 60 Z"/>
+      </g>
+    </svg>
+  </div>
+</div>
+
+<script src="sound.js?v=1"></script>
+<script src="streak.js?v=1"></script>
+<script src="data.js?v=1"></script>
+<script src="graphs.js?v=1"></script>
+<script src="quiz.js?v=1"></script>
+<script src="app.js?v=1"></script>
+<script>
+  // Plain webpage, not an offline app -- clear out any service worker or
+  // cache a browser might be holding for this address, so nobody is ever
+  // shown a stale copy.
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(r => r.unregister()));
+  }
+  if (window.caches) {
+    caches.keys().then(keys => keys.forEach(k => caches.delete(k)));
+  }
+</script>
+</body>
+</html>

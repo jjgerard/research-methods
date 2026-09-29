@@ -1,0 +1,386 @@
+:root {
+  --bg: #f6f4ef;
+  --panel: #ffffff;
+  --ink: #262220;
+  --muted: #6f685f;
+  --line: #e2ddd3;
+  /* Deep teal: the sister of Shapes and Language's plum -- same cream page,
+     same dark-accent-with-white-text idea, a different colour so the two
+     games are told apart at a glance on a home screen. White on it is
+     9:1. */
+  --accent: #1f4e5f;
+  --accent-ink: #ffffff;
+  --accent-dark: #163a47;
+  --accent-mute: #a9bcc2;
+  --accent-tint: #e9f1f3;
+  --mascot-body: #b9d7de;
+  --mascot-ink: #1f4e5f;
+  /* Right and wrong on the answer buttons. The green is kept well away from
+     the teal accent so "correct" never looks like "selected". */
+  --good: #2e7d4f;
+  --good-tint: #e6f3ea;
+  --danger: #c1443a;
+  --danger-tint: #fbeceb;
+  --radius: 14px;
+  /* The docked mascot bar's real height, kept in sync by
+     syncMascotBarHeight() (app.js), so nothing renders underneath it. */
+  --mascot-bar-h: 90px;
+  font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 19px;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); }
+button { font-family: inherit; cursor: pointer; }
+.hidden { display: none !important; }
+
+/* ---- header ---- */
+#app-header {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  padding: 14px 24px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+  position: sticky; top: 0; z-index: 5;
+}
+.brand {
+  display: flex; align-items: center; gap: 9px; min-width: 0;
+  font-weight: 700; font-size: 1.15rem; letter-spacing: -0.02em;
+}
+.brand-logo { height: 30px; width: auto; flex-shrink: 0; display: block; }
+.brand-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.header-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.points-pill {
+  background: var(--accent); color: var(--accent-ink);
+  padding: 3px 10px; border-radius: 999px;
+  font-weight: 600; font-size: 0.85rem; white-space: nowrap;
+}
+/* "Menu" spelled out: a bare ☰ assumes you already know the convention. */
+.btn-menu {
+  background: #eee9df; color: var(--ink); border: none; border-radius: 10px;
+  padding: 11px 16px; font-size: 0.95rem; font-weight: 600;
+  min-height: 44px; flex-shrink: 0; white-space: nowrap;
+}
+.btn-menu:hover { background: #e2dccc; }
+
+main { max-width: 1080px; margin: 0 auto; padding: 28px 20px calc(var(--mascot-bar-h) + 24px); }
+h1 { font-size: 1.7rem; margin: 0 0 8px; }
+h2 { font-size: 1.25rem; }
+.muted { color: var(--muted); }
+
+.card {
+  background: var(--panel); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 24px;
+}
+.card.narrow { max-width: 420px; margin: 24px auto 60px; }
+
+/* ---- welcome screen ---- */
+/* The header and mascot stand down here: the brand is the hero itself, and
+   the mascot has nothing to say before there's a question. */
+body.on-welcome #app-header, body.on-welcome .mascot-wrap { display: none; }
+body.on-welcome main { padding-top: 8px; }
+.hero { text-align: center; padding: 26px 16px 6px; }
+.hero-logo {
+  height: 150px; width: auto; display: block; margin: 0 auto 16px;
+  filter: drop-shadow(0 8px 18px rgba(0,0,0,0.15));
+}
+.hero-name {
+  font-size: 2.6rem; line-height: 1.08; margin: 0 0 8px;
+  letter-spacing: -0.5px; color: var(--accent);
+}
+.hero-tag { font-size: 1.12rem; color: var(--muted); margin: 0; }
+.card.narrow h2 { margin: 0 0 4px; font-size: 1.15rem; }
+.card label { display: block; margin-top: 14px; font-size: 0.9rem; font-weight: 600; }
+.card input {
+  display: block; width: 100%; margin-top: 6px; padding: 10px 12px;
+  border: 1px solid var(--line); border-radius: 8px; font-size: 1rem;
+}
+.card input.invalid { border-color: var(--danger); background: #fdf6f5; }
+.btn-hero { width: 100%; margin-top: 18px; padding: 14px 18px; font-size: 1.08rem; }
+.start-note { font-size: 0.82rem; margin: 12px 0 0; text-align: center; }
+.welcome-help { display: block; margin: 8px auto 0; padding: 8px; font-size: 0.92rem; }
+.field-help { font-size: 0.82rem; color: var(--muted); margin: 10px 0 0; line-height: 1.4; }
+.field-error {
+  margin: 12px 0 0; padding: 10px 12px;
+  background: var(--danger-tint); border: 1px solid var(--danger); border-radius: 8px;
+  color: var(--danger); font-size: 0.88rem; font-weight: 600;
+}
+
+/* ---- buttons ---- */
+.btn-primary, .btn-secondary {
+  border: none; border-radius: 10px;
+  padding: 12px 20px; font-size: 1.05rem; font-weight: 600;
+}
+.btn-primary { background: var(--accent); color: var(--accent-ink); }
+.btn-primary:hover { background: var(--accent-dark); }
+.btn-primary:disabled { background: var(--accent-mute); cursor: not-allowed; }
+.btn-secondary { background: #eee9df; color: var(--ink); }
+.btn-secondary:hover { background: #e2dccc; }
+.btn-icon {
+  background: #eee9df; color: var(--ink); border: none; border-radius: 10px;
+  width: 48px; height: 48px; font-size: 1.3rem; line-height: 1; flex-shrink: 0;
+}
+.btn-icon:hover { background: #e2dccc; }
+.btn-icon-sm { width: 44px; height: 44px; font-size: 1.05rem; font-weight: 700; }
+.link-btn {
+  background: none; border: none; color: var(--accent);
+  font-weight: 600; font-size: 0.9rem; padding: 0;
+}
+.link-btn:hover { text-decoration: underline; }
+.back-btn { display: block; margin-bottom: 12px; }
+.dialog a { color: var(--accent); font-weight: 600; }
+
+/* ---- level select and sub-level cards ---- */
+.level-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 16px; margin-top: 18px;
+}
+.level-card {
+  text-align: left; background: var(--panel); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 20px; color: var(--ink);
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+.level-card:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.06); }
+.level-num { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); font-weight: 700; }
+.level-title { font-size: 1.2rem; font-weight: 700; margin: 4px 0 8px; }
+.level-card p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+.level-progress { margin-top: 12px; font-size: 0.85rem; font-weight: 600; }
+.level-card.level-done { border-color: var(--accent); background: var(--accent-tint); }
+.level-card.locked { cursor: default; background: #f1efe7; color: var(--muted); }
+.level-card.locked:hover { transform: none; box-shadow: none; }
+.level-card.locked .level-num { color: var(--muted); }
+.lock-badge { margin-top: 12px; font-size: 0.85rem; font-weight: 600; }
+.roadmap-grid { margin-top: 16px; }
+.roadmap-grid:empty { display: none; }
+
+.target-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px; margin-top: 18px;
+}
+.target-card {
+  background: var(--panel); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 20px; text-align: left;
+}
+.target-card.done { border-color: var(--accent); background: var(--accent-tint); }
+.target-card.locked { opacity: 0.55; }
+.target-card h3 { margin: 0 0 6px; }
+.target-card p { color: var(--muted); font-size: 0.9rem; margin: 0 0 12px; }
+.lock-note { font-style: italic; }
+
+/* ---- modals ---- */
+.overlay {
+  /* Stops short of the mascot bar rather than fighting it for z-index. */
+  position: fixed; top: 0; left: 0; right: 0; bottom: var(--mascot-bar-h);
+  background: rgba(20, 18, 15, 0.55);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 20; padding: 16px;
+}
+.editor {
+  background: var(--panel); border-radius: var(--radius);
+  width: 100%; max-width: 760px; height: 100%;
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.editor-header {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  padding: 14px 20px; border-bottom: 1px solid var(--line);
+}
+.editor-header-text { min-width: 0; flex: 1 1 auto; }
+.editor-header-text > div {
+  font-weight: 700; font-size: 1.1rem;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.editor-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.btn-return { padding: 14px 24px; font-size: 1.05rem; }
+
+/* ---- the quiz ---- */
+.quiz-body {
+  flex: 1; overflow-y: auto;
+  padding: 18px 20px 24px;
+  display: flex; flex-direction: column; gap: 16px;
+}
+/* The body scrolls; its children must not squash to fit instead. Without
+   this the four graphs plus an explanation overflowed a phone screen and
+   the explanation was crushed to a sliver under the Next button. */
+.quiz-body > * { flex-shrink: 0; }
+.streak-bar-wrap { display: flex; align-items: center; gap: 10px; }
+.streak-bar { flex: 1; height: 10px; background: #eee9df; border-radius: 999px; overflow: hidden; }
+.streak-bar-fill { height: 100%; width: 0%; background: var(--accent); border-radius: 999px; transition: width 0.25s ease; }
+.streak-label { font-size: 0.85rem; font-weight: 700; color: var(--muted); white-space: nowrap; }
+
+.quiz-prompt { display: flex; justify-content: center; }
+/* 1a: the thing being sorted, alone and large. */
+.prompt-big {
+  font-size: 1.7rem; font-weight: 700; text-align: center;
+  padding: 22px 18px; min-width: 60%;
+  background: #fffdf6; border: 2px dashed var(--line); border-radius: var(--radius);
+}
+/* 1b-1d: a statement, set off as a quotation. */
+.prompt-quote {
+  font-size: 1.2rem; line-height: 1.45; font-weight: 600;
+  padding: 14px 18px; border-left: 5px solid var(--accent);
+  background: var(--accent-tint); border-radius: 0 10px 10px 0;
+  width: 100%;
+}
+.quiz-question { text-align: center; font-size: 1.05rem; color: var(--muted); font-weight: 600; }
+.quiz-question strong { color: var(--ink); }
+
+.quiz-answers { display: grid; gap: 12px; }
+.quiz-answers.layout-pair { grid-template-columns: 1fr 1fr; }
+.quiz-answers.layout-graphs { grid-template-columns: 1fr 1fr; max-width: 560px; width: 100%; margin: 0 auto; }
+/* Neutral on purpose: a coloured "Yes" and a grey "No" quietly suggest
+   which one is expected. */
+.answer-btn {
+  background: var(--panel); color: var(--ink);
+  border: 2px solid var(--line); border-radius: 12px;
+  padding: 16px 12px; font-size: 1.08rem; font-weight: 700;
+  min-height: 64px; position: relative;
+  transition: border-color 0.12s, background 0.12s;
+}
+.answer-btn:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-tint); }
+.answer-btn:disabled { cursor: default; }
+.answer-btn.is-answer { border-color: var(--good); background: var(--good-tint); }
+.answer-btn.is-wrong { border-color: var(--danger); background: var(--danger-tint); }
+.layout-graphs .answer-btn { padding: 8px 6px 4px; min-height: 0; }
+.answer-letter {
+  position: absolute; top: 6px; right: 8px;
+  font-size: 0.8rem; font-weight: 800; color: var(--muted);
+}
+
+.graph { width: 100%; height: auto; display: block; }
+.graph-axes path { fill: none; stroke: var(--ink); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.graph-line { stroke: var(--accent); stroke-width: 3; stroke-linecap: round; opacity: 0.55; }
+.graph-dot { fill: var(--accent); }
+.graph-label { font-size: 14px; font-weight: 700; fill: var(--ink); }
+
+.quiz-feedback { min-height: 1.3em; font-weight: 600; text-align: center; line-height: 1.45; }
+.quiz-feedback.ok { color: var(--good); }
+.quiz-feedback.err {
+  color: var(--ink); text-align: left; font-weight: 500; font-size: 0.95rem;
+  background: var(--danger-tint); border: 1px solid var(--danger);
+  border-radius: 10px; padding: 12px 14px;
+}
+.quiz-next { align-self: center; min-width: 220px; }
+
+/* ---- dialogs ---- */
+.overlay-dialog { z-index: 60; }
+.dialog {
+  background: var(--panel); border-radius: var(--radius);
+  padding: 24px; width: min(520px, 100%); max-height: 100%; overflow: auto;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.28);
+}
+.dialog h2 { margin: 0 0 12px; font-size: 1.3rem; }
+.dialog-body { margin: 0; color: var(--ink); font-size: 0.95rem; line-height: 1.5; }
+.dialog-body ul { margin: 0; padding-left: 20px; }
+.dialog-body li { margin-bottom: 10px; }
+.dialog-body li:last-child { margin-bottom: 0; }
+.dialog-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; flex-wrap: wrap; }
+.menu-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
+.menu-item { width: 100%; text-align: left; }
+
+/* ---- mascot ---- */
+/* A docked bar across the bottom that reserves its own strip, rather than a
+   floating corner element fighting everything else for z-index. */
+.mascot-wrap {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
+  background: var(--panel); border-top: 1px solid var(--line);
+  padding: 10px 16px;
+  display: flex; align-items: center; justify-content: flex-end; gap: 12px;
+  pointer-events: none;
+}
+.mascot { width: 60px; height: 60px; flex-shrink: 0; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.18)); }
+.mascot svg { width: 100%; height: 100%; overflow: visible; }
+.mascot-body { fill: var(--mascot-body); stroke: var(--mascot-ink); stroke-width: 2.5; }
+.mascot-gloss { fill: #ffffff; opacity: 0.4; }
+.mascot-blush { fill: #d8455f; opacity: 0.22; }
+.mascot-eye { fill: var(--mascot-ink); }
+.mascot-glint { fill: #ffffff; }
+.mascot-mouth { stroke: var(--mascot-ink); stroke-width: 5.5; fill: none; stroke-linecap: round; }
+.mascot-eye-shut { stroke: var(--mascot-ink); stroke-width: 5; fill: none; stroke-linecap: round; }
+.mascot-mouth-open { fill: var(--mascot-ink); transform-box: fill-box; transform-origin: top center; }
+.mascot-face-happy { opacity: 0; }
+.mascot-bubble { font-size: 0.95rem; font-weight: 600; color: var(--ink); opacity: 0; transition: opacity 0.2s; }
+.mascot-bubble.visible { opacity: 1; }
+
+@keyframes mascot-jump {
+  0%   { transform: translateY(0) scale(1); filter: drop-shadow(0 0 0 rgba(255,209,60,0)); }
+  30%, 55% { transform: translateY(-22px) scale(1.1); filter: drop-shadow(0 0 16px rgba(255,209,60,0.95)); }
+  100% { transform: translateY(0) scale(1); filter: drop-shadow(0 0 0 rgba(255,209,60,0)); }
+}
+.mascot.jumping { animation: mascot-jump 0.6s ease-out; }
+@keyframes mascot-dance {
+  0%   { transform: translateY(0) rotate(0deg); }
+  10%  { transform: translateY(-16px) rotate(-14deg); }
+  20%  { transform: translateY(0) rotate(12deg); }
+  30%  { transform: translateY(-14px) rotate(-12deg); }
+  40%  { transform: translateY(0) rotate(14deg); }
+  50%  { transform: translateY(-18px) rotate(-10deg); }
+  60%  { transform: translateY(0) rotate(10deg); }
+  75%  { transform: translateY(-10px) rotate(-6deg); }
+  90%  { transform: translateY(0) rotate(6deg); }
+  100% { transform: translateY(0) rotate(0deg); }
+}
+.mascot.dancing { animation: mascot-dance 1.3s ease-in-out; }
+@keyframes mascot-face-swap { 0%, 8% { opacity: 1; } 16%, 78% { opacity: 0; } 92%, 100% { opacity: 1; } }
+@keyframes mascot-face-swap-in { 0%, 8% { opacity: 0; } 16%, 78% { opacity: 1; } 92%, 100% { opacity: 0; } }
+@keyframes mascot-mouth-pop { 0% { transform: scaleY(0.25); } 40% { transform: scaleY(1.12); } 70% { transform: scaleY(0.92); } 100% { transform: scaleY(1); } }
+@keyframes mascot-blush-up { 0%, 100% { opacity: 0.22; } 20%, 80% { opacity: 0.5; } }
+.mascot.jumping .mascot-face { animation: mascot-face-swap 0.6s ease-out; }
+.mascot.jumping .mascot-face-happy { animation: mascot-face-swap-in 0.6s ease-out; }
+.mascot.jumping .mascot-mouth-open { animation: mascot-mouth-pop 0.34s ease-out 0.06s; }
+.mascot.dancing .mascot-face { animation: mascot-face-swap 1.3s ease-in-out; }
+.mascot.dancing .mascot-face-happy { animation: mascot-face-swap-in 1.3s ease-in-out; }
+.mascot.dancing .mascot-mouth-open { animation: mascot-mouth-pop 0.4s ease-out 0.08s; }
+.mascot.dancing .mascot-blush { animation: mascot-blush-up 1.3s ease-in-out; }
+
+/* Decoration on top of feedback that's already in words, so switching it
+   off costs nothing. */
+@media (prefers-reduced-motion: reduce) {
+  .mascot.jumping, .mascot.dancing, .mascot.jumping *, .mascot.dancing * { animation: none !important; }
+  .streak-bar-fill { transition: none; }
+}
+
+/* ---- phones ---- */
+@media (max-width: 640px) {
+  html { font-size: 20px; }
+  #app-header { padding: 12px 14px; }
+  .brand { gap: 7px; font-size: 0.95rem; }
+  .brand-name { white-space: normal; text-overflow: clip; line-height: 1.15; }
+  .brand-logo { height: 26px; }
+  main { padding: 16px 12px calc(var(--mascot-bar-h) + 20px); }
+  .card.narrow { margin: 10px auto 24px; padding: 18px; }
+  .hero { padding: 8px 12px 2px; }
+  .hero-logo { height: 110px; margin-bottom: 10px; }
+  .hero-name { font-size: 1.8rem; }
+  .hero-tag { font-size: 0.95rem; }
+  .btn-hero { margin-top: 12px; padding: 13px 16px; }
+  .card label { margin-top: 11px; }
+  .level-grid, .target-grid { grid-template-columns: 1fr; }
+  .level-card, .target-card { padding: 18px; }
+  .btn-primary, .btn-secondary { padding: 14px 22px; min-height: 48px; }
+  .overlay { padding: 0; }
+  .editor { max-width: none; border-radius: 0; }
+  .editor-header { padding: 10px 12px; gap: 8px; }
+  .quiz-body { padding: 14px 12px 20px; gap: 14px; }
+  .prompt-big { font-size: 1.45rem; min-width: 100%; padding: 18px 12px; }
+  .prompt-quote { font-size: 1.02rem; }
+  .answer-btn { font-size: 0.98rem; padding: 14px 8px; }
+  .layout-graphs .answer-btn { padding: 6px 4px 2px; }
+  .quiz-answers.layout-graphs { gap: 8px; }
+  .quiz-next { min-width: 0; width: 100%; }
+  .overlay-dialog { padding: 16px; }
+  .dialog { padding: 20px; }
+  .dialog-actions .btn-primary, .dialog-actions .btn-secondary { flex: 1 1 140px; }
+  .mascot-bubble { font-size: 0.85rem; }
+  .mascot { width: 50px; height: 50px; }
+}
+/* A four-digit score arrives within the first level, and at 375px the pill,
+   the Menu button and a two-line name only just fit side by side -- so on
+   narrow phones everything in the header gives up a little room rather than
+   the Menu button being pushed off the edge. */
+@media (max-width: 420px) {
+  #app-header { padding: 10px 10px; gap: 8px; }
+  .header-right { gap: 6px; }
+  .brand { font-size: 0.85rem; gap: 6px; }
+  .brand-logo { height: 24px; }
+  .points-pill { padding: 3px 8px; font-size: 0.78rem; }
+  .btn-menu { padding: 10px 11px; font-size: 0.85rem; }
+}
