@@ -1,7 +1,9 @@
 # Research Methods
 
-A browser game for practising research methods in linguistics. It goes with the
-second-year Research Methods module (CMM378) rather than replacing it.
+A browser game for practising research methods, for second-year undergraduates in any of
+27 disciplines, from linguistics and psychology to chemistry and engineering. Students pick
+their subject at the start, and every example comes from it. It was written to go
+alongside the Research Methods module CMM378 (linguistics), rather than replace it.
 
 It runs on a phone, needs no account, stores nothing on a server, and has no build step.
 It's the sister game to [Shapes and Language](https://github.com/jjgerard/shapes).
@@ -126,6 +128,29 @@ Every question, including its Check button, fits on a small phone screen (360×6
 without scrolling. That's checked for every sub-level, and at the last step of the
 multi-step ones.
 
+## Disciplines and subject pools
+
+The examples come from **subject pools** (`pools/`), and each discipline draws on its own
+pool plus one or two neighbours (`disciplines.js`), so adjacent subjects share examples.
+Items can be marked for particular disciplines, so chemistry and physics share a pool but
+still get their own examples.
+
+| Pool | Status |
+|---|---|
+| Language | ready (the original linguistics content) |
+| Mind & behaviour, Life sciences, Health & exercise, Physical sciences | ready |
+| Society, Education, Economics & business, Earth & environment, Computing | still to write — their disciplines show as "coming soon" |
+
+Every example has to be obvious to a second-year in the subject, true as written, and
+uncontroversial: no health or treatment claims, no screen-time or social-media effects, no
+differences between groups of people, nothing a newspaper would argue about. The full
+rules and the format are in [`pools/README.md`](pools/README.md), and
+`node tools/check-pools.js` checks every pool and every discipline against them.
+
+Studies on samples rather than people (chemistry, biology, geology…) get sample wording
+for within/between designs, and design questions only come from pools that study the same
+kind of thing as the discipline.
+
 ## Running it
 
 It's a static site with no dependencies:
@@ -144,6 +169,9 @@ number in `index.html`. Raise it on every change so nobody gets a cached old cop
 | File | What's in it |
 |---|---|
 | `levels.js` | The levels and sub-levels: names, help text, and which question type each uses. |
+| `disciplines.js` | The 27 disciplines, and which pools each draws on. |
+| `pools/` | The subject pools, their rules and format. |
+| `tools/check-pools.js` | Checks every pool and discipline against the rules. |
 | `data.js` | Level 1's items, and the relations Level 2's hypotheses reuse. |
 | `data2.js` | Level 2's items, with every explanation. |
 | `data3.js` | Level 3's factors, and the generator for its graphs. |

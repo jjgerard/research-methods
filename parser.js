@@ -83,7 +83,11 @@ function matchAnswer(text, candidates) {
       const hit = phrase.filter(w => answer.some(a => sameWord(a, w)));
       const coverage = hit.length / phrase.length;
       if (coverage < 0.5) continue;
-      const score = hit.reduce((s, w) => s + 1 / spread(w), 0) + 0.1 * coverage;
+      // A word typed exactly counts for more than one matched by its ending
+      // or a typo: "readers" is the readers, even if "read" also appears
+      // in how the reading time is described.
+      const quality = w => (answer.includes(w) ? 1 : 0.6);
+      const score = hit.reduce((s, w) => s + quality(w) / spread(w), 0) + 0.1 * coverage;
       best = Math.max(best, score);
     }
     return { id: c.id, score: best };

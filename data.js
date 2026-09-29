@@ -178,7 +178,7 @@ const RELATIONS = [
     says: ['Children grow taller as they get older.',
            'A child\'s height goes up with age.'],
     why: 'Growing older is what makes children taller. Getting taller doesn\'t make anyone older.' },
-  { id: 'delay-recall', hyp: ['time since learning', 'words remembered'], iv: 'time since learning', dv: 'words remembered', ivNP: 'the time since learning', dvNP: 'the number of new words remembered', ivAxis: 'Time since learning', dvAxis: 'Words recalled', dir: 'down',
+  { id: 'delay-recall', hyp: ['time since learning', 'words remembered'], iv: 'time since learning', dv: 'words remembered', ivNP: 'the time since learning', dvNP: 'the number of new words remembered', ivAxis: 'Time elapsed', dvAxis: 'Words recalled', dir: 'down',
     says: ['The longer it has been since people learned a list of new words, the fewer of them they remember.',
            'People remember fewer new words the longer it has been since they learned them.'],
     why: 'Time passing is what does the forgetting. Remembering fewer words can\'t make more time pass.' },

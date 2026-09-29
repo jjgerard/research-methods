@@ -9,6 +9,24 @@
 // sub-level can be inserted in the middle without anyone's progress moving
 // to a different card.
 // ---------------------------------------------------------------------------
+// Any sub-level field can be a function instead of a value: it's called
+// when the sub-level opens (resolveSub in app.js), so items and wording can
+// depend on the discipline the student chose.
+
+// Examples for the help screens, taken from the chosen discipline's own
+// content -- the first of each kind, which comes from its own pool -- so a
+// chemist's help screens talk about chemistry.
+function exRelation() { return content().relations[0]; }
+function exDesign(list, cat) { return content()[list].find(d => d.cat === cat) || content()[list][0]; }
+function exFactorPair() {
+  const f = content().factors;
+  const a = f.find(x => x.levels[3]) || FACTOR_POOL[0];
+  const b = f.find(x => x !== a && x.levels[2]) || FACTOR_POOL[1];
+  return [{ name: a.name, levels: a.levels[3] }, { name: b.name, levels: b.levels[2] }];
+}
+const ucfirst = s => s.charAt(0).toUpperCase() + s.slice(1);
+const quoteDesign = d => `<em>${d.label}</em>`;
+
 // Shared by the three cross-sectional/longitudinal sub-levels.
 const CROSSLONG_CHOICES = [
   { value: 'cross', label: 'Cross-sectional' },
@@ -34,7 +52,7 @@ const LEVELS = [
         id: '1a', kind: 'classify', target: 10, name: 'Variable or not?',
         question: 'Is this a variable?',
         categories: [{ value: 'var', label: 'Variable' }, { value: 'not', label: 'Not a variable' }],
-        items: SORT_ITEMS.map(i => ({ ...i, cat: i.variable ? 'var' : 'not' })),
+        items: () => content().sortItems.map(i => ({ ...i, cat: i.variable ? 'var' : 'not' })),
         desc: 'Sort things into variables and not-variables.',
         speech: 'Is it a variable? It needs to be measurable AND have different possible values.',
         help: {
@@ -57,37 +75,37 @@ const LEVELS = [
         id: '1b', kind: 'roles', terms: 'plain', name: 'Changer and change-ee',
         desc: 'In each statement, which variable is changing the other?',
         speech: 'One variable changes the other. Which one does the changing?',
-        help: {
+        help: () => { const r = exRelation(); return {
           title: 'Changer and change-ee',
           html: `<ul>
             <li>When two variables are related, it usually <strong>isn't an equal relationship</strong>:
                 one of them changes the other.</li>
             <li>The <strong>changer</strong> causes the change. The <strong>change-ee</strong>
                 gets changed.</li>
-            <li><em>As time goes on, children learn more words:</em> time is the changer,
-                vocabulary is the change-ee. That's the <strong>forwards</strong> relation.</li>
-            <li>The <strong>backwards</strong> relation — learning words makes time pass — doesn't
+            <li><em>${r.says[0]}</em> ${ucfirst(r.iv)} is the changer, and ${r.dv} is the
+                change-ee. That's the <strong>forwards</strong> relation.</li>
+            <li>The <strong>backwards</strong> relation — ${r.dv} changing ${r.iv} — doesn't
                 make sense. Checking the backwards version is a good test.</li>
             <li>Read carefully: the changer isn't always mentioned first.</li>
           </ul>`,
-        },
+        }; },
       },
       {
         id: '1c', kind: 'roles', terms: 'formal', name: 'Independent and dependent',
         desc: 'The same question, with the proper names.',
         speech: 'Same question, proper names: which is the independent variable, and which is the dependent?',
-        help: {
+        help: () => { const r = exRelation(); return {
           title: 'New names for what you already know',
           html: `<ul>
             <li>The <strong>changer</strong> has a proper name: the
                 <strong>independent variable</strong> (IV). It causes the change.</li>
             <li>The <strong>change-ee</strong> is the <strong>dependent variable</strong> (DV).
                 It gets changed — its value <em>depends on</em> the independent variable.</li>
-            <li>Time causes the change in vocabulary, so time is the IV and vocabulary is
-                the DV.</li>
+            <li>${ucfirst(r.iv)} causes the change in ${r.dv}, so ${r.iv} is the IV and
+                ${r.dv} is the DV.</li>
             <li>Same statements as before, same thinking. Only the names are new.</li>
           </ul>`,
-        },
+        }; },
       },
       {
         id: '1d', kind: 'graph', target: 10, name: 'Match the graph',
@@ -142,13 +160,13 @@ const LEVELS = [
         id: '2-hyp', kind: 'hypotheses', name: 'Hypotheses',
         desc: 'A research question and four hypotheses. Which two oppose each other?',
         speech: 'Pick the two opposing hypotheses: same cause and effect as the question, opposite directions.',
-        help: {
+        help: () => { const r = exRelation(); return {
           title: 'Hypotheses',
           html: `<ul>
             <li>A <strong>research question</strong> asks whether one variable affects
-                another: <em>Does word frequency affect reading time?</em></li>
+                another: <em>Does ${r.ivNP || r.iv} affect ${r.dvNP || r.dv}?</em></li>
             <li>A <strong>hypothesis</strong> is a possible answer that can be tested:
-                <em>Increasing word frequency decreases reading time.</em></li>
+                <em>Increasing ${r.hyp[0]} ${r.dir === 'up' ? 'increases' : 'decreases'} ${r.hyp[1]}.</em></li>
             <li><strong>Opposing hypotheses</strong> keep the same cause and effect as the
                 question — the same independent and dependent variable — and predict opposite
                 directions: one says the DV goes up, the other says it goes down.</li>
@@ -156,31 +174,31 @@ const LEVELS = [
                 dependent variable doing the changing, like the backwards graphs in Level 1.</li>
             <li>Tap two, then press <strong>Check</strong>.</li>
           </ul>`,
-        },
+        }; },
       },
       {
         id: '2-hyp-null', kind: 'hypotheses', withNull: true, name: 'Hypotheses with the null',
         desc: 'Six hypotheses now. Pick the two opposing ones and the null.',
         speech: 'Pick three: the two opposing hypotheses, and the null hypothesis.',
-        help: {
+        help: () => { const r = exRelation(); return {
           title: 'The null hypothesis',
           html: `<ul>
             <li>As well as the two opposing hypotheses, there's always a third possibility:
                 the independent variable makes <strong>no difference at all</strong>.</li>
-            <li>That's the <strong>null hypothesis</strong>: <em>Changing word frequency has
-                no effect on reading time.</em></li>
+            <li>That's the <strong>null hypothesis</strong>: <em>Changing ${r.hyp[0]} has
+                no effect on ${r.hyp[1]}.</em></li>
             <li>The null keeps the same direction of cause as the question, too. "Changing
-                reading time has no effect on word frequency" is backwards.</li>
+                ${r.hyp[1]} has no effect on ${r.hyp[0]}" is backwards.</li>
             <li>Tap three, then press <strong>Check</strong>.</li>
           </ul>`,
-        },
+        }; },
       },
       {
         id: '2-contdisc', kind: 'classify', name: 'Continuous or discrete?',
         desc: 'Can it take any value, or only separate ones?',
         question: 'Is this variable continuous or discrete?',
         categories: [{ value: 'cont', label: 'Continuous' }, { value: 'disc', label: 'Discrete' }],
-        items: CONTINUITY_ITEMS,
+        items: () => content().continuity,
         speech: 'Continuous: any value, including in between. Discrete: separate values, nothing in between.',
         help: {
           title: 'Continuous or discrete?',
@@ -207,7 +225,7 @@ const LEVELS = [
           { value: 'interval', label: 'Interval' },
           { value: 'ratio', label: 'Ratio' },
         ],
-        items: MEASUREMENT_ITEMS,
+        items: () => content().measurement,
         speech: 'Categorical, ordinal, interval or ratio?',
         help: {
           title: 'Levels of measurement',
@@ -232,75 +250,70 @@ const LEVELS = [
       {
         id: '2-crosslong', kind: 'design', name: 'Cross-sectional or longitudinal?',
         desc: 'A snapshot, or one group followed over time? Then name the IV and DV in your own words.',
-        items: CROSSLONG_SINGLE,
+        items: () => content().single,
         ...CROSSLONG_SHARED,
         choices: CROSSLONG_CHOICES.slice(0, 2),
         choiceQuestion: 'Is this design <strong>cross-sectional</strong> or <strong>longitudinal</strong>?',
         speech: 'Snapshot or over time? Then type the IV and the DV in your own words.',
-        help: {
+        help: () => ({
           title: 'Cross-sectional and longitudinal',
           html: `<ul>
             <li>A <strong>cross-sectional</strong> design is a <strong>snapshot</strong>: how do
-                two or more groups differ at one point in time? <em>Measure 2-year-olds and
-                4-year-olds in the same week.</em></li>
+                two or more groups differ at one point in time? ${quoteDesign(exDesign('single', 'cross'))}</li>
             <li>A <strong>longitudinal</strong> design takes <strong>repeated measures from the same
-                group over time</strong>: how does a group change? <em>Measure the same children
-                at 6, 12, 18 and 24 months.</em> Following one group like this is a
-                <strong>cohort design</strong>.</li>
+                group over time</strong>: how does a group change? ${quoteDesign(exDesign('single', 'long'))}
+                Following one group like this is a <strong>cohort design</strong>.</li>
             <li>Then type the <strong>independent variable</strong> and the <strong>dependent
                 variable</strong> in your own words. In a cross-sectional design the IV is usually
                 the grouping; in a longitudinal one, it's time.</li>
-            <li>You'll see how your answer was read ("Read as: age group") before it's marked.
-                If it could mean two things, you'll be asked which.</li>
+            <li>You'll see how your answer was read before it's marked. If it could mean two
+                things, you'll be asked which.</li>
           </ul>`,
-        },
+        }),
       },
       {
         id: '2-crosslong-multi', kind: 'design', name: 'Two factors',
         desc: 'Cross-sectional or longitudinal again, but now each design has two independent variables.',
-        items: CROSSLONG_MULTI,
+        items: () => content().multi,
         ...CROSSLONG_SHARED,
         choices: CROSSLONG_CHOICES.slice(0, 2),
         choiceQuestion: 'Is this design <strong>cross-sectional</strong> or <strong>longitudinal</strong>?',
         speech: 'Snapshot or over time? Then find BOTH independent variables, and the DV.',
-        help: {
+        help: () => ({
           title: 'Two factors',
           html: `<ul>
             <li>A design can have <strong>more than one factor</strong> — more than one
                 independent variable.</li>
-            <li><em>Monolingual and bilingual children aged 3 and 5, tested in the same week</em>:
-                still a snapshot, so still <strong>cross-sectional</strong>, but with two IVs —
-                language background and age group.</li>
-            <li><em>The same children tested on nouns and verbs at 18, 24 and 30 months</em>:
-                still one group over time, so still <strong>longitudinal</strong>, with two IVs —
-                age and word type.</li>
+            <li>${quoteDesign(exDesign('multi', 'cross'))} Still a snapshot, so still
+                <strong>cross-sectional</strong>, but with two IVs: ${exDesign('multi', 'cross').ivs.map(v => v.name).join(' and ')}.</li>
+            <li>${quoteDesign(exDesign('multi', 'long'))} Still one group over time, so still
+                <strong>longitudinal</strong>, with two IVs: ${exDesign('multi', 'long').ivs.map(v => v.name).join(' and ')}.</li>
             <li>First choose the design. Then type <strong>both</strong> independent variables,
                 in either order, and then the dependent variable.</li>
           </ul>`,
-        },
+        }),
       },
       {
         id: '2-crosslong-both', kind: 'design', name: 'Both: panel designs',
         desc: 'Several groups, each followed over time. Plus some from before, so choose carefully.',
-        items: CROSSLONG_PART3,
+        items: () => content().part3,
         ...CROSSLONG_SHARED,
         choices: CROSSLONG_CHOICES,
         choiceQuestion: 'Is this design <strong>cross-sectional</strong>, <strong>longitudinal</strong>, or <strong>both</strong>?',
         speech: 'Snapshot, over time, or both? Then type the IVs and the DV.',
-        help: {
+        help: () => ({
           title: 'Both: panel designs',
           html: `<ul>
             <li>A <strong>panel design</strong> is cross-sectional and longitudinal at once:
                 <strong>several groups</strong>, each <strong>followed over time</strong>.</li>
-            <li><em>Classes taught with methods A, B and C, each tested before teaching, after
-                year 1 and after year 2.</em> The groups make it cross-sectional; the repeated
-                testing makes it longitudinal.</li>
+            <li>${quoteDesign(exDesign('panel', 'both'))} The groups make it cross-sectional; the
+                repeated measurements make it longitudinal.</li>
             <li>So a panel design always has at least <strong>two independent variables</strong>:
                 which group, and when.</li>
             <li>Not every design here is a panel design — some are from the last two parts. Check
                 for both things: different groups <em>and</em> repeated testing.</li>
           </ul>`,
-        },
+        }),
       },
       {
         id: '2-confound', kind: 'confound', name: 'Confounds',
@@ -323,35 +336,51 @@ const LEVELS = [
         },
       },
       {
-        id: '2-withinbetween', kind: 'design', name: 'Within or between subjects?',
-        desc: 'Name the IV in your own words, say whether it\'s within or between subjects, then name the DV.',
-        items: DESIGN_ITEMS,
+        // Worded for whatever the discipline studies: people take part in
+        // conditions, but a chemistry sample or a steel beam doesn't.
+        id: '2-withinbetween', kind: 'design',
+        name: () => (onSamples() ? 'Within or between samples?' : 'Within or between subjects?'),
+        desc: () => `Name the IV in your own words, say whether it's within or between ${onSamples() ? 'samples' : 'subjects'}, then name the DV.`,
+        items: () => content().designs,
         steps: ['iv', 'choice', 'dv'],
-        choiceQuestion: 'Is this a <strong>within-subjects</strong> or a <strong>between-subjects</strong> design?',
-        choices: [{ value: 'within', label: 'Within subjects' }, { value: 'between', label: 'Between subjects' }],
-        choiceWhy: {
-          within: 'The same people take part in every condition, so each person is compared with themselves.',
-          between: 'Each person is in only one condition, so different groups of people are compared.',
-        },
+        choiceQuestion: () => (onSamples()
+          ? 'Is each sample tested in <strong>every condition</strong> (within), or are there <strong>different samples</strong> for each (between)?'
+          : 'Is this a <strong>within-subjects</strong> or a <strong>between-subjects</strong> design?'),
+        choices: () => (onSamples()
+          ? [{ value: 'within', label: 'Within (same samples)' }, { value: 'between', label: 'Between (different samples)' }]
+          : [{ value: 'within', label: 'Within subjects' }, { value: 'between', label: 'Between subjects' }]),
+        choiceWhy: () => (onSamples()
+          ? {
+            within: 'The same samples are tested under every condition, so each sample is compared with itself.',
+            between: 'Each sample is tested under only one condition, so different samples are compared.',
+          }
+          : {
+            within: 'The same people take part in every condition, so each person is compared with themselves.',
+            between: 'Each person is in only one condition, so different groups of people are compared.',
+          }),
         speech: 'Type the IV in your own words, decide within or between, then type the DV.',
-        help: {
-          title: 'Within or between subjects?',
+        help: () => ({
+          title: onSamples() ? 'Within or between samples?' : 'Within or between subjects?',
           html: `<ul>
-            <li>In a <strong>within-subjects</strong> design, <strong>the same people</strong>
-                take part in every condition. Each person reads both the active and the passive
-                sentences, so each person is compared with themselves.</li>
+            ${onSamples()
+              ? `<li>In a <strong>within</strong> design, <strong>the same samples</strong> are
+                tested under every condition, so each sample is compared with itself.</li>
+            <li>In a <strong>between</strong> design, each sample is tested under
+                <strong>only one condition</strong>, and different samples are compared.</li>
+            <li>Ask: is any one sample tested under more than one condition?</li>`
+              : `<li>In a <strong>within-subjects</strong> design, <strong>the same people</strong>
+                take part in every condition, so each person is compared with themselves.</li>
             <li>In a <strong>between-subjects</strong> design, each person takes part in
-                <strong>only one condition</strong>. One group reads active sentences and a
-                different group reads passive ones.</li>
-            <li>Ask: does any one person experience more than one condition?</li>
+                <strong>only one condition</strong>, and different groups are compared.</li>
+            <li>Ask: does any one person experience more than one condition?</li>`}
             <li>Each question has three steps. First <strong>type the independent
                 variable</strong> in your own words — whatever differs between the
                 conditions. Then choose within or between. Then <strong>type the dependent
                 variable</strong> — whatever gets measured.</li>
-            <li>You'll see how your answer was read ("Read as: font size") before it's marked.
-                If it could mean two things, you'll be asked which.</li>
+            <li>You'll see how your answer was read before it's marked. If it could mean two
+                things, you'll be asked which.</li>
           </ul>`,
-        },
+        }),
       },
     ],
   },
@@ -364,18 +393,18 @@ const LEVELS = [
         id: '3-box', kind: 'box', target: 10, name: 'What by what?',
         desc: 'Read the size of a design from its box notation.',
         speech: 'Count the levels of each factor. What by what?',
-        help: {
+        help: () => { const [a, b] = exFactorPair(); return {
           title: 'Factorial designs',
           html: `<ul>
             <li>A <strong>factorial design</strong> has more than one factor (independent
                 variable), and every level of one is combined with every level of the other.</li>
-            <li>The design is named by <strong>how many levels each factor has</strong>. Prime
-                (passive, active, silence) × Priming context (speaking, listening) is a
+            <li>The design is named by <strong>how many levels each factor has</strong>.
+                ${a.name} (${a.levels.join(', ')}) × ${b.name} (${b.levels.join(', ')}) is a
                 <strong>3×2 design</strong>, with 3 × 2 = 6 conditions.</li>
             <li>Either order is fine: a 3×2 design is also a 2×3 design.</li>
             <li>Tap the two numbers, then <strong>Check</strong>.</li>
           </ul>`,
-        },
+        }; },
       },
       {
         id: '3-bars', kind: 'barDims', target: 10, name: 'What by what? From a graph',

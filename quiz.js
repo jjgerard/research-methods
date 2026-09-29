@@ -89,7 +89,7 @@ const ROLE_TERMS = {
 };
 
 function rolesQuestion(recent, sub) {
-  const rel = pickFresh(RELATIONS, recent, r => r.id);
+  const rel = pickFresh(content().relations, recent, r => r.id);
   const terms = ROLE_TERMS[sub.terms];
   // Asking for the change-ee half the time means tapping "whichever one
   // did the changing" can't become a reflex that skips the reading.
@@ -111,7 +111,7 @@ function rolesQuestion(recent, sub) {
 
 // ---------------- match the graph ----------------
 function graphQuestion(recent) {
-  const rel = pickFresh(RELATIONS, recent, r => r.id);
+  const rel = pickFresh(content().relations, recent, r => r.id);
   const flip = d => (d === 'up' ? 'down' : 'up');
   const combos = [
     { forwards: true, dir: rel.dir },
@@ -184,7 +184,7 @@ function hypothesisTexts(rel) {
 }
 
 function hypothesisQuestion(recent, sub) {
-  const rel = pickFresh(RELATIONS, recent, r => r.id);
+  const rel = pickFresh(content().relations, recent, r => r.id);
   const iv = rel.ivNP || rel.iv;
   const dv = rel.dvNP || rel.dv;
   const texts = hypothesisTexts(rel);
@@ -263,7 +263,7 @@ function hypothesisQuestion(recent, sub) {
 // they're independent questions. Graded as one answer -- both have to be
 // right -- but the explanation speaks to each half separately.
 function validityQuestion(recent) {
-  const item = pickFresh(VALIDITY_ITEMS, recent, i => i.text);
+  const item = pickFresh(content().validity, recent, i => i.text);
   const judge = yesNoRows([
     { key: 'valid', label: 'Is it valid?', help: 'Does it measure the intended effect?' },
     { key: 'reliable', label: 'Is it reliable?', help: 'Would it give the same result again?' },
@@ -409,7 +409,9 @@ function boxQuestion() {
   let groups;
 
   const table = document.createElement('table');
-  table.className = 'factor-box';
+  // The biggest boxes, with long level names, get smaller type so they
+  // still fit on a phone without pushing the answer buttons off screen.
+  table.className = 'factor-box' + (nA + nB >= 7 ? ' dense' : '');
   const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
   table.innerHTML =
     `<caption class="sr-only">A ${nA} by ${nB} factorial design: ${esc(fa.name)} by ${esc(fb.name)}</caption>` +
@@ -516,7 +518,7 @@ function effectsQuestion() {
 // used to fish for a list of suspects -- but the whole item still counts as
 // a single answer to the streak, right only if both steps are.
 function confoundQuestion(recent) {
-  const item = pickFresh(CONFOUND_ITEMS, recent, i => i.text);
+  const item = pickFresh(content().confounds, recent, i => i.text);
   let stage2 = null;
   let yesNo = {};
 
@@ -1057,7 +1059,8 @@ function answerQuestion(value) {
   }
 }
 
-function openQuiz(sub) {
+function openQuiz(rawSub) {
+  const sub = resolveSub(rawSub);
   quizSub = sub;
   quizGame = new StreakGame(sub.target || STREAK_TARGET, sub.allowedMisses ?? ALLOWED_MISSES);
   quizRecent = [];

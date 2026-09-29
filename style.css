@@ -129,6 +129,24 @@ body.on-welcome main { padding-top: 8px; }
 .back-btn { display: block; margin-bottom: 12px; }
 .dialog a { color: var(--accent); font-weight: 600; }
 
+/* ---- discipline picker ---- */
+.discipline-group-name { font-size: 1.05rem; margin: 22px 0 10px; color: var(--accent); }
+.discipline-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+.discipline-btn {
+  text-align: left; background: var(--panel); color: var(--ink);
+  border: 2px solid var(--line); border-radius: 12px; padding: 12px 14px;
+  font-size: 0.98rem; font-weight: 700; min-height: 52px;
+}
+.discipline-btn:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-tint); }
+.discipline-btn.current { border-color: var(--accent); background: var(--accent-tint); }
+.discipline-btn:disabled { cursor: default; color: var(--muted); background: #f1efe7; }
+.discipline-btn span { display: block; font-size: 0.75rem; font-weight: 600; }
+.subject-tag { margin: -4px 0 0; }
+@media (max-width: 640px) {
+  .discipline-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .discipline-btn { font-size: 0.85rem; padding: 10px; min-height: 48px; }
+}
+
 /* ---- level select and sub-level cards ---- */
 .level-grid {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
@@ -496,8 +514,8 @@ body.on-welcome main { padding-top: 8px; }
   .prompt-desc { font-size: 0.88rem; line-height: 1.4; padding: 9px 11px; }
   .prompt-quote { font-size: 0.86rem; line-height: 1.35; padding: 8px 11px; }
   .quiz-question { font-size: 0.86rem; }
-  .layout-list .answer-btn { font-size: 0.8rem; padding: 5px 11px; line-height: 1.25; border-width: 1.5px; }
-  .quiz-answers.layout-list { gap: 6px; }
+  .layout-list .answer-btn { font-size: 0.8rem; padding: 4px 11px; line-height: 1.22; border-width: 1.5px; }
+  .quiz-answers.layout-list { gap: 5px; }
   .judge-row { flex-wrap: nowrap; gap: 8px; }
   .judge-label { font-size: 0.9rem; flex: 1 1 auto; min-width: 0; }
   .judge-label span { font-size: 0.74rem; }
@@ -510,6 +528,9 @@ body.on-welcome main { padding-top: 8px; }
   .factor-box { font-size: 0.8rem; }
   .factor-box th, .factor-box td { padding: 5px 6px; }
   .factor-box td { height: 30px; min-width: 34px; }
+  .factor-box.dense { font-size: 0.7rem; }
+  .factor-box.dense th, .factor-box.dense td { padding: 3px 4px; }
+  .factor-box.dense td { height: 24px; min-width: 26px; }
   .dims-btn { min-height: 44px; font-size: 1.05rem; }
   .dims-group { grid-template-columns: repeat(2, 50px); gap: 6px; }
   /* The standing instruction repeats what the help and the question already

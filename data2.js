@@ -299,7 +299,7 @@ const WITHIN_WHY = 'Within subjects: the same people take part in every conditio
 const BETWEEN_WHY = 'Between subjects: each person is in only one condition, so different groups of people are compared.';
 
 const V_READING_TIME = { name: 'reading time', aliases: ['time to read', 'how long it takes to read', 'reading speed', 'how fast they read', 'reading', 'speed', 'time', 'reading times'] };
-const V_FONT_SIZE = { name: 'font size', aliases: ['font', 'size', 'text size', 'print size', 'large or small', 'large', 'small', 'big', 'letter size'] };
+const V_FONT_SIZE = { name: 'font size', aliases: ['font', 'size', 'print size', 'large or small', 'large', 'small', 'big', 'letter size'] };
 const V_VOICE = { name: 'sentence voice (active or passive)', aliases: ['voice', 'active or passive', 'active', 'passive', 'sentence type', 'type of sentence', 'sentence structure', 'construction'] };
 const V_NOISE = { name: 'background noise (quiet or noisy)', aliases: ['noise', 'background noise', 'quiet or noise', 'quiet', 'noisy', 'sound level', 'listening condition', 'loud'] };
 const V_COMPREHENSION = { name: 'comprehension', aliases: ['understanding', 'how much they understand', 'how well they understand', 'understand', 'comprehension score'] };

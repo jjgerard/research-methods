@@ -29,9 +29,14 @@ const FACTOR_POOL = [
 const FACTOR_LEVEL_COUNTS = [2, 3, 4];
 
 // Two different factors, one with nA levels and one with nB.
+// Drawn from the chosen discipline's factors (FACTOR_POOL is the Language
+// pool's); if a discipline hasn't enough for this size, the Language ones
+// fill in rather than the question failing.
 function pickFactorPair(nA, nB) {
-  const a = pick(FACTOR_POOL.filter(f => f.levels[nA]));
-  const b = pick(FACTOR_POOL.filter(f => f !== a && f.levels[nB]));
+  const own = content().factors;
+  const pool = own.filter(f => f.levels[nA]).length >= 1 && own.filter(f => f.levels[nB]).length >= 2 ? own : FACTOR_POOL;
+  const a = pick(pool.filter(f => f.levels[nA]));
+  const b = pick(pool.filter(f => f !== a && f.levels[nB]));
   return [{ name: a.name, levels: a.levels[nA] }, { name: b.name, levels: b.levels[nB] }];
 }
 

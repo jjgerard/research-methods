@@ -24,6 +24,9 @@ function loadState(key) {
     points: Number(parsed?.points) || 0,
     done: Array.isArray(parsed?.done) ? parsed.done : [],
     introsSeen: Array.isArray(parsed?.introsSeen) ? parsed.introsSeen : [],
+    // Which discipline's examples to use. Progress and points are shared
+    // across disciplines: switching changes the examples, not what's done.
+    discipline: DISCIPLINES[parsed?.discipline] ? parsed.discipline : null,
   };
 }
 // Storage can be full or switched off (private browsing on some phones).
@@ -56,6 +59,7 @@ window.addEventListener('popstate', () => {
 
 // ---------------- screens ----------------
 const SCREEN_SPEECH = {
+  disciplines: 'What do you study? The examples will come from your subject.',
   name: '',
   levels: 'Pick a level to start!',
   level: 'Choose a sub-level below!',
@@ -155,6 +159,16 @@ function updateHeader() {
   who.classList.toggle('hidden', !player);
   if (player) who.textContent = `Playing as ${player.name} — class ${player.code}`;
   document.getElementById('menu-switch').classList.toggle('hidden', !player);
+  const subj = document.getElementById('menu-subject');
+  subj.classList.toggle('hidden', !player || !state.discipline);
+  if (player && state.discipline) subj.textContent = `📚 Subject: ${DISCIPLINES[state.discipline].name} — change`;
+  const tag = document.getElementById('subject-tag');
+  if (tag) {
+    tag.classList.toggle('hidden', !player || !state.discipline);
+    if (player && state.discipline) tag.innerHTML = `Examples from <strong>${DISCIPLINES[state.discipline].name}</strong> · <button class="link-btn" id="subject-change">change</button>`;
+    const btn = document.getElementById('subject-change');
+    if (btn) btn.addEventListener('click', () => { pushNav(gotoLevels); gotoDisciplines(); });
+  }
 }
 
 function loginAs(name, code) {
@@ -163,7 +177,85 @@ function loginAs(name, code) {
   try { localStorage.setItem(`${STORAGE_PREFIX}lastPlayer`, JSON.stringify({ name, code })); } catch { /* fine */ }
   updateHeader();
   resetNav();
+  if (state.discipline && isPlayable(state.discipline)) gotoLevels();
+  else gotoDisciplines();
+}
+
+// ---------------- disciplines ----------------
+// Every example comes from the chosen discipline's pools (disciplines.js,
+// pools/). content() merges them -- the discipline's own pool first, then
+// its neighbours -- and drops items marked `for` other disciplines. It must
+// stay in step with merged() in tools/check-pools.js.
+function isPlayable(id) { return !!POOLS[DISCIPLINES[id].pools[0]]; }
+function onSamples() { return DISCIPLINES[state.discipline]?.subjects === 'samples'; }
+
+let contentCache = { id: null, value: null };
+function content() {
+  const id = state.discipline && isPlayable(state.discipline) ? state.discipline : 'linguistics';
+  if (contentCache.id === id) return contentCache.value;
+  const keep = it => !it.for || it.for.includes(id);
+  const out = { sortItems: [], relations: [], validity: [], continuity: [], measurement: [], confounds: [], designs: [], single: [], multi: [], panel: [], factors: [] };
+  const disc = DISCIPLINES[id];
+  disc.pools.forEach((pid, i) => {
+    const P = POOLS[pid];
+    if (!P) return;
+    const sameKind = i === 0 || POOL_SUBJECTS[pid] === disc.subjects;
+    for (const k of ['sortItems', 'relations', 'validity', 'continuity', 'measurement', 'factors']) out[k].push(...P[k].filter(keep));
+    if (!sameKind) return;
+    for (const k of ['confounds', 'designs']) out[k].push(...P[k].filter(keep));
+    for (const k of ['single', 'multi', 'panel']) out[k].push(...(P.crosslong[k] || []).filter(keep));
+  });
+  // Part 3 of cross-sectional/longitudinal: the panel designs, plus a third
+  // as many from parts 1 and 2, so "both" has to be recognised.
+  out.part3 = [...out.panel, ...out.single.filter((_, i) => i % 3 === 0), ...out.multi.filter((_, i) => i % 3 === 1)];
+  contentCache = { id, value: out };
+  return out;
+}
+
+// A sub-level with every function-valued field called -- see levels.js.
+const RESOLVED_FIELDS = ['items', 'name', 'desc', 'choices', 'choiceWhy', 'choiceQuestion', 'question', 'categories', 'speech', 'help'];
+function resolveSub(sub) {
+  const out = { ...sub };
+  for (const k of RESOLVED_FIELDS) if (typeof out[k] === 'function') out[k] = out[k]();
+  return out;
+}
+
+function gotoDisciplines() {
+  renderDisciplines();
+  showScreen('disciplines');
+}
+
+function renderDisciplines() {
+  const wrap = document.getElementById('discipline-groups');
+  wrap.innerHTML = '';
+  DISCIPLINE_GROUPS.forEach(g => {
+    const h = document.createElement('h2');
+    h.className = 'discipline-group-name';
+    h.textContent = g.name;
+    const grid = document.createElement('div');
+    grid.className = 'discipline-grid';
+    g.ids.forEach(id => {
+      const d = DISCIPLINES[id];
+      const ok = isPlayable(id);
+      const b = document.createElement('button');
+      b.className = 'discipline-btn' + (state.discipline === id ? ' current' : '');
+      b.disabled = !ok;
+      b.innerHTML = `${d.name}${ok ? '' : '<span>coming soon</span>'}`;
+      b.addEventListener('click', () => chooseDiscipline(id));
+      grid.appendChild(b);
+    });
+    wrap.append(h, grid);
+  });
+}
+
+function chooseDiscipline(id) {
+  state.discipline = id;
+  saveState();
+  contentCache = { id: null, value: null };
+  updateHeader();
+  resetNav();
   gotoLevels();
+  toast(`Examples will now come from ${DISCIPLINES[id].name}.`);
 }
 
 // ---------------- level select ----------------
@@ -234,10 +326,11 @@ function renderSubGrid() {
     const h3 = document.createElement('h3');
     // Locked cards keep their name hidden: "Independent and dependent"
     // sitting on screen during 1b would hand over 1c's new words early.
-    h3.textContent = locked ? `${letter}. Locked` : `${letter}. ${done ? '✓ ' : ''}${sub.name}`;
+    const shown = resolveSub(sub);
+    h3.textContent = locked ? `${letter}. Locked` : `${letter}. ${done ? '✓ ' : ''}${shown.name}`;
     card.appendChild(h3);
     const p = document.createElement('p');
-    p.textContent = locked ? 'Finish the one before to unlock this.' : sub.desc;
+    p.textContent = locked ? 'Finish the one before to unlock this.' : shown.desc;
     if (locked) p.className = 'lock-note';
     card.appendChild(p);
     if (!locked) {
@@ -279,12 +372,13 @@ const HELP = {
   about: {
     title: 'About Research Methods',
     html: `<ul>
-      <li>This is a puzzle game for practising <strong>research methods in
-          linguistics</strong>: what a variable is, which one changes which, and how
-          studies are designed.</li>
-      <li>It goes with the Research Methods module (CMM378). Everything in it is also
-          taught in class, in the same order. The game is where you practise it enough
-          times for it to stick.</li>
+      <li>This is a puzzle game for practising <strong>research methods</strong>: what a
+          variable is, which one changes which, how studies are designed, and how to
+          describe data.</li>
+      <li>You choose your subject at the start, from linguistics to chemistry, and every
+          example comes from it. You can change subject at any time from the menu.</li>
+      <li>It goes with a research methods module rather than replacing it. The game is
+          where you practise the ideas enough times for them to stick.</li>
       <li>There are <strong>four levels</strong> so far, each split into short sub-levels.
           Early questions are a single tap. Later ones ask you to type answers in your
           own words.</li>
@@ -359,6 +453,13 @@ document.getElementById('menu-sound').addEventListener('click', () => {
 });
 document.getElementById('menu-help').addEventListener('click', () => { closeMenu(); openHelp('general'); });
 document.getElementById('menu-about').addEventListener('click', () => { closeMenu(); openHelp('about'); });
+
+document.getElementById('menu-subject').addEventListener('click', () => {
+  closeMenu();
+  if (quizSub) navBack();
+  pushNav(gotoLevels);
+  gotoDisciplines();
+});
 
 document.getElementById('menu-switch').addEventListener('click', async () => {
   closeMenu();
