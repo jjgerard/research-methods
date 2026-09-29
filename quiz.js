@@ -835,7 +835,7 @@ function sigmaQuestion() {
   return {
     key: `sig-${Math.random()}`,
     prompt: { node: drawSigmaGroup(g) },
-    question: 'The grey arrows show how far each person is from the mean. Which arrow, <strong>A, B or C</strong>, is the standard deviation?',
+    question: 'The grey arrows show how far each person is from the mean. Which arrow, <strong>A, B or C</strong>, is the standard deviation (the average arrow length)?',
     layout: 'triple',
     options: g.arrows.map(a => ({ value: a.letter, label: a.letter })),
     answer: right,

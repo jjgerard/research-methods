@@ -1,4 +1,4 @@
-# Methods and Language
+# Research Methods
 
 A browser game for practising research methods in linguistics. It goes with the
 second-year Research Methods module (CMM378) rather than replacing it.
@@ -42,7 +42,8 @@ five examples; this gives them hundreds, with a reason every time they get one w
 ## The design, and why
 
 **Five in a row, with two hearts.** A sub-level is finished with 5 right answers in a row
-(10 for Variable or not?, Match the graph, all of Level 3, and Level 4's b, c and d).
+(10 for Variable or not?, Match the graph, all of Level 3, and Level 4's b–f;
+Level 4e also gets three hearts instead of two).
 Each run allows two mistakes: a mistake costs a heart, and a third one starts the run
 again. Every third right answer doubles what each answer is worth, and what a wrong one
 costs, so guessing doesn't pay.

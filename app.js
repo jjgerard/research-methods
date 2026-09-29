@@ -277,7 +277,7 @@ const HELP = {
   // Openable from the welcome screen, so it's written for someone who has
   // no idea what this is yet.
   about: {
-    title: 'About Methods and Language',
+    title: 'About Research Methods',
     html: `<ul>
       <li>This is a puzzle game for practising <strong>research methods in
           linguistics</strong>: what a variable is, which one changes which, and how
@@ -303,7 +303,7 @@ const HELP = {
     </ul>`,
   },
   general: {
-    title: 'How Methods and Language works',
+    title: 'How Research Methods works',
     html: `<ul>
       <li>Work through the levels in order. Each is split into sub-levels, and each one
           unlocks when you finish the one before it.</li>

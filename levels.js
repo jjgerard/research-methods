@@ -492,8 +492,8 @@ const LEVELS = [
         },
       },
       {
-        id: '4-ratingz', kind: 'ratingZ', name: 'Standard deviations: ratings',
-        desc: 'The same on a 1–7 rating scale, with a different participant each time.',
+        id: '4-ratingz', kind: 'ratingZ', target: 10, allowedMisses: 3, name: 'Standard deviations: ratings',
+        desc: 'The same on a 1–7 rating scale, with a different participant each time. Three hearts for this one.',
         speech: 'Every participant has their own mean and σ. Tap the rating for that z.',
         help: {
           title: 'z-scores for ratings',
@@ -503,12 +503,15 @@ const LEVELS = [
             <li>So each participant has their <strong>own mean and σ</strong>, and their own way
                 the 1–7 scale lines up with the z-scale underneath it.</li>
             <li>z = +1 for a lenient participant might be a 7; for a harsh one, a 4.</li>
-            <li>Tap the rating that matches the z you're given, for this participant.</li>
+            <li>Drag the marker to the rating that matches the z you're given, for this
+                participant.</li>
+            <li>This one is trickier, so you get <strong>three hearts</strong> per run instead
+                of two.</li>
           </ul>`,
         },
       },
       {
-        id: '4-skew', kind: 'skew', name: 'Normal or skewed?',
+        id: '4-skew', kind: 'skew', target: 10, name: 'Normal or skewed?',
         desc: 'Is the distribution symmetrical, or does it have a long tail?',
         speech: 'Normal or skewed? Look at the shape, and at the tails.',
         help: {
