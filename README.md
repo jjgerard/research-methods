@@ -135,11 +135,20 @@ pool plus one or two neighbours (`disciplines.js`), so adjacent subjects share e
 Items can be marked for particular disciplines, so chemistry and physics share a pool but
 still get their own examples.
 
-| Pool | Status |
+| Pool | Main pool for |
 |---|---|
-| Language | ready (the original linguistics content) |
-| Mind & behaviour, Life sciences, Health & exercise, Physical sciences | ready |
-| Society, Education, Economics & business, Earth & environment, Computing | still to write — their disciplines show as "coming soon" |
+| Language | Linguistics (the original content), Speech & language therapy (with Health) |
+| Mind & behaviour | Psychology, Neuroscience |
+| Society | Sociology, Criminology, Human geography, Anthropology, Media & communication, Social work |
+| Education | Education |
+| Economics & business | Economics, Business & marketing |
+| Life sciences | Biology, Ecology, Biomedical science, Agriculture & animal science |
+| Health & exercise | Nursing, Sport & exercise science, Nutrition & dietetics, Physiotherapy |
+| Physical sciences | Chemistry, Physics, Engineering |
+| Earth & environment | Earth sciences, Physical geography, Environmental science |
+| Computing | Computer science |
+
+All 27 disciplines are playable.
 
 Every example has to be obvious to a second-year in the subject, true as written, and
 uncontroversial: no health or treatment claims, no screen-time or social-media effects, no
