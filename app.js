@@ -370,7 +370,7 @@ const HELP = {
   // Openable from the welcome screen, so it's written for someone who has
   // no idea what this is yet.
   about: {
-    title: 'About Research Methods',
+    title: 'About Trial and Error',
     html: `<ul>
       <li>This is a puzzle game for practising <strong>research methods</strong>: what a
           variable is, which one changes which, how studies are designed, and how to
@@ -397,7 +397,7 @@ const HELP = {
     </ul>`,
   },
   general: {
-    title: 'How Research Methods works',
+    title: 'How Trial and Error works',
     html: `<ul>
       <li>Work through the levels in order. Each is split into sub-levels, and each one
           unlocks when you finish the one before it.</li>

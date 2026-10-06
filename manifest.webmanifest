@@ -1,6 +1,6 @@
 {
-  "name": "Research Methods",
-  "short_name": "Research Methods",
+  "name": "Trial and Error",
+  "short_name": "Trial and Error",
   "description": "Solve puzzles with research methods.",
   "start_url": "./index.html",
   "scope": "./",

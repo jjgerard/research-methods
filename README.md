@@ -1,4 +1,4 @@
-# Research Methods
+# Trial and Error
 
 A browser game for practising research methods, for second-year undergraduates in any of
 27 disciplines, from linguistics and psychology to chemistry and engineering. Students pick
