@@ -558,6 +558,145 @@ const LEVELS = [
       },
     ],
   },
+  {
+    n: 5, title: 'Real or coincidence?',
+    blurb: 'Is an effect real, or could it be chance? Null hypotheses, the 5% rule, errors and false alarms.',
+    intro: 'Each sub-level asks one kind of question. Get 5 in a row to finish it and unlock the next. You have two hearts per run, so two mistakes won\'t reset it.',
+    subs: [
+      {
+        id: '5-real', kind: 'real', name: 'Real effect or coincidence?',
+        desc: 'A real effect from your subject, or an everyday coincidence?',
+        speech: 'Real effect, or probably just a coincidence?',
+        help: {
+          title: 'Real effect or coincidence?',
+          html: `<ul>
+            <li>A <strong>real effect</strong> happens again every time: drop your phone and it falls.
+                The chance that it's a coincidence is low.</li>
+            <li>A <strong>coincidence</strong> just happened once: your phone broke on a day your
+                second cousin looked at it. Do it again and it almost certainly won't happen.</li>
+            <li>Ask: is there a way one thing could cause the other — and would it happen again?</li>
+          </ul>`,
+        },
+      },
+      {
+        id: '5-h0h1', kind: 'h0h1', name: 'H0 or H1?',
+        desc: 'The null hypothesis, or the alternative?',
+        speech: 'Null hypothesis or alternative hypothesis?',
+        help: {
+          title: 'H0 and H1',
+          html: `<ul>
+            <li>The <strong>null hypothesis, H0</strong>: there is <strong>no difference</strong> between
+                the conditions — the independent variable has no effect.</li>
+            <li>The <strong>alternative hypothesis, H1</strong>: there <strong>is</strong> a difference
+                — the independent variable has an effect, in either direction.</li>
+            <li>We can never prove H1 is true. What we can do is show that H0 is very hard to believe —
+                and then conclude that there is an effect.</li>
+          </ul>`,
+        },
+      },
+      {
+        id: '5-chance', kind: 'chance', name: 'Likely or unlikely by chance?',
+        desc: 'Coins, dice and cards: could this easily happen just by chance?',
+        speech: 'Could this easily happen just by chance?',
+        help: {
+          title: 'Likely or unlikely by chance?',
+          html: `<ul>
+            <li>Some things happen by chance <strong>all the time</strong>: 6 heads in 10 flips of a coin.</li>
+            <li>Others <strong>hardly ever</strong> happen by chance: 20 heads in a row, or a six on every
+                one of 10 rolls of a die.</li>
+            <li>No calculating needed — just ask: would I be surprised if this happened?</li>
+          </ul>`,
+        },
+      },
+      {
+        id: '5-h0chance', kind: 'h0chance', name: 'Keep or reject H0? Coins and dice',
+        desc: 'The same events, with a null hypothesis: is the coin fair?',
+        speech: 'If H0 were true, would this happen by chance? Then keep it or reject it.',
+        help: {
+          title: 'Keeping or rejecting H0',
+          html: `<ul>
+            <li>H0 here is that the coin (or die) is <strong>fair</strong>.</li>
+            <li>Ask: <strong>if H0 were true</strong>, would results like these happen by chance?</li>
+            <li>If they'd happen all the time — <strong>keep H0</strong>. There's no reason to doubt it.</li>
+            <li>If they'd hardly ever happen — <strong>reject H0</strong>. A fair coin almost never gives
+                20 heads in a row, so we stop believing the coin is fair.</li>
+          </ul>`,
+        },
+      },
+      {
+        id: '5-h0subject', kind: 'h0subject', name: 'Keep or reject H0? Your subject',
+        desc: 'The same reasoning, on an experiment from your subject.',
+        speech: 'If the IV made no difference, would results like these happen by chance?',
+        help: () => {
+          const r = exRelation();
+          return {
+            title: 'H0 in a real experiment',
+            html: `<ul>
+              <li>In an experiment, H0 is that the independent variable makes <strong>no
+                  difference</strong>: <em>Changing ${r.ivNP || r.iv} has no effect on ${r.dvNP || r.dv}.</em></li>
+              <li>If H0 were true, each trial would be like a coin flip: the result would go up or down
+                  by chance.</li>
+              <li>So nearly every trial going the same way is like getting heads almost every time —
+                  it would hardly ever happen by chance. <strong>Reject H0.</strong></li>
+              <li>A near-even split is what chance gives all the time. <strong>Keep H0.</strong></li>
+            </ul>`,
+          };
+        },
+      },
+      {
+        id: '5-five', kind: 'five', name: 'The 5% line',
+        desc: 'Below 1 in 20, reject H0. Above it, keep it.',
+        speech: 'Rarer than 1 in 20 by chance? Then reject H0.',
+        help: {
+          title: 'The 5% rule',
+          html: `<ul>
+            <li>How unlikely is unlikely enough? The usual rule is <strong>5%</strong>: 1 time in 20.</li>
+            <li>If H0 were true and results like ours would happen by chance <strong>less often than
+                1 time in 20</strong>, we reject H0 and call the effect <strong>significant</strong>.</li>
+            <li>If they'd happen <strong>more often than that</strong>, we keep H0: the effect is not
+                significant.</li>
+            <li>No calculating — just compare. 1 in 100 is rarer than 1 in 20: reject. 1 in 4 is far more
+                often: keep.</li>
+          </ul>`,
+        },
+      },
+      {
+        id: '5-errors', kind: 'errors', name: 'Which error?',
+        desc: 'Type 1 error, Type 2 error, or the correct conclusion?',
+        speech: 'Compare reality with what the experiment found.',
+        help: {
+          title: 'Type 1 and Type 2 errors',
+          html: `<ul>
+            <li>An experiment can reach the wrong conclusion, because there's always some chance of a
+                misleading result.</li>
+            <li><strong>Type 1 error</strong>: the experiment finds an effect, but in reality there isn't
+                one. H0 was true but was rejected — a <strong>false alarm</strong>.</li>
+            <li><strong>Type 2 error</strong>: there really is an effect, but the experiment doesn't find
+                it. H0 was false but was kept — a <strong>miss</strong>.</li>
+            <li>Finding a real effect, or finding nothing when there's nothing there, is correct.</li>
+          </ul>`,
+        },
+      },
+      {
+        id: '5-falsealarm', kind: 'falseAlarm', name: 'False alarms',
+        desc: 'Test enough things and something will look significant by chance.',
+        speech: 'Convincing, or could it easily be a false alarm?',
+        help: {
+          title: 'False alarms',
+          html: `<ul>
+            <li>The 5% rule has a price. Even when H0 is true, results this unlikely still turn up by
+                chance <strong>about 1 time in 20</strong>. Each time, that's a false alarm — a Type 1
+                error.</li>
+            <li>So test 20 things that really have no effect, and you'd expect about
+                <strong>one</strong> to come out significant anyway — like the jelly beans in the
+                cartoon from the lecture.</li>
+            <li>One significant result among many tests is <strong>weak evidence</strong>. A result that
+                was predicted in advance, or found again in a new study, is <strong>convincing</strong>.</li>
+          </ul>`,
+        },
+      },
+    ],
+  },
 ];
 
 // A stray comma between two levels leaves an empty slot in LEVELS, and the

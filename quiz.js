@@ -907,7 +907,171 @@ function skewQuestion() {
   };
 }
 
+// ---------------- Level 5: real or coincidence? ----------------
+const lc = s => s.charAt(0).toLowerCase() + s.slice(1);
+
+// 5a. A relation from the student's subject (a real effect) or an everyday
+// coincidence, half and half.
+function realQuestion(recent) {
+  if (Math.random() < 0.5) {
+    const rel = pickFresh(content().relations, recent, r => r.id);
+    return {
+      key: rel.id, prompt: { quote: rel.says[0] }, question: 'A real effect, or probably a coincidence?',
+      layout: 'pair', options: [{ value: 'real', label: 'Real effect' }, { value: 'chance', label: 'Probably coincidence' }],
+      answer: 'real',
+      explain: () => 'This is a real, well-established effect: test it again and again and you get the same result. The chance that it\'s just a coincidence is very low.',
+    };
+  }
+  const c = pickFresh(COINCIDENCES, recent, x => x.label);
+  return {
+    key: c.label, prompt: { quote: c.label }, question: 'A real effect, or probably a coincidence?',
+    layout: 'pair', options: [{ value: 'real', label: 'Real effect' }, { value: 'chance', label: 'Probably coincidence' }],
+    answer: 'chance',
+    explain: () => `Probably a coincidence. ${c.why} Try it again and it very likely wouldn't happen.`,
+  };
+}
+
+// 5b. Null or alternative hypothesis, about the student's own subject.
+function h0h1Question(recent) {
+  const rel = pickFresh(content().relations, recent, r => r.id);
+  // The full noun phrases, which are always singular ("the number of
+  // transfers"), so "has" and "makes" agree whatever the variable.
+  const iv = rel.ivNP || rel.iv;
+  const dv = rel.dvNP || rel.dv;
+  const forms = [
+    { text: `Changing ${iv} has no effect on ${dv}.`, h: 'h0' },
+    { text: `${cap(dv)} stays the same whatever ${iv} is.`, h: 'h0' },
+    { text: `Changing ${iv} changes ${dv}.`, h: 'h1' },
+    { text: `Increasing ${iv} ${rel.dir === 'up' ? 'increases' : 'decreases'} ${dv}.`, h: 'h1' },
+    { text: `Changing ${iv} makes a difference to ${dv}.`, h: 'h1' },
+  ];
+  const f = pick(forms);
+  return {
+    key: rel.id, prompt: { quote: f.text }, question: 'Is this the <strong>null</strong> hypothesis (H0) or the <strong>alternative</strong> (H1)?',
+    layout: 'pair', options: [{ value: 'h0', label: 'H0 — null' }, { value: 'h1', label: 'H1 — alternative' }],
+    answer: f.h,
+    explain: () => (f.h === 'h0'
+      ? 'It says there is no effect — no difference between the conditions. That\'s the null hypothesis, H0.'
+      : 'It says there is an effect — a difference between the conditions. That\'s the alternative hypothesis, H1.'),
+  };
+}
+
+// 5c. Could this easily happen by chance?
+function chanceQuestion() {
+  const e = makeChanceEvent();
+  return {
+    key: `chance-${Math.random()}`, prompt: { quote: e.text }, question: 'Could this easily happen <strong>just by chance</strong>?',
+    layout: 'pair', options: [{ value: 'likely', label: 'Yes — easily' }, { value: 'unlikely', label: 'No — hardly ever' }],
+    answer: e.unlikely ? 'unlikely' : 'likely',
+    explain: () => (e.unlikely
+      ? `By chance alone, this happens ${oneIn(e.prob)}. It's possible, but you'd hardly ever see it.`
+      : `By chance alone, a result exactly like this happens ${oneIn(e.prob)} — it turns up all the time.`),
+  };
+}
+
+// 5d. The same, with H0 named: keep it or reject it?
+function h0ChanceQuestion() {
+  const e = makeChanceEvent();
+  return {
+    key: `h0c-${Math.random()}`, prompt: { quote: `H0: ${e.h0}. ${e.text}` }, question: 'Do you <strong>keep</strong> H0 or <strong>reject</strong> it?',
+    layout: 'pair', options: [{ value: 'keep', label: 'Keep H0' }, { value: 'reject', label: 'Reject H0' }],
+    answer: e.unlikely ? 'reject' : 'keep',
+    explain: () => (e.unlikely
+      ? `If ${e.h0}, this would happen ${oneIn(e.prob)}. Results that hardly ever happen when H0 is true are a reason to stop believing H0 — so reject it.`
+      : `If ${e.h0}, a result like this happens ${oneIn(e.prob)} — all the time. It gives no reason to doubt H0, so keep it.`),
+  };
+}
+
+// 5e. The same reasoning on an experiment from the student's subject.
+function h0SubjectQuestion(recent) {
+  const rel = pickFresh(content().relations, recent, r => r.id);
+  const e = makeExperimentResult(rel);
+  return {
+    key: rel.id, prompt: { quote: `H0: ${e.h0} ${e.text}` }, question: 'Do you <strong>keep</strong> H0 or <strong>reject</strong> it?',
+    layout: 'pair', options: [{ value: 'keep', label: 'Keep H0' }, { value: 'reject', label: 'Reject H0' }],
+    answer: e.unlikely ? 'reject' : 'keep',
+    explain: () => (e.unlikely
+      ? `If H0 were true, each trial would be like a coin flip — up or down by chance. Nearly every trial going the same way is like flipping a coin and getting heads almost every time: by chance it happens ${oneIn(e.prob)}. So reject H0.`
+      : `If H0 were true, each trial would be like a coin flip — up or down by chance — and a near-even split like this is exactly what coin flips give. It happens ${oneIn(e.prob)} by chance. No reason to doubt H0, so keep it.`),
+  };
+}
+
+// 5f. The 5% line, against an H0 from the student's subject.
+function fivePercentQuestion(recent) {
+  const rel = pickFresh(content().relations, recent, r => r.id);
+  const c = pick(FIVE_PERCENT_CHANCES);
+  return {
+    key: `${rel.id}-${c.text}`,
+    prompt: { quote: `H0: Changing ${rel.ivNP || rel.iv} has no effect on ${rel.dvNP || rel.dv}. If H0 were true, results like these would happen by chance ${c.text}.` },
+    question: 'Using the <strong>5% rule</strong>, do you keep H0 or reject it?',
+    layout: 'pair', options: [{ value: 'keep', label: 'Keep H0' }, { value: 'reject', label: 'Reject H0' }],
+    answer: c.reject ? 'reject' : 'keep',
+    explain: () => (c.reject
+      ? `The 5% rule: reject H0 if results like these would happen by chance less than 5% of the time — less often than 1 time in 20. ${cap(c.text)} is rarer than 1 in 20, so reject H0: the effect is significant.`
+      : `The 5% rule: reject H0 only if results like these would happen by chance less than 5% of the time — less often than 1 time in 20. ${cap(c.text)} is much more often than that, so keep H0: the effect is not significant.`),
+  };
+}
+
+// 5g. Type 1, Type 2, or correct.
+function errorQuestion(recent) {
+  const rel = pickFresh(content().relations, recent, r => r.id);
+  const iv = rel.ivNP || rel.iv;
+  const dv = rel.dvNP || rel.dv;
+  const real = Math.random() < 0.5;
+  const found = Math.random() < 0.5;
+  const reality = real ? `In reality, ${iv} really does affect ${dv}.` : `In reality, ${iv} has no effect on ${dv}.`;
+  const outcome = pick(found
+    ? ['The experiment finds a significant effect.', 'The researchers reject H0.']
+    : ['The experiment finds no significant effect.', 'The researchers keep H0.']);
+  const answer = real === found ? 'correct' : (found ? 'type1' : 'type2');
+  const why = {
+    correct: real ? 'The effect is real and the experiment found it — the right conclusion.' : 'There\'s no effect and the experiment found none — the right conclusion.',
+    type1: 'A Type 1 error: the experiment found an effect that isn\'t really there — a false alarm. H0 was true, but it was rejected.',
+    type2: 'A Type 2 error: the effect is real, but the experiment missed it. H0 was false, but it was kept.',
+  }[answer];
+  return {
+    key: rel.id, prompt: { quote: `${reality} ${outcome}` }, question: 'Is this a <strong>Type 1</strong> error, a <strong>Type 2</strong> error, or the correct conclusion?',
+    layout: 'triple', options: [{ value: 'type1', label: 'Type 1 error' }, { value: 'type2', label: 'Type 2 error' }, { value: 'correct', label: 'Correct' }],
+    answer,
+    explain: () => why,
+  };
+}
+
+// 5h. Convincing, or could easily be a false alarm? The convincing cases
+// are built from the student's subject; the false alarms are fixed.
+function falseAlarmQuestion(recent) {
+  if (Math.random() < 0.5) {
+    const c = pickFresh(FALSE_ALARMS, recent, x => x.label);
+    return {
+      key: c.label, prompt: { desc: c.label }, question: 'Convincing, or could it easily be a <strong>false alarm</strong>?',
+      layout: 'pair', options: [{ value: 'convincing', label: 'Convincing' }, { value: 'false', label: 'Could be a false alarm' }],
+      answer: 'false', explain: () => c.why,
+    };
+  }
+  const rel = pickFresh(content().relations, recent, r => r.id);
+  const s = `“${rel.says[0]}”`;
+  const form = pick([
+    `Three different research teams, working separately, each find the same significant result: ${s}`,
+    `Before collecting any data, researchers predict ${s} They run that one test, and results like theirs would happen by chance less than 1 time in 1,000.`,
+    `A study finds ${s} A second, larger study set up to check it finds the same significant result.`,
+  ]);
+  return {
+    key: `${rel.id}-conv`, prompt: { desc: form }, question: 'Convincing, or could it easily be a <strong>false alarm</strong>?',
+    layout: 'pair', options: [{ value: 'convincing', label: 'Convincing' }, { value: 'false', label: 'Could be a false alarm' }],
+    answer: 'convincing',
+    explain: () => 'This is convincing. A false alarm happens about 1 time in 20 when H0 is true — but here the result was predicted in advance, or found again and again. Chance alone would hardly ever do that.',
+  };
+}
+
 const QUESTION_TYPES = {
+  real: realQuestion,
+  h0h1: h0h1Question,
+  chance: chanceQuestion,
+  h0chance: h0ChanceQuestion,
+  h0subject: h0SubjectQuestion,
+  five: fivePercentQuestion,
+  errors: errorQuestion,
+  falseAlarm: falseAlarmQuestion,
   variation: variationQuestion,
   sigma: sigmaQuestion,
   heightZ: () => zLineQuestion('height'),

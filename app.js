@@ -379,7 +379,7 @@ const HELP = {
           example comes from it. You can change subject at any time from the menu.</li>
       <li>It goes with a research methods module rather than replacing it. The game is
           where you practise the ideas enough times for them to stick.</li>
-      <li>There are <strong>four levels</strong> so far, each split into short sub-levels.
+      <li>There are <strong>five levels</strong> so far, each split into short sub-levels.
           Early questions are a single tap. Later ones ask you to type answers in your
           own words.</li>
       <li><strong>Nothing here is graded and nothing is watched.</strong> Your points and

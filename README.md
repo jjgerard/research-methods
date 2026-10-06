@@ -122,6 +122,23 @@ gap between colours without moving any average.
 
 Everything except 4a is generated. Heights are in centimetres.
 
+### Level 5: Real or coincidence?
+
+| | Sub-level | What it asks |
+|---|---|---|
+| **a** | Real effect or coincidence? | A real effect from your subject, or an everyday coincidence? |
+| **b** | H0 or H1? | Null or alternative hypothesis, about your subject. |
+| **c** | Likely or unlikely by chance? | Coins, dice and cards: 6 heads in 10 flips, or 20 heads in a row? |
+| **d** | Keep or reject H0? Coins and dice | The same events with an H0 ("the coin is fair"). |
+| **e** | Keep or reject H0? Your subject | An experiment where nearly every trial goes the same way, or splits evenly. |
+| **f** | The 5% line | "If H0 were true, this would happen 1 time in 4 / 1 in 1,000": keep or reject? |
+| **g** | Which error? | Type 1, Type 2, or correct? |
+| **h** | False alarms | One significant result among 20 tests, or a result found again and again? |
+
+No arithmetic anywhere: the level builds the idea that we reject H0 when results would
+hardly ever happen by chance *if H0 were true*, from coins and dice to the student's own
+subject, and then shows the price of the 5% rule (about 1 false alarm in 20 tests).
+
 ## Fits on a phone
 
 Every question, including its Check button, fits on a small phone screen (360×640)
@@ -185,6 +202,7 @@ number in `index.html`. Raise it on every change so nobody gets a cached old cop
 | `data2.js` | Level 2's items, with every explanation. |
 | `data3.js` | Level 3's factors, and the generator for its graphs. |
 | `data4.js` | Level 4's descriptions, and the generators for its groups, lines and distributions. |
+| `data5.js` | Level 5's coincidences, chance events, the 5% line and the false alarms. |
 | `quiz.js` | The question types, and the quiz screen they all share. |
 | `parser.js` | Works out which part of a study description a typed answer means. |
 | `graphs.js` | Every figure: line graphs, bar graphs, people, number lines and histograms. |
