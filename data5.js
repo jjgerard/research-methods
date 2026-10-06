@@ -9,8 +9,8 @@
 //   5c  chance events everyone can judge (20 heads in a row? no way)
 //   5d  the same events with an H0 attached ("the coin is fair")
 //   5e  the same reasoning on an experiment in the student's own subject
-//   5f  the 5% line: "1 in 4" keep, "1 in 1000" reject -- a comparison
-//       against 1 in 20, not a calculation
+//   5f  the 5% line: "a 30% chance" keep, "a 2% chance" reject -- a
+//       straight comparison with 5, not a calculation
 //   5h  the price of the 5% line: about 1 test in 20 where H0 is true
 //       comes out significant anyway (the lecture's xkcd jelly beans)
 //
@@ -166,22 +166,12 @@ function makeExperimentResult(rel) {
 // judgment call on the border.
 // ---------------------------------------------------------------------------
 const FIVE_PERCENT_CHANCES = [
-  { text: 'about 1 time in 2', reject: false },
-  { text: 'about 1 time in 3', reject: false },
-  { text: 'about 1 time in 4', reject: false },
-  { text: 'about 1 time in 6', reject: false },
-  { text: 'about 1 time in 10', reject: false },
-  { text: 'about 30% of the time', reject: false },
-  { text: 'about 15% of the time', reject: false },
-  { text: 'about half the time', reject: false },
-  { text: 'about 1 time in 100', reject: true },
-  { text: 'about 1 time in 200', reject: true },
-  { text: 'about 1 time in 1,000', reject: true },
-  { text: 'about 1 time in a million', reject: true },
-  { text: 'about 1% of the time', reject: true },
-  { text: 'less than 0.1% of the time', reject: true },
-  { text: 'about 1 time in 50', reject: true },
-  { text: 'about 2% of the time', reject: true },
+  // Plain percentages only, so the decision is a straight comparison with 5:
+  // "1 in 50" made students reverse their intuition (a bigger number meaning
+  // a rarer result) and convert to percentages in their heads.
+  // Nothing from 4% to 6%, so it's never a judgment call on the border.
+  ...[50, 40, 30, 25, 20, 15, 12, 10, 8].map(p => ({ percent: p, reject: false })),
+  ...[3, 2, 1, 0.5, 0.1].map(p => ({ percent: p, reject: true })),
 ];
 
 // ---------------------------------------------------------------------------

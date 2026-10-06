@@ -131,7 +131,7 @@ Everything except 4a is generated. Heights are in centimetres.
 | **c** | Likely or unlikely by chance? | Coins, dice and cards: 6 heads in 10 flips, or 20 heads in a row? |
 | **d** | Keep or reject H0? Coins and dice | The same events with an H0 ("the coin is fair"). |
 | **e** | Keep or reject H0? Your subject | An experiment where nearly every trial goes the same way, or splits evenly. |
-| **f** | The 5% line | "If H0 were true, this would happen 1 time in 4 / 1 in 1,000": keep or reject? |
+| **f** | The 5% line | "If H0 were true, the chance of results like these would be 30% / 2%": below 5%, reject; above, keep. |
 | **g** | Which error? | Type 1, Type 2, or correct? |
 | **h** | False alarms | One significant result among 20 tests, or a result found again and again? |
 

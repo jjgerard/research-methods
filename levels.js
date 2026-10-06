@@ -645,18 +645,17 @@ const LEVELS = [
       },
       {
         id: '5-five', kind: 'five', name: 'The 5% line',
-        desc: 'Below 1 in 20, reject H0. Above it, keep it.',
-        speech: 'Rarer than 1 in 20 by chance? Then reject H0.',
+        desc: 'Below 5%, reject H0. Above 5%, keep it.',
+        speech: 'Below 5%? Reject H0. Above 5%? Keep it.',
         help: {
           title: 'The 5% rule',
           html: `<ul>
-            <li>How unlikely is unlikely enough? The usual rule is <strong>5%</strong>: 1 time in 20.</li>
-            <li>If H0 were true and results like ours would happen by chance <strong>less often than
-                1 time in 20</strong>, we reject H0 and call the effect <strong>significant</strong>.</li>
-            <li>If they'd happen <strong>more often than that</strong>, we keep H0: the effect is not
-                significant.</li>
-            <li>No calculating — just compare. 1 in 100 is rarer than 1 in 20: reject. 1 in 4 is far more
-                often: keep.</li>
+            <li>How unlikely is unlikely enough? The usual line is <strong>5%</strong>.</li>
+            <li>Ask: if H0 were true, what's the chance of getting results like these?</li>
+            <li><strong>Below 5%</strong> — reject H0. The result is <strong>significant</strong>.</li>
+            <li><strong>Above 5%</strong> — keep H0. The result is <strong>not significant</strong>.</li>
+            <li>No calculating — just compare the number with 5. 2% is below 5%: reject. 30% is above:
+                keep.</li>
           </ul>`,
         },
       },

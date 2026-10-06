@@ -1000,15 +1000,18 @@ function h0SubjectQuestion(recent) {
 function fivePercentQuestion(recent) {
   const rel = pickFresh(content().relations, recent, r => r.id);
   const c = pick(FIVE_PERCENT_CHANCES);
+  const p = `${c.percent}%`;
   return {
-    key: `${rel.id}-${c.text}`,
-    prompt: { quote: `H0: Changing ${rel.ivNP || rel.iv} has no effect on ${rel.dvNP || rel.dv}. If H0 were true, results like these would happen by chance ${c.text}.` },
-    question: 'Using the <strong>5% rule</strong>, do you keep H0 or reject it?',
+    key: `${rel.id}-${c.percent}`,
+    prompt: { quote: `H0: Changing ${rel.ivNP || rel.iv} has no effect on ${rel.dvNP || rel.dv}. If H0 were true, the chance of getting results like these would be ${p}.` },
+    // The rule itself is on screen: the question is only ever "is this
+    // number below 5?", which is the whole of the 5% rule.
+    question: `Is <strong>${p}</strong> below 5%? Below 5% → reject H0. Above 5% → keep H0.`,
     layout: 'pair', options: [{ value: 'keep', label: 'Keep H0' }, { value: 'reject', label: 'Reject H0' }],
     answer: c.reject ? 'reject' : 'keep',
     explain: () => (c.reject
-      ? `The 5% rule: reject H0 if results like these would happen by chance less than 5% of the time — less often than 1 time in 20. ${cap(c.text)} is rarer than 1 in 20, so reject H0: the effect is significant.`
-      : `The 5% rule: reject H0 only if results like these would happen by chance less than 5% of the time — less often than 1 time in 20. ${cap(c.text)} is much more often than that, so keep H0: the effect is not significant.`),
+      ? `${p} is below 5%, so reject H0: the result is significant. Results like these would hardly ever happen if H0 were true.`
+      : `${p} is above 5%, so keep H0: the result is not significant. Results like these could easily happen by chance if H0 were true.`),
   };
 }
 
@@ -1052,7 +1055,7 @@ function falseAlarmQuestion(recent) {
   const s = `“${rel.says[0]}”`;
   const form = pick([
     `Three different research teams, working separately, each find the same significant result: ${s}`,
-    `Before collecting any data, researchers predict ${s} They run that one test, and results like theirs would happen by chance less than 1 time in 1,000.`,
+    `Before collecting any data, researchers predict ${s} They run that one test, and if H0 were true, the chance of getting results like theirs would be less than 0.1%.`,
     `A study finds ${s} A second, larger study set up to check it finds the same significant result.`,
   ]);
   return {
