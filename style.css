@@ -98,6 +98,7 @@ body.on-welcome main { padding-top: 8px; }
 .btn-hero { width: 100%; margin-top: 18px; padding: 14px 18px; font-size: 1.08rem; }
 .start-note { font-size: 0.82rem; margin: 12px 0 0; text-align: center; }
 .welcome-help { display: block; margin: 8px auto 0; padding: 8px; font-size: 0.92rem; }
+.welcome-games { display: flex; align-items: center; min-height: 44px; width: fit-content; margin: 0 auto; text-decoration: none; }
 .field-help { font-size: 0.82rem; color: var(--muted); margin: 10px 0 0; line-height: 1.4; }
 .field-error {
   margin: 12px 0 0; padding: 10px 12px;
