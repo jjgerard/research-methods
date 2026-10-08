@@ -127,6 +127,8 @@ body.on-welcome main { padding-top: 8px; }
 }
 .link-btn:hover { text-decoration: underline; }
 .back-btn { display: block; margin-bottom: 12px; }
+/* Back to the games site (jjgerard.github.io/games), on the level select. */
+.screen > a.allgames { display: inline-flex; align-items: center; min-height: 44px; width: fit-content; text-decoration: none; }
 .dialog a { color: var(--accent); font-weight: 600; }
 
 /* ---- discipline picker ---- */
