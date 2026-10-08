@@ -8,7 +8,7 @@ alongside the Research Methods module CMM378 (linguistics), rather than replace 
 It runs on a phone, needs no account, stores nothing on a server, and has no build step.
 It's the sister game to [Shapes and Language](https://github.com/jjgerard/shapes).
 
-**Play it:** https://jjgerard.github.io/research-methods/
+**Play it:** https://jjgerard.github.io/trial-and-error/
 
 ## Get it on a phone
 
@@ -187,8 +187,8 @@ kind of thing as the discipline.
 It's a static site with no dependencies:
 
 ```sh
-git clone https://github.com/jjgerard/research-methods
-cd research-methods
+git clone https://github.com/jjgerard/trial-and-error
+cd trial-and-error
 python3 -m http.server 8123      # then open http://localhost:8123
 ```
 
