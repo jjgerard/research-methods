@@ -461,6 +461,109 @@ body.on-welcome main { padding-top: 8px; }
 
 /* Decoration on top of feedback that's already in words, so switching it
    off costs nothing. */
+/* ---- the visual sub-levels (visual.js) ----
+   Circles and squares are the sister games' shapes; here the circle is
+   always the independent variable and the square the dependent. */
+.shape-icon { display: block; flex-shrink: 0; }
+
+/* 1b-1c: build the arrow. */
+.quiz-answers.layout-arrow { grid-template-columns: minmax(0, 1fr); }
+.arrow-build { display: grid; grid-template-columns: minmax(0, 1fr) 28px minmax(0, 1fr); align-items: stretch; gap: 4px; }
+.role-arrow { align-self: center; text-align: center; font-size: 1.6rem; font-weight: 800; color: var(--muted); }
+.arrow-build.built .role-arrow { color: var(--ink); }
+.role-slot { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; text-align: left; min-height: 96px; padding: 10px; border-style: dashed; }
+.role-slot.filled { border-style: solid; }
+.role-slot:disabled:not(.is-answer):not(.is-wrong) { color: var(--ink); }
+.role-slot-head { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; color: var(--muted); font-weight: 700; }
+.role-slot-name { font-size: 1rem; line-height: 1.25; }
+.role-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.role-tile { min-height: 56px; line-height: 1.25; }
+
+/* 2b-2c: hypotheses on graphs. */
+.quiz-answers.layout-hypgraphs { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+.hyp-graphs { display: flex; gap: 8px; justify-content: center; }
+.hyp-graph { flex: 1 1 0; max-width: 150px; min-height: 0; padding: 6px 6px 4px; display: flex; flex-direction: column; align-items: center; gap: 2px; border-style: dashed; }
+.hyp-graph.filled { border-style: solid; border-color: var(--accent); }
+.hyp-graph.held, .hyp-tile.held { border-color: var(--accent); background: var(--accent-tint); box-shadow: inset 0 0 0 1px var(--accent); }
+.mini-graph { width: 100%; max-width: 100px; height: auto; display: block; }
+.mini-axes { fill: none; stroke: var(--ink); stroke-width: 2.2; }
+.mini-line { stroke: var(--accent); stroke-width: 3.2; stroke-linecap: round; }
+.mini-dot { fill: #e4572e; }
+.hyp-tiles { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 6px; }
+.hyp-tile { display: flex; align-items: center; gap: 6px; text-align: left; font-weight: 600; min-height: 0; padding: 10px 12px; line-height: 1.3; }
+.hyp-tile-icon:empty { display: none; }
+.hyp-tile-icon { flex: 0 0 30px; }
+.hyp-tile-icon .mini-graph { width: 30px; }
+.hyp-tile.placed { border-color: var(--accent); }
+
+/* 2d-2e: categories as pictures. */
+.quiz-answers.layout-pictures, .quiz-answers.layout-pictures-pair { grid-template-columns: 1fr 1fr; gap: 10px; }
+.picture-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; min-height: 0; padding: 8px 6px 8px; }
+.cat-picture { width: 100%; max-width: 130px; height: auto; display: block; }
+.picture-label { font-size: 1rem; }
+.cat-solid { fill: #cfdde2; stroke: var(--accent); stroke-width: 2; }
+.cat-scale { stroke: var(--ink); stroke-width: 2; }
+.cat-ruler { fill: #fbe9b7; stroke: var(--ink); stroke-width: 1.5; }
+.cat-arrow { stroke: var(--muted); stroke-width: 2; stroke-linecap: round; }
+.cat-text { font-size: 15px; font-weight: 700; fill: var(--ink); }
+.cat-num { font-size: 17px; font-weight: 800; fill: var(--accent); }
+
+/* 2i: two groups of shapes. */
+.quiz-answers.layout-groups { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+.groups-figure { width: 100%; max-width: 420px; height: auto; display: block; margin: 0 auto; }
+.group-panel { fill: #fffdf6; stroke: var(--line); stroke-width: 1.5; }
+.confound-chip.striped { background: repeating-linear-gradient(45deg, #d5e7ef 0 6px, #ffffff 6px 10px); }
+.confound-chips { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+.confound-chip { min-height: 44px; padding: 8px 12px; font-size: 0.92rem; font-weight: 600; border-radius: 999px; }
+.confound-chip.selected::before { content: ''; }
+
+/* 2j: who takes part in what. */
+.design-grid-table { display: grid; grid-template-columns: auto 1fr 1fr; gap: 6px; align-items: center; }
+.dg-head { text-align: center; font-size: 0.85rem; font-weight: 700; color: var(--muted); }
+.dg-row { display: flex; align-items: center; gap: 6px; font-size: 0.9rem; font-weight: 700; padding-right: 4px; }
+.dg-cell {
+  min-height: 46px; border: 2px dashed var(--line); border-radius: 10px; background: var(--panel);
+  display: flex; align-items: center; justify-content: center;
+}
+.dg-cell[aria-pressed="true"] { border-style: solid; border-color: var(--accent); background: var(--accent-tint); }
+.dg-cell.is-answer { border-style: solid; border-color: var(--good); background: var(--good-tint); }
+.design-grid .check-btn { margin-top: 8px; width: 100%; }
+
+/* 4a: the see-saw. */
+.seesaw { width: 100%; height: auto; display: block; overflow: visible; }
+.seesaw-plank { transition: transform 0.35s ease; transform-box: view-box; }
+.plank { stroke: var(--ink); stroke-width: 6; stroke-linecap: round; }
+.seesaw-num { font-size: 15px; font-weight: 700; fill: var(--ink); }
+.seesaw-pivot { fill: var(--accent); }
+@media (prefers-reduced-motion: reduce) { .seesaw-plank { transition: none; } }
+
+/* 5c-5d: draws from a bag. */
+.bag-figure { width: 100%; }
+.bag-caption { font-weight: 600; font-size: 1rem; line-height: 1.35; margin-bottom: 6px; padding: 8px 12px; border-left: 5px solid var(--accent); background: var(--accent-tint); border-radius: 0 10px 10px 0; }
+.bag-row { display: flex; align-items: center; gap: 10px; }
+.bag { flex: 0 0 72px; width: 72px; height: auto; }
+.bag-body { fill: #e9dcc3; stroke: #8a7350; stroke-width: 2; }
+.bag-neck { fill: none; stroke: #8a7350; stroke-width: 3; stroke-linecap: round; }
+.bag-q { font-size: 34px; font-weight: 800; fill: #8a7350; }
+.draws { flex: 1 1 auto; min-width: 0; width: 100%; max-width: 300px; height: auto; display: block; }
+
+/* 5g: the 2 x 2 grid. */
+.quiz-answers.layout-errgrid { grid-template-columns: auto 1fr 1fr; gap: 8px; align-items: stretch; }
+.eg-head { text-align: center; font-size: 0.85rem; font-weight: 700; color: var(--muted); align-self: end; }
+.eg-row { font-size: 0.85rem; font-weight: 700; color: var(--muted); align-self: center; max-width: 90px; line-height: 1.25; }
+.eg-cell { min-height: 60px; }
+
+/* 5h: tests as jars. */
+.jar-figure { width: 100%; display: flex; flex-direction: column; gap: 6px; align-items: center; }
+.jars { width: 100%; max-width: 330px; height: auto; display: block; }
+.jars-big { max-width: 100%; }
+.jar-body { fill: #fffdf6; stroke: var(--muted); stroke-width: 1.5; }
+.jar-lid { fill: var(--muted); }
+.jar.lit .jar-body { fill: #f6c445; stroke: #8a6400; }
+.jar.lit .jar-lid { fill: #8a6400; }
+.jar-star { fill: #5b3f00; font-weight: 800; }
+.jar-key { font-size: 0.8rem; color: var(--muted); font-weight: 600; text-align: center; }
+
 @media (prefers-reduced-motion: reduce) {
   .mascot.jumping, .mascot.dancing, .mascot.jumping *, .mascot.dancing * { animation: none !important; }
   .streak-bar-fill { transition: none; }
@@ -542,6 +645,29 @@ body.on-welcome main { padding-top: 8px; }
   body.in-quiz .mascot-wrap { padding: 6px 12px; gap: 8px; }
   body.in-quiz .mascot { width: 38px; height: 38px; }
   body.in-quiz .mascot-bubble { font-size: 0.78rem; line-height: 1.3; }
+  .role-slot { min-height: 84px; padding: 8px; }
+  .role-slot-name { font-size: 0.92rem; }
+  .role-tile { min-height: 50px; font-size: 0.92rem; padding: 8px; }
+  .hyp-tile { font-size: 0.8rem; padding: 5px 10px; border-width: 1.5px; }
+  .hyp-tiles { gap: 5px; }
+  .mini-graph { max-width: 64px; }
+  .hyp-graph { padding: 3px; }
+  .hyp-tile { padding: 4px 8px; line-height: 1.22; }
+  .picture-label { font-size: 0.9rem; }
+  .cat-picture { max-width: 104px; }
+  .bag-caption { font-size: 0.86rem; padding: 7px 10px; }
+  .bag { flex-basis: 60px; width: 60px; }
+  .confound-chip { min-height: 34px; padding: 3px 9px; font-size: 0.8rem; }
+  .confound-chips { gap: 5px; }
+  .groups-figure { max-height: 44px; width: auto; }
+  .quiz-answers.layout-groups { gap: 6px; }
+  .layout-groups .check-btn { min-height: 44px; }
+  .dg-cell { min-height: 36px; }
+  .design-grid-table { gap: 3px; }
+  .design-grid .check-btn { margin-top: 4px; min-height: 44px; }
+  .dg-head { font-size: 0.78rem; }
+  .eg-cell { min-height: 52px; font-size: 0.9rem; padding: 8px 6px; }
+  .jar-figure .prompt-desc { font-size: 0.86rem; }
 }
 /* A four-digit score arrives within the first level, and at 375px the pill,
    the Menu button and a two-line name only just fit side by side -- so on

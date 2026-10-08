@@ -83,31 +83,11 @@ function classifyQuestion(recent, sub) {
 }
 
 // ---------------- which variable changes the other ----------------
+// The question itself is in visual.js: the student builds the arrow.
 const ROLE_TERMS = {
   plain:  { changer: 'changer', changee: 'change-ee' },
   formal: { changer: 'independent variable', changee: 'dependent variable' },
 };
-
-function rolesQuestion(recent, sub) {
-  const rel = pickFresh(content().relations, recent, r => r.id);
-  const terms = ROLE_TERMS[sub.terms];
-  // Asking for the change-ee half the time means tapping "whichever one
-  // did the changing" can't become a reflex that skips the reading.
-  const askChanger = Math.random() < 0.5;
-  const wanted = askChanger ? terms.changer : terms.changee;
-  return {
-    key: rel.id,
-    prompt: { quote: pick(rel.says) },
-    question: `Which is the <strong>${wanted}</strong>?`,
-    layout: 'pair',
-    options: shuffle([
-      { value: 'iv', label: rel.iv },
-      { value: 'dv', label: rel.dv },
-    ]),
-    answer: askChanger ? 'iv' : 'dv',
-    explain: () => `${cap(rel.iv)} is the ${terms.changer} and ${rel.dv} is the ${terms.changee}. ${rel.why}`,
-  };
-}
 
 // ---------------- match the graph ----------------
 function graphQuestion(recent) {
@@ -160,9 +140,10 @@ function graphQuestion(recent) {
 }
 
 // ---------------- hypotheses ----------------
-// The Level 1 relations again, now as research questions. The options are
-// the four graphs from 1d put into words -- forwards or backwards, up or
-// down -- plus, in the second sub-level, a "no effect" version each way.
+// The Level 1 relations again, now as research questions. The hypotheses
+// are the four graphs from 1d put into words -- forwards or backwards, up
+// or down -- plus, in the second sub-level, a "no effect" version each way.
+// The question, placing them on graphs, is in visual.js.
 //
 // The right answers keep the direction of cause the question asks about and
 // differ only in which way the effect goes: that's what makes two
@@ -180,80 +161,6 @@ function hypothesisTexts(rel) {
     'b-down': `Increasing ${dv} decreases ${iv}.`,
     'f-null': `Changing ${iv} has no effect on ${dv}.`,
     'b-null': `Changing ${dv} has no effect on ${iv}.`,
-  };
-}
-
-function hypothesisQuestion(recent, sub) {
-  const rel = pickFresh(content().relations, recent, r => r.id);
-  const iv = rel.ivNP || rel.iv;
-  const dv = rel.dvNP || rel.dv;
-  const texts = hypothesisTexts(rel);
-  const [ivShort, dvShort] = rel.hyp;
-  const ids = sub.withNull
-    ? ['f-up', 'f-down', 'b-up', 'b-down', 'f-null', 'b-null']
-    : ['f-up', 'f-down', 'b-up', 'b-down'];
-  const correctIds = sub.withNull ? ['f-up', 'f-down', 'f-null'] : ['f-up', 'f-down'];
-  const need = correctIds.length;
-  const order = shuffle(ids);
-  let buttons = {};
-
-  const render = (el, submit) => {
-    const chosen = new Set();
-    const check = makeButton(`Check`, 'btn-primary check-btn');
-    const refresh = () => {
-      check.disabled = chosen.size !== need;
-      check.textContent = chosen.size === need ? 'Check' : `Pick ${need} (${chosen.size} so far)`;
-    };
-    order.forEach(id => {
-      const btn = makeToggle(texts[id], (b) => {
-        if (chosen.has(id)) chosen.delete(id);
-        // Picking one more than allowed swaps out nothing silently: it's
-        // simply refused until one is deselected.
-        else if (chosen.size < need) chosen.add(id);
-        setPressed(b, chosen.has(id));
-        refresh();
-      });
-      buttons[id] = btn;
-      el.appendChild(btn);
-    });
-    check.addEventListener('click', () => submit([...chosen]));
-    el.appendChild(check);
-    refresh();
-  };
-
-  const grade = (picked) => {
-    disableAll(document.getElementById('quiz-answers'));
-    for (const id of ids) {
-      if (correctIds.includes(id)) buttons[id].classList.add('is-answer');
-      else if (picked.includes(id)) buttons[id].classList.add('is-wrong');
-    }
-    const wrong = picked.filter(id => !correctIds.includes(id));
-    const correct = wrong.length === 0;
-    const parts = [];
-    if (wrong.some(id => id.startsWith('b-'))) {
-      parts.push(`The question asks about the effect OF ${iv} ON ${dv}, so ${iv} should be the cause in every hypothesis. The ones that start "Increasing ${dvShort}…" or "Changing ${dvShort}…" are backwards.`);
-    }
-    if (wrong.includes('f-null') || wrong.includes('b-null')) {
-      parts.push('"No effect" isn\'t one of a pair of opposing hypotheses — it\'s the null hypothesis.');
-    }
-    // "Will increase" rather than "goes up": several of these are plural
-    // ("acceptability ratings"), and a modal agrees with either.
-    parts.push(sub.withNull
-      ? `The three are: ${dv} will increase, ${dv} will decrease, and the null hypothesis — that changing ${iv} makes no difference at all.`
-      : `The two opposing hypotheses keep the same cause and effect, and differ only in direction: ${dv} will increase, or ${dv} will decrease.`);
-    return { correct, explain: parts.join(' ') };
-  };
-
-  return {
-    key: rel.id,
-    prompt: { quote: `Does ${iv} affect ${dv}?` },
-    question: sub.withNull
-      ? 'Pick <strong>3</strong>: two opposing, plus the null.'
-      : 'Pick the <strong>2</strong> opposing hypotheses.',
-    layout: 'list',
-    answer: correctIds.map(id => texts[id]),
-    render,
-    grade,
   };
 }
 
@@ -512,77 +419,6 @@ function effectsQuestion() {
   };
 }
 
-// ---------------- confounds ----------------
-// Two steps, one answer: is there a confound, and if so, which variable is
-// it? The second step only appears after a "yes", so saying yes can't be
-// used to fish for a list of suspects -- but the whole item still counts as
-// a single answer to the streak, right only if both steps are.
-function confoundQuestion(recent) {
-  const item = pickFresh(content().confounds, recent, i => i.text);
-  let stage2 = null;
-  let yesNo = {};
-
-  const render = (el, submit) => {
-    ['Yes, there\'s a confound', 'No confound'].forEach((label, i) => {
-      const saidYes = i === 0;
-      const btn = makeButton(label);
-      yesNo[saidYes] = btn;
-      btn.addEventListener('click', () => {
-        if (!saidYes || !item.confound) { submit({ saidYes }); return; }
-        // A correct "yes": on to naming it.
-        disableAll(el);
-        btn.classList.add('is-answer');
-        document.getElementById('quiz-question').innerHTML = 'Which variable is the <strong>confound</strong>?';
-        stage2 = {};
-        const list = document.createElement('div');
-        list.className = 'quiz-answers layout-list stage2';
-        shuffle(item.vars).forEach(v => {
-          const b = makeButton(v);
-          stage2[v] = b;
-          b.addEventListener('click', () => submit({ saidYes, picked: v }));
-          list.appendChild(b);
-        });
-        el.after(list);
-      });
-      el.appendChild(btn);
-    });
-  };
-
-  const grade = (ans) => {
-    document.querySelectorAll('.quiz-body button.answer-btn').forEach(b => { b.disabled = true; });
-    if (!item.confound) {
-      yesNo[false].classList.add('is-answer');
-      if (ans.saidYes) yesNo[true].classList.add('is-wrong');
-      return { correct: !ans.saidYes, explain: `There's no confound here. ${item.why}` };
-    }
-    if (!ans.saidYes) {
-      yesNo[true].classList.add('is-answer');
-      yesNo[false].classList.add('is-wrong');
-      return { correct: false, explain: `There is one: ${item.confound}. ${item.why}` };
-    }
-    stage2[item.confound].classList.add('is-answer');
-    if (ans.picked !== item.confound) stage2[ans.picked].classList.add('is-wrong');
-    return {
-      correct: ans.picked === item.confound,
-      explain: ans.picked === item.iv
-        ? `${cap(ans.picked)} is what the study is testing — the independent variable — not the confound. The confound is ${item.confound}. ${item.why}`
-        : ans.picked === item.dv
-          ? `${cap(ans.picked)} is what's being measured — the dependent variable. The confound is ${item.confound}. ${item.why}`
-          : `The confound is ${item.confound}. ${item.why}`,
-    };
-  };
-
-  return {
-    key: item.text,
-    prompt: { desc: item.text },
-    question: 'Is there a <strong>confound</strong>?',
-    layout: 'pair',
-    answer: item.confound,
-    render,
-    grade,
-  };
-}
-
 // ---------------- typed answers ----------------
 // A box to type in, read by parser.js. What the parser finds is shown back
 // ("Read as: font size") before anything is marked, so a student can see
@@ -692,12 +528,14 @@ function designQuestion(recent, sub) {
   const setQuestion = html => { document.getElementById('quiz-question').innerHTML = html; };
   const choiceLabel = Object.fromEntries(sub.choices.map(c => [c.value, c.label]));
   let choiceButtons = {};
+  let gridStep = null;
 
   // One step per IV, so "iv" in sub.steps expands to as many as the item has.
   const steps = sub.steps.flatMap(s => (s === 'iv' ? ivs.map((_, i) => ({ kind: 'iv', index: i })) : [{ kind: s }]));
   const found = new Set();
 
   const questionFor = (step) => {
+    if (step.kind === 'choice' && sub.grid) return `Who takes part in what? Tap the grid to put each ${onSamples() ? 'sample' : 'person'} in a condition.`;
     if (step.kind === 'choice') return sub.choiceQuestion;
     if (step.kind === 'dv') return 'What\'s the <strong>dependent variable</strong>? Type it in your own words.';
     if (ivs.length === 1) return 'What\'s the <strong>independent variable</strong>? Type it in your own words.';
@@ -711,6 +549,18 @@ function designQuestion(recent, sub) {
       if (i >= steps.length) { submit({ ok: true }); return; }
       const step = steps[i];
       setQuestion(questionFor(step));
+      if (step.kind === 'choice' && sub.grid) {
+        // 2j: the choice is made by filling in who takes part in what.
+        gridStep = designGridStep(el, {
+          samples: onSamples(),
+          onDone: (pattern) => {
+            if (pattern !== item.cat) { submit({ step: 'choice', got: pattern }); return; }
+            gridStep.collapse(`✓ ${choiceLabel[item.cat]}`);
+            run(i + 1);
+          },
+        });
+        return;
+      }
       if (step.kind === 'choice') {
         const row = document.createElement('div');
         row.className = `quiz-answers ${sub.choices.length === 2 ? 'layout-pair' : 'layout-list'} step`;
@@ -753,6 +603,13 @@ function designQuestion(recent, sub) {
   const grade = (ans) => {
     document.querySelectorAll('#quiz-answers input, #quiz-answers button').forEach(x => { x.disabled = true; });
     if (ans.ok) return { correct: true };
+    if (ans.step === 'choice' && sub.grid) {
+      gridStep.show(item.cat, 'is-answer');
+      const mixed = ans.got === 'mixed'
+        ? `In your grid, some ${onSamples() ? 'samples' : 'people'} are in both conditions and some in only one. `
+        : '';
+      return { correct: false, explain: `${mixed}It's ${choiceLabel[item.cat].toLowerCase()}: the grid now shows it. ${sub.choiceWhy[item.cat]}` };
+    }
     if (ans.step === 'choice') {
       choiceButtons[ans.got].classList.add('is-wrong');
       choiceButtons[item.cat].classList.add('is-answer');
@@ -956,32 +813,6 @@ function h0h1Question(recent) {
   };
 }
 
-// 5c. Could this easily happen by chance?
-function chanceQuestion() {
-  const e = makeChanceEvent();
-  return {
-    key: `chance-${Math.random()}`, prompt: { quote: e.text }, question: 'Could this easily happen <strong>just by chance</strong>?',
-    layout: 'pair', options: [{ value: 'likely', label: 'Yes — easily' }, { value: 'unlikely', label: 'No — hardly ever' }],
-    answer: e.unlikely ? 'unlikely' : 'likely',
-    explain: () => (e.unlikely
-      ? `By chance alone, this happens ${oneIn(e.prob)}. It's possible, but you'd hardly ever see it.`
-      : `By chance alone, a result exactly like this happens ${oneIn(e.prob)} — it turns up all the time.`),
-  };
-}
-
-// 5d. The same, with H0 named: keep it or reject it?
-function h0ChanceQuestion() {
-  const e = makeChanceEvent();
-  return {
-    key: `h0c-${Math.random()}`, prompt: { quote: `H0: ${e.h0}. ${e.text}` }, question: 'Do you <strong>keep</strong> H0 or <strong>reject</strong> it?',
-    layout: 'pair', options: [{ value: 'keep', label: 'Keep H0' }, { value: 'reject', label: 'Reject H0' }],
-    answer: e.unlikely ? 'reject' : 'keep',
-    explain: () => (e.unlikely
-      ? `If ${e.h0}, this would happen ${oneIn(e.prob)}. Results that hardly ever happen when H0 is true are a reason to stop believing H0 — so reject it.`
-      : `If ${e.h0}, a result like this happens ${oneIn(e.prob)} — all the time. It gives no reason to doubt H0, so keep it.`),
-  };
-}
-
 // 5e. The same reasoning on an experiment from the student's subject.
 function h0SubjectQuestion(recent) {
   const rel = pickFresh(content().relations, recent, r => r.id);
@@ -1040,41 +871,13 @@ function errorQuestion(recent) {
   };
 }
 
-// 5h. Convincing, or could easily be a false alarm? The convincing cases
-// are built from the student's subject; the false alarms are fixed.
-function falseAlarmQuestion(recent) {
-  if (Math.random() < 0.5) {
-    const c = pickFresh(FALSE_ALARMS, recent, x => x.label);
-    return {
-      key: c.label, prompt: { desc: c.label }, question: 'Convincing, or could it easily be a <strong>false alarm</strong>?',
-      layout: 'pair', options: [{ value: 'convincing', label: 'Convincing' }, { value: 'false', label: 'Could be a false alarm' }],
-      answer: 'false', explain: () => c.why,
-    };
-  }
-  const rel = pickFresh(content().relations, recent, r => r.id);
-  const s = `“${rel.says[0]}”`;
-  const form = pick([
-    `Three different research teams, working separately, each find the same significant result: ${s}`,
-    `Before collecting any data, researchers predict ${s} They run that one test, and if H0 were true, the chance of getting results like theirs would be less than 0.1%.`,
-    `A study finds ${s} A second, larger study set up to check it finds the same significant result.`,
-  ]);
-  return {
-    key: `${rel.id}-conv`, prompt: { desc: form }, question: 'Convincing, or could it easily be a <strong>false alarm</strong>?',
-    layout: 'pair', options: [{ value: 'convincing', label: 'Convincing' }, { value: 'false', label: 'Could be a false alarm' }],
-    answer: 'convincing',
-    explain: () => 'This is convincing. A false alarm happens about 1 time in 20 when H0 is true — but here the result was predicted in advance, or found again and again. Chance alone would hardly ever do that.',
-  };
-}
-
+// The visual question types (visual.js) are added to this after it loads.
 const QUESTION_TYPES = {
   real: realQuestion,
   h0h1: h0h1Question,
-  chance: chanceQuestion,
-  h0chance: h0ChanceQuestion,
   h0subject: h0SubjectQuestion,
   five: fivePercentQuestion,
   errors: errorQuestion,
-  falseAlarm: falseAlarmQuestion,
   variation: variationQuestion,
   sigma: sigmaQuestion,
   heightZ: () => zLineQuestion('height'),
@@ -1085,11 +888,8 @@ const QUESTION_TYPES = {
   effects: effectsQuestion,
   design: designQuestion,
   classify: classifyQuestion,
-  roles: rolesQuestion,
   graph: graphQuestion,
-  hypotheses: hypothesisQuestion,
   validity: validityQuestion,
-  confound: confoundQuestion,
 };
 
 // ---------------- the modal ----------------

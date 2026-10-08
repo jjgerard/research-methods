@@ -6,8 +6,9 @@
 // would hardly ever happen by chance IF H0 WERE TRUE. It's built from
 // intuition, not arithmetic -- nobody is asked to multiply probabilities:
 //
-//   5c  chance events everyone can judge (20 heads in a row? no way)
-//   5d  the same events with an H0 attached ("the coin is fair")
+//   5c  chance events everyone can judge (20 circles in a row from a bag
+//       that's half circles? no way)
+//   5d  the same events with an H0 attached ("half the shapes are circles")
 //   5e  the same reasoning on an experiment in the student's own subject
 //   5f  the 5% line: "a 30% chance" keep, "a 2% chance" reject -- a
 //       straight comparison with 5, not a calculation
@@ -62,11 +63,12 @@ const COINCIDENCES = [
 ];
 
 // ---------------------------------------------------------------------------
-// 5c / 5d. Chance events. Generated from coins, dice and cards, and always
-// clearly one thing or the other: "likely" outcomes are the kind that turn
-// up at least about 1 time in 6 by chance; "unlikely" ones are 1 in a
-// thousand or rarer. Nothing in between, so there's nothing to calculate --
-// the only skill being practised is the judgment.
+// 5c / 5d. Chance events, as draws from a bag of shapes (see visual.js). A
+// coin is a bag that's half circles; a die is a bag where 1 shape in 6 is a
+// circle. Always clearly one thing or the other: "likely" outcomes turn up
+// at least about 1 time in 6 by chance; "unlikely" ones are 1 in a thousand
+// or rarer. Nothing in between, so there's nothing to calculate -- the only
+// skill being practised is the judgment.
 // ---------------------------------------------------------------------------
 function binomial(n, k, p) {
   let c = 1;
@@ -85,50 +87,24 @@ function oneIn(prob) {
   return `about 1 in ${round.toLocaleString('en-GB')} tries`;
 }
 
-const CHANCE_DEVICES = {
-  coin: { h0: 'the coin is fair', what: 'heads', p: 1 / 2 },
-  die: { h0: 'the die is fair', what: 'sixes', p: 1 / 6 },
-  card: { h0: 'the cards are shuffled fairly', what: 'red cards', p: 1 / 2 },
+const BAG_KINDS = {
+  half: { p: 1 / 2, h0: 'half the shapes in the bag are circles' },
+  sixth: { p: 1 / 6, h0: 'only 1 shape in 6 in the bag is a circle' },
 };
 
-// Returns { device, text, unlikely, prob, h0 }.
+// Returns { kind, n, k, draws, unlikely, prob, h0 }: n draws, k of them
+// circles, in the order they came out.
 function makeChanceEvent() {
-  const kind = pick(['coin', 'coin', 'die', 'die', 'card']);
-  const dev = CHANCE_DEVICES[kind];
+  const kind = pick(['half', 'half', 'sixth']);
   const unlikely = Math.random() < 0.5;
-  let n, k, text, prob;
-  if (kind === 'coin') {
-    if (unlikely) {
-      n = pick([10, 12, 15, 20, 25]); k = Math.random() < 0.8 ? n : 0;
-      text = `You flip a coin ${n} times and get ${k === n ? `${n} heads` : `no heads at all — ${n} tails`}.`;
-      prob = binomial(n, k, 0.5);
-    } else {
-      n = pick([4, 6, 8, 10]); k = n / 2 + pick([-1, 0, 0, 1]);
-      text = `You flip a coin ${n} times and get ${k} heads.`;
-      prob = binomial(n, k, 0.5);
-    }
-  } else if (kind === 'die') {
-    if (unlikely) {
-      n = pick([5, 6, 8, 10]); k = n;
-      text = `You roll a die ${n} times and get a six every time.`;
-      prob = binomial(n, k, 1 / 6);
-    } else {
-      [n, k] = pick([[6, 1], [6, 0], [12, 2], [12, 1], [12, 3], [3, 0]]);
-      text = k === 0 ? `You roll a die ${n} times and don't get a single six.` : `You roll a die ${n} times and get ${k === 1 ? 'one six' : `${k} sixes`}.`;
-      prob = binomial(n, k, 1 / 6);
-    }
-  } else {
-    if (unlikely) {
-      n = pick([10, 12, 15, 20]); k = n;
-      text = `You draw a card from a shuffled deck ${n} times, putting it back and reshuffling each time, and every card is red.`;
-      prob = binomial(n, k, 0.5);
-    } else {
-      n = pick([4, 6, 8]); k = n / 2 + pick([-1, 0, 1]);
-      text = `You draw a card from a shuffled deck ${n} times, putting it back and reshuffling each time, and ${k} of them are red.`;
-      prob = binomial(n, k, 0.5);
-    }
-  }
-  return { kind, text, unlikely, prob, h0: dev.h0 };
+  let n, k;
+  if (kind === 'half') {
+    if (unlikely) { n = pick([10, 12, 15, 20]); k = Math.random() < 0.8 ? n : 0; }
+    else { n = pick([4, 6, 8, 10]); k = n / 2 + pick([-1, 0, 0, 1]); }
+  } else if (unlikely) { n = pick([5, 6, 8, 10]); k = n; }
+  else [n, k] = pick([[6, 1], [6, 0], [12, 2], [12, 1], [12, 3], [3, 0]]);
+  const draws = shuffle([...Array(k).fill('circle'), ...Array(n - k).fill('square')]);
+  return { kind, n, k, draws, unlikely, prob: binomial(n, k, BAG_KINDS[kind].p), h0: BAG_KINDS[kind].h0 };
 }
 
 // ---------------------------------------------------------------------------
@@ -180,23 +156,24 @@ const FIVE_PERCENT_CHANCES = [
 // significant result among many tests is weak evidence; a single planned
 // test with a very rare result, or the same result found again and again,
 // is strong. The convincing ones are partly built from the student's own
-// subject (see quiz.js), so the strong evidence sounds like their field.
+// subject (see visual.js), so the strong evidence sounds like their field.
+// `tests` and `hits` draw the jars: one per test, lit if significant.
 // ---------------------------------------------------------------------------
 const FALSE_ALARMS = [
-  { label: 'Researchers test whether each of 20 colours of jelly bean is linked to spots. One colour comes out significant at the 5% level.',
+  { label: 'Researchers test whether each of 20 colours of jelly bean is linked to spots. One colour comes out significant at the 5% level.', tests: 20, hits: 1,
     why: 'Test 20 things that really have no effect, and about 1 in 20 will come out significant at the 5% level by chance. One out of 20 is exactly what chance alone predicts.' },
-  { label: 'A questionnaire asks 40 different questions, and each is tested against exam marks. Two come out significant at the 5% level.',
+  { label: 'A questionnaire asks 40 different questions, and each is tested against exam marks. Two come out significant at the 5% level.', tests: 40, hits: 2,
     why: 'With 40 tests at the 5% level, about 2 would come out significant by chance even if nothing were going on.' },
-  { label: 'A researcher reruns the same analysis 15 different ways, and reports only the one version that came out significant.',
+  { label: 'A researcher reruns the same analysis 15 different ways, and reports only the one version that came out significant.', tests: 15, hits: 1,
     why: 'Try enough versions and one will cross the 5% line by chance. Reporting only that one hides all the times it didn\'t.' },
-  { label: 'A study measures 25 different outcomes, and only one of them shows a significant difference between the groups.',
+  { label: 'A study measures 25 different outcomes, and only one of them shows a significant difference between the groups.', tests: 25, hits: 1,
     why: 'With 25 outcomes, at least one significant result is likely by chance alone — about 1 in 20 tests gives a false alarm.' },
-  { label: 'Researchers check 30 different foods against how well people sleep. One food comes out significant, and it\'s announced as a sleep aid.',
+  { label: 'Researchers check 30 different foods against how well people sleep. One food comes out significant, and it\'s announced as a sleep aid.', tests: 30, hits: 1,
     why: 'Out of 30 tests, one or two significant results is what chance alone would produce. One hit out of 30 is weak evidence.' },
-  { label: 'A study keeps adding participants and testing after each one, and stops as soon as the result is significant.',
+  { label: 'A study keeps adding participants and testing after each one, and stops as soon as the result is significant.', tests: 12, hits: 1, lastHit: true,
     why: 'Testing again and again gives chance many tries to cross the 5% line. Stopping the moment it does makes a false alarm far more likely.' },
-  { label: 'A researcher splits the participants into 20 different subgroups. The effect is significant in just one of them.',
+  { label: 'A researcher splits the participants into 20 different subgroups. The effect is significant in just one of them.', tests: 20, hits: 1,
     why: 'Twenty subgroups means twenty tests. One significant result among them is about what chance alone gives.' },
-  { label: 'Of 20 tests in a study, one is significant at the 5% level — but nobody predicted it, and it has never been repeated.',
+  { label: 'Of 20 tests in a study, one is significant at the 5% level — but nobody predicted it, and it has never been repeated.', tests: 20, hits: 1,
     why: 'One unpredicted result among 20 tests, never repeated, is exactly what a false alarm looks like.' },
 ];

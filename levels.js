@@ -73,8 +73,8 @@ const LEVELS = [
       },
       {
         id: '1b', kind: 'roles', terms: 'plain', name: 'Changer and change-ee',
-        desc: 'In each statement, which variable is changing the other?',
-        speech: 'One variable changes the other. Which one does the changing?',
+        desc: 'Build the arrow: the changer goes in the circle, the change-ee in the square.',
+        speech: 'One variable changes the other. Build the arrow from the changer to the change-ee.',
         help: () => { const r = exRelation(); return {
           title: 'Changer and change-ee',
           html: `<ul>
@@ -87,13 +87,17 @@ const LEVELS = [
             <li>The <strong>backwards</strong> relation — ${r.dv} changing ${r.iv} — doesn't
                 make sense. Checking the backwards version is a good test.</li>
             <li>Read carefully: the changer isn't always mentioned first.</li>
+            <li>Tap the variable you're asked for, and it goes into its shape: the
+                <strong>changer</strong> in the circle, the <strong>change-ee</strong> in the
+                square, with an arrow between them. Tap either shape to swap them round, then
+                press <strong>Check the arrow</strong>.</li>
           </ul>`,
         }; },
       },
       {
         id: '1c', kind: 'roles', terms: 'formal', name: 'Independent and dependent',
-        desc: 'The same question, with the proper names.',
-        speech: 'Same question, proper names: which is the independent variable, and which is the dependent?',
+        desc: 'The same arrow, with the proper names.',
+        speech: 'Same arrow, proper names: independent variable in the circle, dependent variable in the square.',
         help: () => { const r = exRelation(); return {
           title: 'New names for what you already know',
           html: `<ul>
@@ -103,7 +107,8 @@ const LEVELS = [
                 It gets changed — its value <em>depends on</em> the independent variable.</li>
             <li>${ucfirst(r.iv)} causes the change in ${r.dv}, so ${r.iv} is the IV and
                 ${r.dv} is the DV.</li>
-            <li>Same statements as before, same thinking. Only the names are new.</li>
+            <li>Same statements as before, same arrow: the IV in the circle, the DV in the
+                square. Only the names are new.</li>
           </ul>`,
         }; },
       },
@@ -158,8 +163,8 @@ const LEVELS = [
       },
       {
         id: '2-hyp', kind: 'hypotheses', name: 'Hypotheses',
-        desc: 'A research question and four hypotheses. Which two oppose each other?',
-        speech: 'Pick the two opposing hypotheses: same cause and effect as the question, opposite directions.',
+        desc: 'A research question, four hypotheses and two graphs. Put the opposing pair on their graphs.',
+        speech: 'Put the two opposing hypotheses on their graphs: one rising, one falling.',
         help: () => { const r = exRelation(); return {
           title: 'Hypotheses',
           html: `<ul>
@@ -170,16 +175,23 @@ const LEVELS = [
             <li><strong>Opposing hypotheses</strong> keep the same cause and effect as the
                 question — the same independent and dependent variable — and predict opposite
                 directions: one says the DV goes up, the other says it goes down.</li>
+            <li>On a graph, opposing hypotheses are a <strong>rising line</strong> and a
+                <strong>falling line</strong>, both with the independent variable along the
+                bottom.</li>
             <li>Watch for hypotheses that are <strong>backwards</strong>: they have the
-                dependent variable doing the changing, like the backwards graphs in Level 1.</li>
-            <li>Tap two, then press <strong>Check</strong>.</li>
+                dependent variable doing the changing, like the backwards graphs in Level 1.
+                They don't go on either graph.</li>
+            <li>Every graph has the research question's cause — the independent variable —
+                along the bottom. Tap a hypothesis, then the graph it describes (or the graph
+                first, then the hypothesis). Tap a placed one to take it off. Then press
+                <strong>Check</strong>.</li>
           </ul>`,
         }; },
       },
       {
         id: '2-hyp-null', kind: 'hypotheses', withNull: true, name: 'Hypotheses with the null',
-        desc: 'Six hypotheses now. Pick the two opposing ones and the null.',
-        speech: 'Pick three: the two opposing hypotheses, and the null hypothesis.',
+        desc: 'Six hypotheses and three graphs: rising, falling and flat.',
+        speech: 'Rising, falling, and flat: the flat line is the null hypothesis.',
         help: () => { const r = exRelation(); return {
           title: 'The null hypothesis',
           html: `<ul>
@@ -187,14 +199,16 @@ const LEVELS = [
                 the independent variable makes <strong>no difference at all</strong>.</li>
             <li>That's the <strong>null hypothesis</strong>: <em>Changing ${r.hyp[0]} has
                 no effect on ${r.hyp[1]}.</em></li>
+            <li>On a graph, the null is a <strong>flat line</strong>: ${r.hyp[1]} stays the
+                same whatever ${r.hyp[0]} is.</li>
             <li>The null keeps the same direction of cause as the question, too. "Changing
                 ${r.hyp[1]} has no effect on ${r.hyp[0]}" is backwards.</li>
-            <li>Tap three, then press <strong>Check</strong>.</li>
+            <li>Put a hypothesis on each of the three graphs, then press <strong>Check</strong>.</li>
           </ul>`,
         }; },
       },
       {
-        id: '2-contdisc', kind: 'classify', name: 'Continuous or discrete?',
+        id: '2-contdisc', kind: 'pictureClassify', name: 'Continuous or discrete?',
         desc: 'Can it take any value, or only separate ones?',
         question: 'Is this variable continuous or discrete?',
         categories: [{ value: 'cont', label: 'Continuous' }, { value: 'disc', label: 'Discrete' }],
@@ -212,11 +226,13 @@ const LEVELS = [
                 continuous.</li>
             <li>A quick test: can you sensibly add another decimal place? Then it's continuous.
                 If the values are counted, it's discrete.</li>
+            <li>Picture a <strong>ramp</strong> and a <strong>staircase</strong>. On a ramp a ball
+                can stop anywhere: continuous. On stairs it can only rest on a step: discrete.</li>
           </ul>`,
         },
       },
       {
-        id: '2-noir', kind: 'classify', name: 'Levels of measurement',
+        id: '2-noir', kind: 'pictureClassify', name: 'Levels of measurement',
         desc: 'Categorical, ordinal, interval or ratio?',
         question: 'What level of measurement is this?',
         categories: [
@@ -230,15 +246,15 @@ const LEVELS = [
         help: {
           title: 'Levels of measurement',
           html: `<ul>
-            <li><strong>Categorical</strong>: distinct outcomes with no order. <em>Place of
+            <li><strong>Categorical</strong> (loose shapes): distinct outcomes with no order. <em>Place of
                 birth, blood type, handedness.</em></li>
-            <li><strong>Ordinal</strong>: the outcomes are ranked, but the difference between
+            <li><strong>Ordinal</strong> (a podium): the outcomes are ranked, but the difference between
                 steps is arbitrary. <em>1st, 2nd, 3rd place; strongly disagree … strongly
                 agree.</em></li>
-            <li><strong>Interval</strong>: ranked, with a constant difference between steps, but
+            <li><strong>Interval</strong> (a scale where 0 is just another point): ranked, with a constant difference between steps, but
                 no natural zero — values aren't "twice as much". <em>A rating scale of 1–7;
                 a date.</em></li>
-            <li><strong>Ratio</strong>: ranked, constant steps, <em>and</em> a natural zero.
+            <li><strong>Ratio</strong> (a ruler that starts at 0): ranked, constant steps, <em>and</em> a natural zero.
                 <em>Weight; time to do a task</em> — it can take twice as long.</li>
           </ul>`,
         },
@@ -317,8 +333,8 @@ const LEVELS = [
       },
       {
         id: '2-confound', kind: 'confound', name: 'Confounds',
-        desc: 'Is something other than the independent variable changing too?',
-        speech: 'Is there a confound? If there is, say which variable it is.',
+        desc: 'The groups differ in the independent variable. Does anything else differ too?',
+        speech: 'Circles and squares differ in the IV. Does anything else differ between the groups?',
         help: {
           title: 'Confounds',
           html: `<ul>
@@ -330,8 +346,11 @@ const LEVELS = [
                 two caused any difference in the DV.</li>
             <li>Example: the music group reads in the morning and the silent group at night.
                 Time of day is a confound.</li>
-            <li>First say whether there is one. If you say yes, you'll be asked which variable
-                it is. Both steps have to be right to count.</li>
+            <li>The picture shows the two groups: circles and squares, because they differ in
+                the independent variable. Tap a variable to stripe the squares — "this differs
+                between the groups too". If that's true, it's the confound.</li>
+            <li>If the study is done properly, nothing else differs: tap <strong>Nothing else
+                differs</strong>. Then press <strong>Check</strong>.</li>
           </ul>`,
         },
       },
@@ -340,9 +359,10 @@ const LEVELS = [
         // conditions, but a chemistry sample or a steel beam doesn't.
         id: '2-withinbetween', kind: 'design',
         name: () => (onSamples() ? 'Within or between samples?' : 'Within or between subjects?'),
-        desc: () => `Name the IV in your own words, say whether it's within or between ${onSamples() ? 'samples' : 'subjects'}, then name the DV.`,
+        desc: () => `Name the IV, show in a grid which ${onSamples() ? 'samples' : 'people'} are in which condition, then name the DV.`,
         items: () => content().designs,
         steps: ['iv', 'choice', 'dv'],
+        grid: true,
         choiceQuestion: () => (onSamples()
           ? 'Is each sample tested in <strong>every condition</strong> (within), or are there <strong>different samples</strong> for each (between)?'
           : 'Is this a <strong>within-subjects</strong> or a <strong>between-subjects</strong> design?'),
@@ -358,7 +378,7 @@ const LEVELS = [
             within: 'The same people take part in every condition, so each person is compared with themselves.',
             between: 'Each person is in only one condition, so different groups of people are compared.',
           }),
-        speech: 'Type the IV in your own words, decide within or between, then type the DV.',
+        speech: 'Type the IV, fill in who takes part in what, then type the DV.',
         help: () => ({
           title: onSamples() ? 'Within or between samples?' : 'Within or between subjects?',
           html: `<ul>
@@ -375,8 +395,10 @@ const LEVELS = [
             <li>Ask: does any one person experience more than one condition?</li>`}
             <li>Each question has three steps. First <strong>type the independent
                 variable</strong> in your own words — whatever differs between the
-                conditions. Then choose within or between. Then <strong>type the dependent
-                variable</strong> — whatever gets measured.</li>
+                conditions. Then fill in the grid: tap a cell to put a
+                ${onSamples() ? 'sample' : 'person'} in a condition. Everyone in every
+                condition is within; everyone in just one is between. Then <strong>type the
+                dependent variable</strong> — whatever gets measured.</li>
             <li>You'll see how your answer was read before it's marked. If it could mean two
                 things, you'll be asked which.</li>
           </ul>`,
@@ -454,21 +476,21 @@ const LEVELS = [
     intro: 'Each sub-level asks one kind of question. Some sub-levels need 5 in a row to finish and some need 10 (the bar shows which). You have two hearts per run, so two mistakes won\'t reset it.',
     subs: [
       {
-        id: '4-central', kind: 'classify', name: 'Mean, median or mode?',
-        desc: 'Which average does this calculation give you?',
-        question: 'Which average is this?',
-        categories: [{ value: 'mean', label: 'Mean' }, { value: 'median', label: 'Median' }, { value: 'mode', label: 'Mode' }],
-        items: CENTRAL_ITEMS,
-        speech: 'Mean, median or mode? Read how it\'s worked out.',
+        id: '4-central', kind: 'centre', name: 'Mean, median or mode?',
+        desc: 'Seven shapes on a see-saw. Move the pivot to the mean, the median or the mode.',
+        speech: 'Mode: tallest stack. Median: middle shape. Mean: where it balances.',
         help: {
           title: 'Mean, median and mode',
           html: `<ul>
-            <li>The <strong>mean</strong>: add up all the values and divide by how many there
-                are. Exam marks 80, 77 and 30: 187 ÷ 3 = 62.</li>
-            <li>The <strong>median</strong>: put the values in order and take the one in the
-                <strong>middle</strong>. 30, 77, 80: the median is 77. Half the values are below
-                it and half above.</li>
-            <li>The <strong>mode</strong>: the value that appears <strong>most often</strong>.</li>
+            <li>Seven shapes sit on a number line that's also a see-saw, resting on a ▲. Drag
+                the ▲ along the line.</li>
+            <li>The <strong>mode</strong> is the value that appears <strong>most often</strong>:
+                the <strong>tallest stack</strong>.</li>
+            <li>The <strong>median</strong> is the <strong>middle</strong> value when they're in
+                order: the shape with as many to its left as to its right.</li>
+            <li>The <strong>mean</strong> is where the see-saw <strong>balances</strong>. Adding
+                everything up and dividing gives the same place, but here you can watch it:
+                the see-saw tips towards the heavier side, and is level only at the mean.</li>
           </ul>`,
         },
       },
@@ -596,30 +618,34 @@ const LEVELS = [
       },
       {
         id: '5-chance', kind: 'chance', name: 'Likely or unlikely by chance?',
-        desc: 'Coins, dice and cards: could this easily happen just by chance?',
+        desc: 'Shapes drawn from a bag: could this easily happen just by chance?',
         speech: 'Could this easily happen just by chance?',
         help: {
           title: 'Likely or unlikely by chance?',
           html: `<ul>
-            <li>Some things happen by chance <strong>all the time</strong>: 6 heads in 10 flips of a coin.</li>
-            <li>Others <strong>hardly ever</strong> happen by chance: 20 heads in a row, or a six on every
-                one of 10 rolls of a die.</li>
+            <li>A bag of shapes, and a row of draws from it: draw a shape, put it back, shake, and
+                draw again.</li>
+            <li>A bag that's half circles is like a coin. Some things happen by chance <strong>all
+                the time</strong>: 5 circles in 10 draws.</li>
+            <li>Others <strong>hardly ever</strong> happen by chance: 20 circles in a row. A bag with 1
+                circle in 6 shapes is like a die: a circle every time in 10 draws is just as rare.</li>
             <li>No calculating needed — just ask: would I be surprised if this happened?</li>
           </ul>`,
         },
       },
       {
-        id: '5-h0chance', kind: 'h0chance', name: 'Keep or reject H0? Coins and dice',
-        desc: 'The same events, with a null hypothesis: is the coin fair?',
+        id: '5-h0chance', kind: 'h0chance', name: 'Keep or reject H0? A bag of shapes',
+        desc: 'The same draws, from a bag you can\'t see into, with a null hypothesis about what\'s inside.',
         speech: 'If H0 were true, would this happen by chance? Then keep it or reject it.',
         help: {
           title: 'Keeping or rejecting H0',
           html: `<ul>
-            <li>H0 here is that the coin (or die) is <strong>fair</strong>.</li>
-            <li>Ask: <strong>if H0 were true</strong>, would results like these happen by chance?</li>
+            <li>Now the bag is closed. H0 says what's inside: <em>half the shapes are circles</em>,
+                or <em>1 shape in 6 is a circle</em>.</li>
+            <li>Ask: <strong>if H0 were true</strong>, would draws like these happen by chance?</li>
             <li>If they'd happen all the time — <strong>keep H0</strong>. There's no reason to doubt it.</li>
-            <li>If they'd hardly ever happen — <strong>reject H0</strong>. A fair coin almost never gives
-                20 heads in a row, so we stop believing the coin is fair.</li>
+            <li>If they'd hardly ever happen — <strong>reject H0</strong>. A bag that's half circles
+                almost never gives 20 circles in a row, so we stop believing that's what's in it.</li>
           </ul>`,
         },
       },
@@ -673,6 +699,8 @@ const LEVELS = [
             <li><strong>Type 2 error</strong>: there really is an effect, but the experiment doesn't find
                 it. H0 was false but was kept — a <strong>miss</strong>.</li>
             <li>Finding a real effect, or finding nothing when there's nothing there, is correct.</li>
+            <li>The grid puts it together: what's <strong>really</strong> true down the side, what
+                the test <strong>decided</strong> along the top. Tap the cell for what happened.</li>
           </ul>`,
         },
       },
@@ -691,6 +719,8 @@ const LEVELS = [
                 cartoon from the lecture.</li>
             <li>One significant result among many tests is <strong>weak evidence</strong>. A result that
                 was predicted in advance, or found again in a new study, is <strong>convincing</strong>.</li>
+            <li>Each jar is one test, and a ★ means it came out significant. One ★ among 20 jars is
+                what chance gives. A ★ in every study is not.</li>
           </ul>`,
         },
       },

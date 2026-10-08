@@ -65,6 +65,11 @@ dependent variables. The game shows how it read the answer ("Read as: font size"
 marking it, and asks when it isn't sure. Typed answers are read on the device and never
 sent anywhere.
 
+**Shapes, not just sentences.** Where an answer can be built or placed, it is: an arrow
+from changer to change-ee, hypotheses placed on graphs, a see-saw for the mean. The shapes
+are the sister games' circles and squares, and the circle is always the independent
+variable and the square the dependent one.
+
 **Built for phones, and for nervous users.** Large text and buttons, a visible way back
 from everything, the phone's back gesture works, and nothing destructive happens without
 asking first.
@@ -76,8 +81,8 @@ asking first.
 | | Sub-level | What it asks |
 |---|---|---|
 | **a** | Variable or not? | Is this a measurable feature with different possible values? |
-| **b** | Changer and change-ee | In this statement, which variable changes the other? |
-| **c** | Independent and dependent | The same question, with the proper names. |
+| **b** | Changer and change-ee | Build the arrow: tap the changer into the circle, or the change-ee into the square. |
+| **c** | Independent and dependent | The same arrow, with the proper names: IV in the circle, DV in the square. |
 | **d** | Match the graph | Which of four graphs shows this statement? Forwards or backwards, increasing or decreasing. |
 
 ### Level 2: Research design fundamentals
@@ -85,15 +90,15 @@ asking first.
 | | Sub-level | What it asks |
 |---|---|---|
 | **a** | Valid? Reliable? | Is this design valid? Is it reliable? Both at once. |
-| **b** | Hypotheses | Pick the two opposing hypotheses for a research question. |
-| **c** | Hypotheses with the null | The same, plus the null hypothesis. Pick three. |
-| **d** | Continuous or discrete? | Can the variable take any value, or only separate ones? |
-| **e** | Levels of measurement | Categorical, ordinal, interval or ratio? |
+| **b** | Hypotheses | Put the two opposing hypotheses on a rising and a falling graph. Backwards ones fit neither. |
+| **c** | Hypotheses with the null | The same, plus a flat graph for the null hypothesis. |
+| **d** | Continuous or discrete? | A ramp (any value) or a staircase (separate values)? |
+| **e** | Levels of measurement | Four pictures: loose shapes, a podium, a scale where 0 is just a point, a ruler from 0. |
 | **f** | Cross-sectional or longitudinal? | Snapshot or over time? Then type the IV and DV. One factor each. |
 | **g** | Two factors | The same, with two independent variables to find. |
 | **h** | Both: panel designs | Several groups followed over time, mixed with designs from f and g. |
-| **i** | Confounds | Is there a confound? If so, which variable is it? |
-| **j** | Within or between subjects? | Type the IV, choose the design, then type the DV. |
+| **i** | Confounds | The groups are circles and squares (the IV). Tap what else differs to stripe it, or say nothing does. |
+| **j** | Within or between subjects? | Type the IV, fill in a grid of who takes part in which condition, then type the DV. |
 
 ### Level 3: Factorial designs and interactions
 
@@ -113,14 +118,14 @@ gap between colours without moving any average.
 
 | | Sub-level | What it asks |
 |---|---|---|
-| **a** | Mean, median or mode? | Which average does this description of a calculation give? |
+| **a** | Mean, median or mode? | Seven shapes on a see-saw: move the pivot to the tallest stack, the middle shape, or where it balances. |
 | **b** | Which varies more? | Two groups of people drawn by height. Whose heights are more spread out? The more varied group is as often the shorter one. |
 | **c** | Which arrow is σ? | Arrows from the mean to each person, and three candidates: half σ, σ and twice σ. |
 | **d** | Standard deviations: heights | Drag a marker to the height that's a given number of σ from the mean. |
 | **e** | Standard deviations: ratings | The same on a 1–7 scale lined up with the z-scale, with a new participant (mean and σ) each time. |
 | **f** | Normal or skewed? | Normal curves come narrow or wide and anywhere on the scale; skewed ones have a long tail on either side. |
 
-Everything except 4a is generated. Heights are in centimetres.
+Everything is generated. Heights are in centimetres.
 
 ### Level 5: Real or coincidence?
 
@@ -128,15 +133,15 @@ Everything except 4a is generated. Heights are in centimetres.
 |---|---|---|
 | **a** | Real effect or coincidence? | A real effect from your subject, or an everyday coincidence? |
 | **b** | H0 or H1? | Null or alternative hypothesis, about your subject. |
-| **c** | Likely or unlikely by chance? | Coins, dice and cards: 6 heads in 10 flips, or 20 heads in a row? |
-| **d** | Keep or reject H0? Coins and dice | The same events with an H0 ("the coin is fair"). |
+| **c** | Likely or unlikely by chance? | Draws from a bag of shapes, shown in a row: 5 circles in 10, or 20 in a row? |
+| **d** | Keep or reject H0? A bag of shapes | The same draws from a closed bag, with an H0 about what's inside. |
 | **e** | Keep or reject H0? Your subject | An experiment where nearly every trial goes the same way, or splits evenly. |
 | **f** | The 5% line | "If H0 were true, the chance of results like these would be 30% / 2%": below 5%, reject; above, keep. |
-| **g** | Which error? | Type 1, Type 2, or correct? |
-| **h** | False alarms | One significant result among 20 tests, or a result found again and again? |
+| **g** | Which error? | Tap the cell in the 2 × 2 of what's really true and what the test decided. |
+| **h** | False alarms | One jar per test, lit if significant: one lit among 20, or lit in study after study? |
 
 No arithmetic anywhere: the level builds the idea that we reject H0 when results would
-hardly ever happen by chance *if H0 were true*, from coins and dice to the student's own
+hardly ever happen by chance *if H0 were true*, from a bag of shapes to the student's own
 subject, and then shows the price of the 5% rule (about 1 false alarm in 20 tests).
 
 ## Fits on a phone
@@ -204,6 +209,7 @@ number in `index.html`. Raise it on every change so nobody gets a cached old cop
 | `data4.js` | Level 4's descriptions, and the generators for its groups, lines and distributions. |
 | `data5.js` | Level 5's coincidences, chance events, the 5% line and the false alarms. |
 | `quiz.js` | The question types, and the quiz screen they all share. |
+| `visual.js` | The question types you answer by building, placing or moving something, drawn with circles and squares. |
 | `parser.js` | Works out which part of a study description a typed answer means. |
 | `graphs.js` | Every figure: line graphs, bar graphs, people, number lines and histograms. |
 | `app.js` | Players, points, screens, menu, help and the mascot. |

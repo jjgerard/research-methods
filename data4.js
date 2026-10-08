@@ -4,39 +4,8 @@
 // length"), then distributions, z-scores, and the normal distribution.
 //
 // Heights are in centimetres (the slides use feet and inches, but this is a
-// UK class). Everything except 4a is generated.
+// UK class). Everything is generated; 4a's see-saw is in visual.js.
 // ---------------------------------------------------------------------------
-
-// ---------------------------------------------------------------------------
-// 4a. Mean, median or mode -- from a description of how it's calculated.
-// Some are the recipe in general, some are the recipe carried out on real
-// numbers (the lecture's own exam marks, 80, 77 and 30, among them), and a
-// couple describe the result rather than the steps ("half fall below
-// it"), because recognising a median by what it IS matters as much as
-// recognising it by how it's found.
-// ---------------------------------------------------------------------------
-const MEAN_WHY = 'That\'s the mean: add everything up and divide by how many there are.';
-const MEDIAN_WHY = 'That\'s the median: put everything in order and take the middle value.';
-const MODE_WHY = 'That\'s the mode: the value that turns up most often.';
-const CENTRAL_ITEMS = [
-  { cat: 'mean', label: 'Add up all the scores, then divide the total by how many scores there are.' },
-  { cat: 'mean', label: 'Researchers total the reaction times from all 20 trials and divide the total by 20.' },
-  { cat: 'mean', label: 'To summarise the ratings, every participant\'s rating is added together and the sum is divided by the number of participants.' },
-  { cat: 'mean', label: 'The exam marks 80, 77 and 30 are added to make 187. That is divided by 3, giving 62.' },
-  { cat: 'mean', label: 'Each child\'s vocabulary count is added together, and the total is shared out equally across all the children.' },
-
-  { cat: 'median', label: 'Put all the scores in order from lowest to highest, and take the one in the middle.' },
-  { cat: 'median', label: 'The children line up from shortest to tallest. The height of the child standing in the middle of the line is the answer.' },
-  { cat: 'median', label: 'The reading times are sorted from fastest to slowest. There\'s an even number of them, so the answer is halfway between the two in the middle.' },
-  { cat: 'median', label: 'The exam marks 80, 77 and 30 are put in order: 30, 77, 80. The answer is 77, the one in the middle.' },
-  { cat: 'median', label: 'The value with exactly half of the ratings below it and half above it.' },
-
-  { cat: 'mode', label: 'Count how many times each score appears, and take the score that appears most often.' },
-  { cat: 'mode', label: 'On a 1–7 rating scale, find the rating that the largest number of participants chose.' },
-  { cat: 'mode', label: 'Tally how many children gave each answer. The answer with the biggest tally is the result.' },
-  { cat: 'mode', label: 'In the ratings 1, 3, 3, 3, 5 and 7, the answer is 3, because it appears more often than any other rating.' },
-  { cat: 'mode', label: 'Draw a bar chart of how often each score occurred, and take the score with the tallest bar.' },
-].map(i => ({ ...i, why: { mean: MEAN_WHY, median: MEDIAN_WHY, mode: MODE_WHY }[i.cat] }));
 
 // ---------------------------------------------------------------------------
 // Generated groups of heights.
